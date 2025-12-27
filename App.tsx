@@ -1,22 +1,34 @@
-import {StyleSheet, Text, View} from 'react-native'
+import {StyleSheet, View} from 'react-native'
 
 import {StatusBar} from 'expo-status-bar'
 
+import {Text} from 'react-native-paper'
+
+import {ThemeProvider} from '@/core/providers'
+
 export default function App() {
     return (
-        <View style={styles.container}>
-            <Text>Open up App.tsx to start working on your app!</Text>
-
-            <StatusBar style='auto' />
-        </View>
+        <ThemeProvider>
+            <View style={styles.container}>
+                <Text variant='headlineMedium'>Welcome to SV Car Mobile</Text>
+                <Text variant='bodyMedium' style={styles.subtitle}>
+                    React Native Paper is now set up!
+                </Text>
+                <StatusBar style='auto' />
+            </View>
+        </ThemeProvider>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
+        padding: 16,
+    },
+    subtitle: {
+        marginTop: 8,
+        opacity: 0.7,
     },
 })

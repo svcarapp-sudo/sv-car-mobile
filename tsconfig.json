@@ -5,15 +5,17 @@
         "baseUrl": ".",
         "paths": {
             "@/*": ["./src/*"],
-            "@/components/*": ["./src/components/*"],
-            "@/screens/*": ["./src/screens/*"],
-            "@/navigation/*": ["./src/navigation/*"],
-            "@/services/*": ["./src/services/*"],
-            "@/utils/*": ["./src/utils/*"],
-            "@/types/*": ["./src/types/*"],
-            "@/constants/*": ["./src/constants/*"],
-            "@/hooks/*": ["./src/hooks/*"],
-            "@/store/*": ["./src/store/*"]
+            "@/features/*": ["./src/features/*"],
+            "@/shared/*": ["./src/shared/*"],
+            "@/core/*": ["./src/core/*"],
+            "@/components/*": ["./src/shared/components/*"],
+            "@/utils/*": ["./src/shared/utils/*"],
+            "@/types/*": ["./src/shared/types/*"],
+            "@/constants/*": ["./src/shared/constants/*"],
+            "@/hooks/*": ["./src/shared/hooks/*"],
+            "@/services/*": ["./src/shared/services/*"],
+            "@/navigation/*": ["./src/core/navigation/*"],
+            "@/store/*": ["./src/core/store/*"]
         }
     },
     "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],

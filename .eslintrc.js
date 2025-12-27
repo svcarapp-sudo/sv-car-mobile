@@ -29,6 +29,21 @@ module.exports = {
             },
             'babel-module': {
                 extensions: ['.js', '.jsx', '.ts', '.tsx'],
+                root: ['./'],
+                alias: {
+                    '@': './src',
+                    '@/features': './src/features',
+                    '@/shared': './src/shared',
+                    '@/core': './src/core',
+                    '@/components': './src/shared/components',
+                    '@/utils': './src/shared/utils',
+                    '@/types': './src/shared/types',
+                    '@/constants': './src/shared/constants',
+                    '@/hooks': './src/shared/hooks',
+                    '@/services': './src/shared/services',
+                    '@/navigation': './src/core/navigation',
+                    '@/store': './src/core/store',
+                },
             },
         },
         'import/parsers': {
