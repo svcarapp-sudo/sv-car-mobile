@@ -1,0 +1,12 @@
+node_modules/
+.expo/
+dist/
+web-build/
+*.log
+coverage/
+.nyc_output/
+build/
+android/
+ios/
+*.tsbuildinfo
+
