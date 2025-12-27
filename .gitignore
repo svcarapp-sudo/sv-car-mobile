@@ -41,11 +41,11 @@ yarn-error.*
 /android
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
 *~
+# Note: .vscode/ is committed to share workspace settings with the team
 
 # OS
 Thumbs.db
