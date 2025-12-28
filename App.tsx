@@ -1,34 +1,24 @@
-import {StyleSheet, View} from 'react-native'
+import {useEffect} from 'react'
 
 import {StatusBar} from 'expo-status-bar'
 
-import {Text} from 'react-native-paper'
-
+import {AppNavigator} from '@/core/navigation'
 import {ThemeProvider} from '@/core/providers'
+import {usePartsStore} from '@/features/parts/store'
+import {SAMPLE_PARTS} from '@/shared/utils'
 
 export default function App() {
+    const {setParts} = usePartsStore()
+
+    // Load sample parts data on app start
+    useEffect(() => {
+        setParts(SAMPLE_PARTS)
+    }, [setParts])
+
     return (
         <ThemeProvider>
-            <View style={styles.container}>
-                <Text variant='headlineMedium'>Welcome to SV Car Mobile</Text>
-                <Text variant='bodyMedium' style={styles.subtitle}>
-                    React Native Paper is now set up!
-                </Text>
-                <StatusBar style='auto' />
-            </View>
+            <AppNavigator />
+            <StatusBar style='auto' />
         </ThemeProvider>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 16,
-    },
-    subtitle: {
-        marginTop: 8,
-        opacity: 0.7,
-    },
-})

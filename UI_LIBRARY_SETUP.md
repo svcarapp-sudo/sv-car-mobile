@@ -32,7 +32,7 @@ src/
 ✅ **Single customizable theme**  
 ✅ **TypeScript support**  
 ✅ **Fully customizable colors**  
-✅ **Accessibility** built-in  
+✅ **Accessibility** built-in
 
 ## 📝 Usage Examples
 
@@ -65,7 +65,7 @@ import { useTheme } from 'react-native-paper'
 
 function ThemedComponent() {
   const theme = useTheme()
-  
+
   return (
     <View style={{ backgroundColor: theme.colors.primary }}>
       <Text style={{ color: theme.colors.onPrimary }}>
@@ -75,7 +75,6 @@ function ThemedComponent() {
   )
 }
 ```
-
 
 ### Using Custom Button Component
 
@@ -115,13 +114,13 @@ Edit `src/shared/theme/theme.ts`:
 
 ```typescript
 export const lightTheme: MD3Theme = {
-  ...MD3LightTheme,
-  colors: {
-    ...MD3LightTheme.colors,
-    primary: '#your-primary-color',
-    secondary: '#your-secondary-color',
-    // Customize other colors...
-  },
+    ...MD3LightTheme,
+    colors: {
+        ...MD3LightTheme.colors,
+        primary: '#your-primary-color',
+        secondary: '#your-secondary-color',
+        // Customize other colors...
+    },
 }
 ```
 
@@ -151,4 +150,3 @@ export const CustomCard = (props) => {
 2. Customize theme colors to match your brand
 3. Create custom component wrappers as needed
 4. Use theme provider in your feature components
-

@@ -1,0 +1,213 @@
+import type {Part} from '@/shared/types'
+
+/**
+ * Sample parts data for testing/demo purposes
+ * In a real app, this would come from an API
+ */
+export const SAMPLE_PARTS: Part[] = [
+    // Engine parts
+    {
+        id: 'part_1',
+        name: 'Engine Oil Filter',
+        description: 'High-quality engine oil filter for optimal engine protection',
+        category: 'engine',
+        price: 12.99,
+        brand: 'ACDelco',
+        sku: 'OIL-FILTER-001',
+        inStock: true,
+        compatibleVehicles: [
+            {make: 'Toyota', model: 'Camry', yearFrom: 2015, yearTo: 2023},
+            {make: 'Toyota', model: 'Corolla', yearFrom: 2014, yearTo: 2024},
+        ],
+    },
+    {
+        id: 'part_2',
+        name: 'Spark Plugs Set (4pc)',
+        description: 'Iridium spark plugs for improved fuel efficiency and performance',
+        category: 'engine',
+        price: 45.99,
+        brand: 'NGK',
+        sku: 'SPARK-4PK-001',
+        inStock: true,
+        compatibleVehicles: [
+            {make: 'Honda', model: 'Civic', yearFrom: 2016, yearTo: 2023},
+            {make: 'Honda', model: 'Accord', yearFrom: 2018, yearTo: 2024},
+        ],
+    },
+    {
+        id: 'part_3',
+        name: 'Timing Belt',
+        description: 'OE-quality timing belt with proper tensioning',
+        category: 'engine',
+        price: 89.99,
+        brand: 'Gates',
+        sku: 'TIMING-BELT-001',
+        inStock: true,
+        compatibleVehicles: [{make: 'Toyota', model: 'Camry', yearFrom: 2015, yearTo: 2020, engine: '2.5L'}],
+    },
+    // Brakes
+    {
+        id: 'part_4',
+        name: 'Brake Pad Set (Front)',
+        description: 'Premium ceramic brake pads for smooth, quiet braking',
+        category: 'brakes',
+        price: 65.99,
+        brand: 'PowerStop',
+        sku: 'BRAKE-PAD-F-001',
+        inStock: true,
+        compatibleVehicles: [
+            {make: 'Ford', model: 'F-150', yearFrom: 2015, yearTo: 2023},
+            {make: 'Chevrolet', model: 'Silverado', yearFrom: 2014, yearTo: 2022},
+        ],
+    },
+    {
+        id: 'part_5',
+        name: 'Brake Rotor (Front Pair)',
+        description: 'Slotted and drilled rotors for enhanced brake performance',
+        category: 'brakes',
+        price: 129.99,
+        brand: 'PowerStop',
+        sku: 'ROTOR-F-PAIR-001',
+        inStock: true,
+        compatibleVehicles: [{make: 'Ford', model: 'F-150', yearFrom: 2015, yearTo: 2023}],
+    },
+    // Suspension
+    {
+        id: 'part_6',
+        name: 'Front Strut Assembly',
+        description: 'Complete strut assembly with coil spring',
+        category: 'suspension',
+        price: 189.99,
+        brand: 'Monroe',
+        sku: 'STRUT-F-001',
+        inStock: true,
+        compatibleVehicles: [{make: 'Honda', model: 'Civic', yearFrom: 2016, yearTo: 2021}],
+    },
+    {
+        id: 'part_7',
+        name: 'Shock Absorber (Rear)',
+        description: 'Heavy-duty shock absorber for improved ride comfort',
+        category: 'suspension',
+        price: 79.99,
+        brand: 'Monroe',
+        sku: 'SHOCK-R-001',
+        inStock: false,
+        compatibleVehicles: [{make: 'Toyota', model: 'Camry', yearFrom: 2015, yearTo: 2023}],
+    },
+    // Electrical
+    {
+        id: 'part_8',
+        name: 'Car Battery 12V',
+        description: 'Maintenance-free AGM battery with 3-year warranty',
+        category: 'electrical',
+        price: 149.99,
+        brand: 'Optima',
+        sku: 'BATTERY-12V-001',
+        inStock: true,
+        compatibleVehicles: [
+            {make: 'BMW', model: '3 Series', yearFrom: 2012, yearTo: 2018},
+            {make: 'Mercedes-Benz', model: 'C-Class', yearFrom: 2014, yearTo: 2020},
+        ],
+    },
+    {
+        id: 'part_9',
+        name: 'Headlight Bulb (H7)',
+        description: 'Bright LED headlight bulb, 6000K white light',
+        category: 'electrical',
+        price: 34.99,
+        brand: 'Philips',
+        sku: 'BULB-H7-LED',
+        inStock: true,
+        compatibleVehicles: [
+            {make: 'Volkswagen', model: 'Jetta', yearFrom: 2015, yearTo: 2022},
+            {make: 'Audi', model: 'A4', yearFrom: 2016, yearTo: 2023},
+        ],
+    },
+    // Body
+    {
+        id: 'part_10',
+        name: 'Front Bumper Cover',
+        description: 'OEM-style front bumper cover, unpainted',
+        category: 'body',
+        price: 299.99,
+        brand: 'OEM Plus',
+        sku: 'BUMPER-F-001',
+        inStock: true,
+        compatibleVehicles: [{make: 'Honda', model: 'Civic', yearFrom: 2016, yearTo: 2021}],
+    },
+    // Interior
+    {
+        id: 'part_11',
+        name: 'Floor Mat Set (4pc)',
+        description: 'All-weather rubber floor mats, custom fit',
+        category: 'interior',
+        price: 89.99,
+        brand: 'WeatherTech',
+        sku: 'MATS-4PC-001',
+        inStock: true,
+        compatibleVehicles: [
+            {make: 'Toyota', model: 'RAV4', yearFrom: 2019, yearTo: 2024},
+            {make: 'Subaru', model: 'Outback', yearFrom: 2020, yearTo: 2024},
+        ],
+    },
+    // Exhaust
+    {
+        id: 'part_12',
+        name: 'Catalytic Converter',
+        description: 'OEM replacement catalytic converter, EPA compliant',
+        category: 'exhaust',
+        price: 459.99,
+        brand: 'Bosch',
+        sku: 'CAT-CONV-001',
+        inStock: true,
+        compatibleVehicles: [{make: 'Toyota', model: 'Camry', yearFrom: 2015, yearTo: 2023, engine: '2.5L'}],
+    },
+    // Cooling
+    {
+        id: 'part_13',
+        name: 'Radiator',
+        description: 'Aluminum radiator for improved cooling efficiency',
+        category: 'cooling',
+        price: 199.99,
+        brand: 'Mishimoto',
+        sku: 'RADIATOR-001',
+        inStock: true,
+        compatibleVehicles: [{make: 'Ford', model: 'Mustang', yearFrom: 2015, yearTo: 2023}],
+    },
+    // Transmission
+    {
+        id: 'part_14',
+        name: 'Transmission Filter Kit',
+        description: 'Complete transmission filter and gasket kit',
+        category: 'transmission',
+        price: 39.99,
+        brand: 'WIX',
+        sku: 'TRANS-FILTER-001',
+        inStock: true,
+        compatibleVehicles: [{make: 'Chevrolet', model: 'Silverado', yearFrom: 2014, yearTo: 2018}],
+    },
+    // Fuel
+    {
+        id: 'part_15',
+        name: 'Fuel Pump Assembly',
+        description: 'Electric fuel pump with integrated filter',
+        category: 'fuel',
+        price: 189.99,
+        brand: 'Bosch',
+        sku: 'FUEL-PUMP-001',
+        inStock: true,
+        compatibleVehicles: [{make: 'Honda', model: 'Accord', yearFrom: 2013, yearTo: 2017}],
+    },
+    // Tires
+    {
+        id: 'part_16',
+        name: 'All-Season Tire (Set of 4)',
+        description: 'Premium all-season tire, 225/65R17',
+        category: 'tires',
+        price: 599.99,
+        brand: 'Michelin',
+        sku: 'TIRE-4PK-001',
+        inStock: true,
+        compatibleVehicles: [{make: 'Subaru', model: 'Outback', yearFrom: 2020, yearTo: 2024}],
+    },
+]

@@ -53,36 +53,36 @@ src/
 
 ```typescript
 // Import from a feature
-import { LoginScreen } from '@/features/auth'
-import { HomeScreen } from '@/features/home'
+import {LoginScreen} from '@/features/auth'
+import {HomeScreen} from '@/features/home'
 
 // Import specific feature module
-import { useAuth } from '@/features/auth/hooks'
-import type { LoginCredentials } from '@/features/auth/types'
+import {useAuth} from '@/features/auth/hooks'
+import type {LoginCredentials} from '@/features/auth/types'
 ```
 
 ### Importing from Shared
 
 ```typescript
 // Import shared utilities
-import { formatCurrency } from '@/shared/utils'
-import { APP_NAME } from '@/shared/constants'
+import {formatCurrency} from '@/shared/utils'
+import {APP_NAME} from '@/shared/constants'
 
 // Import shared components
-import { Button, Input } from '@/shared/components'
+import {Button, Input} from '@/shared/components'
 
 // Import shared hooks
-import { useDebounce } from '@/shared/hooks'
+import {useDebounce} from '@/shared/hooks'
 ```
 
 ### Importing from Core
 
 ```typescript
 // Import navigation
-import { AppNavigator } from '@/core/navigation'
+import {AppNavigator} from '@/core/navigation'
 
 // Import store
-import { store } from '@/core/store'
+import {store} from '@/core/store'
 ```
 
 ## 🔧 Path Aliases
@@ -105,11 +105,11 @@ The following path aliases are configured:
 
 1. Create feature folder: `src/features/[feature-name]/`
 2. Add subfolders as needed:
-   - `components/` - Feature-specific components
-   - `screens/` - Feature screens
-   - `hooks/` - Feature-specific hooks
-   - `services/` - Feature API/services
-   - `types/` - Feature TypeScript types
+    - `components/` - Feature-specific components
+    - `screens/` - Feature screens
+    - `hooks/` - Feature-specific hooks
+    - `services/` - Feature API/services
+    - `types/` - Feature TypeScript types
 3. Create `index.ts` in feature root to export public API
 4. Use feature-specific code only within the feature
 5. Share common code through `src/shared/`
@@ -122,4 +122,3 @@ The following path aliases are configured:
 4. **Keep features focused**: Each feature should have a single responsibility
 5. **Shared types**: Put common types in `src/shared/types/`
 6. **Core setup**: Navigation and store configuration in `src/core/`
-

@@ -1,5 +1,5 @@
 // Auth feature hook that uses Zustand store
-import {useAuthStore} from '@/core/store'
+import {useAuthStore} from '../store'
 
 /**
  * Custom hook for authentication

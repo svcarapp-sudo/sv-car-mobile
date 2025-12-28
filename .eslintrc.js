@@ -170,7 +170,7 @@ module.exports = {
         'no-return-assign': 'error',
         'no-return-await': 'warn',
         'no-throw-literal': 'error',
-        'require-await': 'warn',
+        'require-await': 'off',
 
         // Code style (many handled by Prettier, but some useful additions)
         'no-multiple-empty-lines': ['warn', {max: 1, maxEOF: 0}],

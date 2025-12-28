@@ -1,7 +1,9 @@
 import {create} from 'zustand'
 import {devtools, persist} from 'zustand/middleware'
 
-import type {User} from './types'
+import type {User} from '@/shared/types'
+
+// Note: User type is defined in shared/types as it's used across the app
 
 interface AuthState {
     user: User | null
