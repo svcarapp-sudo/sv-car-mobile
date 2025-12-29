@@ -1,6 +1,7 @@
 import {create} from 'zustand'
-import {devtools, persist} from 'zustand/middleware'
+import {persist} from 'zustand/middleware'
 
+import {asyncStorageAdapter} from '@/shared/storage'
 import type {User} from '@/shared/types'
 
 // Note: User type is defined in shared/types as it's used across the app
@@ -27,20 +28,19 @@ const initialState: AuthState = {
 }
 
 export const useAuthStore = create<AuthStore>()(
-    devtools(
-        persist(
-            set => ({
-                ...initialState,
-                login: (user, token) => set({user, token, isAuthenticated: true}, false, 'login'),
-                logout: () => set(initialState, false, 'logout'),
-                updateUser: userData =>
-                    set(state => ({user: state.user ? {...state.user, ...userData} : null}), false, 'updateUser'),
-                setToken: token => set({token}, false, 'setToken'),
-            }),
-            {
-                name: 'auth-storage', // unique name for localStorage key
-            }
-        ),
-        {name: 'AuthStore'} // name for Redux DevTools
+    persist(
+        set => ({
+            ...initialState,
+            login: (user, token) => set({user, token, isAuthenticated: true}),
+            logout: () => set(initialState),
+            updateUser: userData =>
+                set(state => ({user: state.user ? {...state.user, ...userData} : null})),
+            setToken: token => set({token}),
+        }),
+        {
+            name: 'auth-storage',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            storage: asyncStorageAdapter as any,
+        }
     )
 )

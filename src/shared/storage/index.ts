@@ -1,0 +1,1 @@
+export {asyncStorageAdapter} from './asyncStorage'

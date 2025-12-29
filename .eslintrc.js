@@ -45,6 +45,9 @@ module.exports = {
                     '@/store': './src/core/store',
                 },
             },
+            node: {
+                extensions: ['.js', '.jsx', '.ts', '.tsx'],
+            },
         },
         'import/parsers': {
             '@typescript-eslint/parser': ['.ts', '.tsx'],

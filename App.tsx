@@ -18,7 +18,7 @@ export default function App() {
     return (
         <ThemeProvider>
             <AppNavigator />
-            <StatusBar style='auto' />
+                <StatusBar style='auto' />
         </ThemeProvider>
     )
 }

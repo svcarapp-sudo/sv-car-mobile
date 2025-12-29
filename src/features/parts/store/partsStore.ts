@@ -1,6 +1,7 @@
 import {create} from 'zustand'
-import {devtools, persist} from 'zustand/middleware'
+import {persist} from 'zustand/middleware'
 
+import {asyncStorageAdapter} from '@/shared/storage'
 import type {Part, PartCategory} from '@/shared/types'
 
 interface PartsState {
@@ -24,45 +25,31 @@ const initialState: PartsState = {
 }
 
 export const usePartsStore = create<PartsStore>()(
-    devtools(
-        persist(
-            set => ({
-                ...initialState,
-                setParts: parts => set({parts}, false, 'setParts'),
-                addPart: part =>
-                    set(
-                        state => ({
-                            parts: [...state.parts, part],
-                        }),
-                        false,
-                        'addPart'
-                    ),
-                updatePart: (id, updates) =>
-                    set(
-                        state => ({
-                            parts: state.parts.map(p => (p.id === id ? {...p, ...updates} : p)),
-                        }),
-                        false,
-                        'updatePart'
-                    ),
-                deletePart: id =>
-                    set(
-                        state => ({
-                            parts: state.parts.filter(p => p.id !== id),
-                        }),
-                        false,
-                        'deletePart'
-                    ),
-                selectCategory: category => set({selectedCategory: category}, false, 'selectCategory'),
+    persist(
+        set => ({
+            ...initialState,
+            setParts: parts => set({parts}),
+            addPart: part =>
+                set(state => ({
+                    parts: [...state.parts, part],
+                })),
+            updatePart: (id, updates) =>
+                set(state => ({
+                    parts: state.parts.map(p => (p.id === id ? {...p, ...updates} : p)),
+                })),
+            deletePart: id =>
+                set(state => ({
+                    parts: state.parts.filter(p => p.id !== id),
+                })),
+            selectCategory: category => set({selectedCategory: category}),
+        }),
+        {
+            name: 'parts-storage',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            storage: asyncStorageAdapter as any,
+            partialize: state => ({
+                parts: state.parts,
             }),
-            {
-                name: 'parts-storage',
-                partialize: state => ({
-                    parts: state.parts,
-                    // Don't persist selectedCategory as it depends on runtime state
-                }),
-            }
-        ),
-        {name: 'PartsStore'}
+        }
     )
 )

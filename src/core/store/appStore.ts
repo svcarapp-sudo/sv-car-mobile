@@ -1,5 +1,7 @@
 import {create} from 'zustand'
-import {devtools, persist} from 'zustand/middleware'
+import {persist} from 'zustand/middleware'
+
+import {asyncStorageAdapter} from '@/shared/storage'
 
 interface AppState {
     isLoading: boolean
@@ -20,19 +22,18 @@ const initialState: AppState = {
 }
 
 export const useAppStore = create<AppStore>()(
-    devtools(
-        persist(
-            set => ({
-                ...initialState,
-                setLoading: loading => set({isLoading: loading}, false, 'setLoading'),
-                setLanguage: language => set({language}, false, 'setLanguage'),
-                reset: () => set(initialState, false, 'reset'),
-            }),
-            {
-                name: 'app-storage', // unique name for localStorage key
-                partialize: state => ({language: state.language}), // only persist language
-            }
-        ),
-        {name: 'AppStore'} // name for Redux DevTools
+    persist(
+        set => ({
+            ...initialState,
+            setLoading: loading => set({isLoading: loading}),
+            setLanguage: language => set({language}),
+            reset: () => set(initialState),
+        }),
+        {
+            name: 'app-storage',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            storage: asyncStorageAdapter as any,
+            partialize: state => ({language: state.language}),
+        }
     )
 )

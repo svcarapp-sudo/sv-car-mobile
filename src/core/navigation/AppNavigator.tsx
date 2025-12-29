@@ -8,7 +8,7 @@ import type {RootStackParamList} from './types'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
-export const AppNavigator: React.FC = () => {
+export const AppNavigator = () => {
     return (
         <NavigationContainer>
             <Stack.Navigator

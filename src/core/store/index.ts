@@ -3,4 +3,4 @@ export {useAppStore} from './appStore'
 
 // Re-export Zustand utilities
 export {create} from 'zustand'
-export {devtools, persist} from 'zustand/middleware'
+export {persist} from 'zustand/middleware'

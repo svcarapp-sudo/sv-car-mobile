@@ -1,23 +1,52 @@
 {
-    "extends": "expo/tsconfig.base",
-    "compilerOptions": {
-        "strict": true,
-        "baseUrl": ".",
-        "paths": {
-            "@/*": ["./src/*"],
-            "@/features/*": ["./src/features/*"],
-            "@/shared/*": ["./src/shared/*"],
-            "@/core/*": ["./src/core/*"],
-            "@/components/*": ["./src/shared/components/*"],
-            "@/utils/*": ["./src/shared/utils/*"],
-            "@/types/*": ["./src/shared/types/*"],
-            "@/constants/*": ["./src/shared/constants/*"],
-            "@/hooks/*": ["./src/shared/hooks/*"],
-            "@/services/*": ["./src/shared/services/*"],
-            "@/navigation/*": ["./src/core/navigation/*"],
-            "@/store/*": ["./src/core/store/*"]
-        }
-    },
-    "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
-    "exclude": ["node_modules"]
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@/features/*": [
+        "./src/features/*"
+      ],
+      "@/shared/*": [
+        "./src/shared/*"
+      ],
+      "@/core/*": [
+        "./src/core/*"
+      ],
+      "@/components/*": [
+        "./src/shared/components/*"
+      ],
+      "@/utils/*": [
+        "./src/shared/utils/*"
+      ],
+      "@/types/*": [
+        "./src/shared/types/*"
+      ],
+      "@/constants/*": [
+        "./src/shared/constants/*"
+      ],
+      "@/hooks/*": [
+        "./src/shared/hooks/*"
+      ],
+      "@/services/*": [
+        "./src/shared/services/*"
+      ],
+      "@/navigation/*": [
+        "./src/core/navigation/*"
+      ],
+      "@/store/*": [
+        "./src/core/store/*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
