@@ -38,7 +38,7 @@ class VehicleInfoService {
      * Get common engine options
      */
     async getCommonEngines(): Promise<string[]> {
-        return ['1.6L', '2.0L', '2.4L', '3.0L V6', 'Electric', 'Hybrid']
+        return ['1.6L', '2.0L', '2.4L', '3.0L V6', 'كهرباء', 'هجين']
     }
 }
 

@@ -4,6 +4,20 @@ import {Drawer, Text, Avatar, useTheme, Divider} from 'react-native-paper'
 
 import {useLayoutStore} from './layoutStore'
 
+const ARABIC_TEXT = {
+    HOME: 'الرئيسية',
+    MY_VEHICLE: 'مركبتي',
+    MY_ORDERS: 'طلباتي',
+    SERVICE_APPOINTMENTS: 'مواعيد الخدمة',
+    FAVORITES: 'المفضلة',
+    SETTINGS: 'الإعدادات',
+    HELP_SUPPORT: 'المساعدة والدعم',
+    MAIN_MENU: 'القائمة الرئيسية',
+    ACCOUNT: 'الحساب',
+    USER_NAME: 'مستخدم SV',
+    USER_STATUS: 'عضو مميز',
+}
+
 interface AppDrawerProps {
     onClose?: () => void
 }
@@ -13,13 +27,13 @@ export const AppDrawer = ({onClose}: AppDrawerProps) => {
     const {toggleDrawer} = useLayoutStore()
 
     const menuItems = [
-        {id: 'home', label: 'Home', icon: 'home-outline'},
-        {id: 'my-vehicle', label: 'My Vehicle', icon: 'car-outline'},
-        {id: 'orders', label: 'My Orders', icon: 'package-variant-closed'},
-        {id: 'appointments', label: 'Service Appointments', icon: 'calendar-check-outline'},
-        {id: 'favorites', label: 'Favorites', icon: 'heart-outline'},
-        {id: 'settings', label: 'Settings', icon: 'cog-outline'},
-        {id: 'help', label: 'Help & Support', icon: 'help-circle-outline'},
+        {id: 'home', label: ARABIC_TEXT.HOME, icon: 'home-outline'},
+        {id: 'my-vehicle', label: ARABIC_TEXT.MY_VEHICLE, icon: 'car-outline'},
+        {id: 'orders', label: ARABIC_TEXT.MY_ORDERS, icon: 'package-variant-closed'},
+        {id: 'appointments', label: ARABIC_TEXT.SERVICE_APPOINTMENTS, icon: 'calendar-check-outline'},
+        {id: 'favorites', label: ARABIC_TEXT.FAVORITES, icon: 'heart-outline'},
+        {id: 'settings', label: ARABIC_TEXT.SETTINGS, icon: 'cog-outline'},
+        {id: 'help', label: ARABIC_TEXT.HELP_SUPPORT, icon: 'help-circle-outline'},
     ]
 
     const handlePress = (_id: string) => {
@@ -33,16 +47,16 @@ export const AppDrawer = ({onClose}: AppDrawerProps) => {
                 <Avatar.Text size={64} label='SV' style={{backgroundColor: theme.colors.primary}} />
                 <View style={styles.headerInfo}>
                     <Text variant='titleLarge' style={{color: theme.colors.primary}}>
-                        SV User
+                        {ARABIC_TEXT.USER_NAME}
                     </Text>
                     <Text variant='bodySmall' style={{color: theme.colors.onSurfaceVariant}}>
-                        Premium Member
+                        {ARABIC_TEXT.USER_STATUS}
                     </Text>
                 </View>
             </View>
 
             <ScrollView style={styles.content}>
-                <Drawer.Section title='Main Menu'>
+                <Drawer.Section title={ARABIC_TEXT.MAIN_MENU}>
                     {menuItems.slice(0, 4).map(item => (
                         <Drawer.Item key={item.id} label={item.label} icon={item.icon} onPress={() => handlePress(item.id)} />
                     ))}
@@ -50,7 +64,7 @@ export const AppDrawer = ({onClose}: AppDrawerProps) => {
 
                 <Divider />
 
-                <Drawer.Section title='Account'>
+                <Drawer.Section title={ARABIC_TEXT.ACCOUNT}>
                     {menuItems.slice(4).map(item => (
                         <Drawer.Item key={item.id} label={item.label} icon={item.icon} onPress={() => handlePress(item.id)} />
                     ))}
@@ -77,7 +91,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerInfo: {
-        marginLeft: 16,
+        marginStart: 16,
     },
     content: {
         flex: 1,

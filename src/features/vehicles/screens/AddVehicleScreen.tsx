@@ -10,6 +10,36 @@ import {useVehicles, useVehicleInfo} from '../hooks'
 
 import type {NavigationProp} from '@react-navigation/native'
 
+const ARABIC_TEXT = {
+    STEPS: {
+        BRAND: 'الماركة',
+        MODEL: 'الموديل',
+        YEAR: 'السنة',
+        FUEL: 'الوقود',
+        ENGINE: 'المحرك',
+        VIN: 'رقم الهيكل',
+    },
+    SELECT_MANUFACTURER: 'اختر الشركة المصنعة',
+    SEARCH_BRANDS: 'ابحث عن العلامات التجارية...',
+    SELECT_MODEL: 'اختر الموديل',
+    FOR_MAKE: (make: string) => `لسيارة ${make}`,
+    PRODUCTION_YEAR: 'سنة الصنع',
+    FUEL_TYPE: 'نوع الوقود',
+    ENGINE_INFO: 'معلومات المحرك',
+    SELECT_ENGINE_DESC: 'اختر سعة المحرك أو النوع',
+    ALMOST_DONE: 'أوشكنا على الانتهاء!',
+    FINAL_DETAILS_DESC: (year: string, make: string, model: string) => `أضف التفاصيل النهائية لسيارتك ${year} ${make} ${model}`,
+    VIN_LABEL: 'رقم الهيكل (اختياري)',
+    VIN_PLACEHOLDER: 'رقم تعريف المركبة',
+    NICKNAME_LABEL: 'اسم مستعار (اختياري)',
+    NICKNAME_PLACEHOLDER: 'مثلاً، سيارتي اليومية',
+    SUMMARY: 'الملخص',
+    VEHICLE_LABEL: 'المركبة:',
+    ENGINE_LABEL: 'المحرك:',
+    SUBMIT_BUTTON: 'تأكيد وإضافة المركبة',
+    BACK_BUTTON: 'رجوع',
+}
+
 interface AddVehicleScreenProps {
     navigation?: NavigationProp<RootStackParamList>
 }
@@ -24,19 +54,18 @@ enum Step {
 }
 
 const STEPS_INFO = [
-    {label: 'Brand', icon: 'car-outline'},
-    {label: 'Model', icon: 'car-info'},
-    {label: 'Year', icon: 'calendar'},
-    {label: 'Fuel', icon: 'gas-station'},
-    {label: 'Engine', icon: 'engine-outline'},
-    {label: 'VIN', icon: 'numeric'},
+    {label: ARABIC_TEXT.STEPS.BRAND, icon: 'car-outline'},
+    {label: ARABIC_TEXT.STEPS.MODEL, icon: 'car-info'},
+    {label: ARABIC_TEXT.STEPS.YEAR, icon: 'calendar'},
+    {label: ARABIC_TEXT.STEPS.FUEL, icon: 'gas-station'},
+    {label: ARABIC_TEXT.STEPS.ENGINE, icon: 'engine-outline'},
+    {label: ARABIC_TEXT.STEPS.VIN, icon: 'numeric'},
 ]
 
 export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
     const {setVehicle} = useVehicles()
     const {manufacturers, fuelTypes, years, commonEngines, getModels} = useVehicleInfo()
     const theme = useTheme()
-
     const [currentStep, setCurrentStep] = useState<Step>(Step.Manufacturer)
     const [make, setMake] = useState('')
     const [model, setModel] = useState('')
@@ -121,10 +150,10 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
         return (
             <View style={styles.stepContent}>
                 <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                    Select Manufacturer
+                    {ARABIC_TEXT.SELECT_MANUFACTURER}
                 </Text>
                 <TextInput
-                    placeholder='Search brands...'
+                    placeholder={ARABIC_TEXT.SEARCH_BRANDS}
                     value={searchQuery}
                     onChangeText={setSearchQuery}
                     mode='outlined'
@@ -136,7 +165,7 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
                         <List.Item
                             key={m.name}
                             title={m.name}
-                            left={props => <List.Icon {...props} icon='chevron-right' />}
+                            left={props => <List.Icon {...props} icon='chevron-left' />}
                             onPress={async () => {
                                 setMake(m.name)
                                 const fetchedModels = await getModels(m.name)
@@ -155,10 +184,10 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
         return (
             <View style={styles.stepContent}>
                 <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                    Select Model
+                    {ARABIC_TEXT.SELECT_MODEL}
                 </Text>
                 <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
-                    For {make}
+                    {ARABIC_TEXT.FOR_MAKE(make)}
                 </Text>
                 <ScrollView style={styles.listContainer}>
                     {models.map(m => (
@@ -180,7 +209,7 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
     const renderYear = () => (
         <View style={styles.stepContent}>
             <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                Production Year
+                {ARABIC_TEXT.PRODUCTION_YEAR}
             </Text>
             <FlatList
                 data={years.map(String)}
@@ -210,7 +239,7 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
     const renderFuel = () => (
         <View style={styles.stepContent}>
             <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                Fuel Type
+                {ARABIC_TEXT.FUEL_TYPE}
             </Text>
             <View style={styles.fuelContainer}>
                 {fuelTypes.map(f => (
@@ -240,10 +269,10 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
     const renderEngine = () => (
         <View style={styles.stepContent}>
             <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                Engine Information
+                {ARABIC_TEXT.ENGINE_INFO}
             </Text>
             <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
-                Select displacement or engine type
+                {ARABIC_TEXT.SELECT_ENGINE_DESC}
             </Text>
             <View style={styles.commonEngines}>
                 {commonEngines.map(e => (
@@ -265,48 +294,48 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
     const renderDetails = () => (
         <ScrollView style={styles.stepContent}>
             <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                Almost Done!
+                {ARABIC_TEXT.ALMOST_DONE}
             </Text>
             <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
-                Add final details for your {year} {make} {model}
+                {ARABIC_TEXT.FINAL_DETAILS_DESC(year, make, model)}
             </Text>
 
             <TextInput
-                label='VIN (Optional)'
+                label={ARABIC_TEXT.VIN_LABEL}
                 value={vin}
                 onChangeText={setVin}
                 mode='outlined'
                 style={styles.input}
-                placeholder='Vehicle Identification Number'
+                placeholder={ARABIC_TEXT.VIN_PLACEHOLDER}
             />
 
             <TextInput
-                label='Nickname (Optional)'
+                label={ARABIC_TEXT.NICKNAME_LABEL}
                 value={displayName}
                 onChangeText={setDisplayName}
                 mode='outlined'
                 style={styles.input}
-                placeholder='e.g., My Daily Driver'
+                placeholder={ARABIC_TEXT.NICKNAME_PLACEHOLDER}
             />
 
             <Card style={[styles.summaryCard, {backgroundColor: theme.colors.surfaceVariant}]}>
                 <Card.Title
-                    title='Summary'
+                    title={ARABIC_TEXT.SUMMARY}
                     titleStyle={{color: theme.colors.onSurfaceVariant}}
                     left={props => <List.Icon {...props} icon='information' color={theme.colors.primary} />}
                 />
                 <Card.Content>
                     <Text style={{color: theme.colors.onSurfaceVariant}}>
-                        <Text style={{fontWeight: 'bold'}}>Vehicle:</Text> {year} {make} {model}
+                        <Text style={{fontWeight: 'bold'}}>{ARABIC_TEXT.VEHICLE_LABEL}</Text> {year} {make} {model}
                     </Text>
                     <Text style={{color: theme.colors.onSurfaceVariant}}>
-                        <Text style={{fontWeight: 'bold'}}>Engine:</Text> {engine} ({fuelType})
+                        <Text style={{fontWeight: 'bold'}}>{ARABIC_TEXT.ENGINE_LABEL}</Text> {engine} ({fuelType})
                     </Text>
                 </Card.Content>
             </Card>
 
             <Button mode='contained' onPress={handleSubmit} style={styles.submitButton}>
-                Confirm & Add Vehicle
+                {ARABIC_TEXT.SUBMIT_BUTTON}
             </Button>
         </ScrollView>
     )
@@ -337,7 +366,7 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
                 {renderContent()}
                 {currentStep > Step.Manufacturer && (
                     <Button mode='text' onPress={handleBack} style={styles.backButton}>
-                        Back
+                        {ARABIC_TEXT.BACK_BUTTON}
                     </Button>
                 )}
             </View>

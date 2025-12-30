@@ -3,10 +3,24 @@ import {ScrollView, StyleSheet, View} from 'react-native'
 import {Card, Text, Button, IconButton, useTheme} from 'react-native-paper'
 
 import type {RootStackParamList} from '@/shared/navigation/types'
-
 import {useVehicles} from '../hooks'
 
 import type {NavigationProp} from '@react-navigation/native'
+
+const ARABIC_TEXT = {
+    NO_VEHICLE: 'لم يتم إضافة مركبة',
+    ADD_VEHICLE_DESC: 'أضف مركبتك للعثور على قطع الغيار المتوافقة وإدارة معلومات سيارتك',
+    ADD_MY_VEHICLE: 'إضافة مركبتي',
+    MY_VEHICLE: 'مركبتي',
+    FUEL: 'الوقود',
+    ENGINE: 'المحرك',
+    VIN: 'رقم الهيكل',
+    BROWSE_PARTS: 'تصفح قطع الغيار',
+    CHANGE: 'تغيير',
+    REMOVE: 'حذف',
+    NOT_AVAILABLE: 'غير متوفر',
+    INFO_MESSAGE: (make: string, model: string) => `نحن نعرض النتائج والمعلومات المخصصة لمركبتك ${make} ${model}.`,
+}
 
 interface VehicleListScreenProps {
     navigation?: NavigationProp<RootStackParamList>
@@ -39,19 +53,19 @@ export const VehicleListScreen = ({navigation}: VehicleListScreenProps) => {
                     <View style={styles.emptyContainer}>
                         <IconButton icon='car-outline' size={64} iconColor={theme.colors.primary} />
                         <Text variant='headlineSmall' style={styles.emptyTitle}>
-                            No vehicle added
+                            {ARABIC_TEXT.NO_VEHICLE}
                         </Text>
                         <Text variant='bodyMedium' style={[styles.emptyText, {color: theme.colors.onSurfaceVariant}]}>
-                            Add your vehicle to find compatible parts and manage your car information
+                            {ARABIC_TEXT.ADD_VEHICLE_DESC}
                         </Text>
                         <Button mode='contained' onPress={handleAddVehicle} style={styles.addButton}>
-                            Add My Vehicle
+                            {ARABIC_TEXT.ADD_MY_VEHICLE}
                         </Button>
                     </View>
                 ) : (
                     <>
                         <Text variant='headlineMedium' style={[styles.title, {color: theme.colors.onBackground}]}>
-                            My Vehicle
+                            {ARABIC_TEXT.MY_VEHICLE}
                         </Text>
                         <Card style={[styles.card, {backgroundColor: theme.colors.surface}]}>
                             <Card.Content>
@@ -70,20 +84,20 @@ export const VehicleListScreen = ({navigation}: VehicleListScreenProps) => {
                                                 <Text
                                                     variant='labelSmall'
                                                     style={[styles.detailLabel, {color: theme.colors.onSurfaceVariant}]}>
-                                                    FUEL
+                                                    {ARABIC_TEXT.FUEL}
                                                 </Text>
                                                 <Text variant='bodyMedium' style={{color: theme.colors.onSurface}}>
-                                                    {vehicle.fuelType || 'N/A'}
+                                                    {vehicle.fuelType || ARABIC_TEXT.NOT_AVAILABLE}
                                                 </Text>
                                             </View>
                                             <View style={styles.detailItem}>
                                                 <Text
                                                     variant='labelSmall'
                                                     style={[styles.detailLabel, {color: theme.colors.onSurfaceVariant}]}>
-                                                    ENGINE
+                                                    {ARABIC_TEXT.ENGINE}
                                                 </Text>
                                                 <Text variant='bodyMedium' style={{color: theme.colors.onSurface}}>
-                                                    {vehicle.engine || 'N/A'}
+                                                    {vehicle.engine || ARABIC_TEXT.NOT_AVAILABLE}
                                                 </Text>
                                             </View>
                                         </View>
@@ -92,7 +106,7 @@ export const VehicleListScreen = ({navigation}: VehicleListScreenProps) => {
                                                 <Text
                                                     variant='labelSmall'
                                                     style={[styles.detailLabel, {color: theme.colors.onSurfaceVariant}]}>
-                                                    VIN
+                                                    {ARABIC_TEXT.VIN}
                                                 </Text>
                                                 <Text variant='bodySmall' style={{color: theme.colors.onSurface}}>
                                                     {vehicle.vin}
@@ -104,18 +118,18 @@ export const VehicleListScreen = ({navigation}: VehicleListScreenProps) => {
                             </Card.Content>
                             <Card.Actions style={styles.cardActions}>
                                 <Button mode='contained' onPress={handleBrowseParts} style={styles.browseButton}>
-                                    Browse Parts
+                                    {ARABIC_TEXT.BROWSE_PARTS}
                                 </Button>
                                 <View style={styles.secondaryActions}>
                                     <Button mode='outlined' onPress={handleChangeVehicle} style={styles.actionButton}>
-                                        Change
+                                        {ARABIC_TEXT.CHANGE}
                                     </Button>
                                     <Button
                                         mode='text'
                                         onPress={handleRemoveVehicle}
                                         textColor={theme.colors.error}
                                         style={styles.actionButton}>
-                                        Remove
+                                        {ARABIC_TEXT.REMOVE}
                                     </Button>
                                 </View>
                             </Card.Actions>
@@ -124,7 +138,7 @@ export const VehicleListScreen = ({navigation}: VehicleListScreenProps) => {
                         <View style={[styles.infoBox, {backgroundColor: theme.colors.secondaryContainer}]}>
                             <IconButton icon='information-outline' size={20} iconColor={theme.colors.primary} />
                             <Text variant='bodySmall' style={[styles.infoText, {color: theme.colors.onSecondaryContainer}]}>
-                                We are showing results and information specifically for your {vehicle.make} {vehicle.model}.
+                                {ARABIC_TEXT.INFO_MESSAGE(vehicle.make, vehicle.model)}
                             </Text>
                         </View>
                     </>
@@ -220,7 +234,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         borderRadius: 8,
-        paddingRight: 16,
+        paddingEnd: 16,
     },
     infoText: {
         flex: 1,

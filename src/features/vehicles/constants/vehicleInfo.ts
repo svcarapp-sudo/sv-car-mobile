@@ -61,12 +61,12 @@ export const COMMON_MAKES = [
 
 // Fuel Types
 export const FUEL_TYPES = [
-    {id: 'gasoline', name: 'Gasoline', icon: 'gas-station'},
-    {id: 'diesel', name: 'Diesel', icon: 'gas-station-outline'},
-    {id: 'electric', name: 'Electric', icon: 'ev-station'},
-    {id: 'hybrid', name: 'Hybrid', icon: 'leaf'},
-    {id: 'plugin_hybrid', name: 'Plug-in Hybrid', icon: 'battery-charging'},
-    {id: 'hydrogen', name: 'Hydrogen', icon: 'water-outline'},
+    {id: 'gasoline', name: 'بنزين', icon: 'gas-station'},
+    {id: 'diesel', name: 'ديزل', icon: 'gas-station-outline'},
+    {id: 'electric', name: 'كهرباء', icon: 'ev-station'},
+    {id: 'hybrid', name: 'هجين', icon: 'leaf'},
+    {id: 'plugin_hybrid', name: 'هجين قابل للشحن', icon: 'battery-charging'},
+    {id: 'hydrogen', name: 'هيدروجين', icon: 'water-outline'},
 ]
 
 // Expanded Model List for common makes

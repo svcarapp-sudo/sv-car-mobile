@@ -9,6 +9,14 @@ import {LaunchScreen} from '../screens/LaunchScreen'
 
 import type {RootStackParamList} from './types'
 
+const ARABIC_TEXT = {
+    MY_VEHICLE: 'مركبتي',
+    ADD_VEHICLE: 'إضافة مركبة',
+    BROWSE_CATEGORIES: 'تصفح الفئات',
+    PARTS: 'قطع الغيار',
+    DETAIL: 'التفاصيل',
+}
+
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
 const MainFlow = () => {
@@ -23,37 +31,35 @@ const MainFlow = () => {
                     name='Vehicles'
                     component={VehicleListScreen}
                     options={{
-                        title: 'My Vehicle',
+                        title: ARABIC_TEXT.MY_VEHICLE,
                     }}
                 />
                 <Stack.Screen
                     name='AddVehicle'
                     component={AddVehicleScreen}
                     options={{
-                        title: 'Add Vehicle',
+                        title: ARABIC_TEXT.ADD_VEHICLE,
                     }}
                 />
                 <Stack.Screen
                     name='PartsCategories'
                     component={PartsCategoriesScreen}
                     options={{
-                        title: 'Browse Categories',
+                        title: ARABIC_TEXT.BROWSE_CATEGORIES,
                     }}
                 />
                 <Stack.Screen
                     name='PartsList'
                     component={PartsListScreen}
                     options={({route}) => ({
-                        title: route.params?.category
-                            ? `${route.params.category.charAt(0).toUpperCase() + route.params.category.slice(1)}`
-                            : 'Parts',
+                        title: route.params?.category || ARABIC_TEXT.PARTS,
                     })}
                 />
                 <Stack.Screen
                     name='PartDetail'
                     component={PartDetailScreen}
                     options={{
-                        title: 'Detail',
+                        title: ARABIC_TEXT.DETAIL,
                     }}
                 />
             </Stack.Navigator>

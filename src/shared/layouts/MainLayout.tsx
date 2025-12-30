@@ -1,5 +1,4 @@
-import {useEffect, useMemo, useCallback} from 'react'
-
+import {useEffect, useMemo, useCallback, useState} from 'react'
 import {StyleSheet, View, Animated, TouchableWithoutFeedback, Dimensions, PanResponder} from 'react-native'
 
 import {AppDrawer} from './AppDrawer'
@@ -8,6 +7,8 @@ import {useLayoutStore} from './layoutStore'
 
 const {width} = Dimensions.get('window')
 const DRAWER_WIDTH = width * 0.7
+const CLOSED_X = DRAWER_WIDTH
+const OPEN_X = 0
 
 interface MainLayoutProps {
     children: React.ReactNode
@@ -16,64 +17,59 @@ interface MainLayoutProps {
 export const MainLayout = ({children}: MainLayoutProps) => {
     const {isDrawerOpen, toggleDrawer} = useLayoutStore()
 
-    // Using useMemo for stable Animated values
-    const drawerAnim = useMemo(() => new Animated.Value(-DRAWER_WIDTH), [])
-    const backdropAnim = useMemo(() => new Animated.Value(0), [])
+    const [drawerAnim] = useState(() => new Animated.Value(isDrawerOpen ? OPEN_X : CLOSED_X))
+    const [backdropAnim] = useState(() => new Animated.Value(isDrawerOpen ? 1 : 0))
 
     const animateToValue = useCallback(
         (open: boolean) => {
-            const toValue = open ? 0 : -DRAWER_WIDTH
-            const backdropToValue = open ? 1 : 0
-
             Animated.parallel([
                 Animated.timing(drawerAnim, {
-                    toValue,
+                    toValue: open ? OPEN_X : CLOSED_X,
                     duration: 250,
                     useNativeDriver: true,
                 }),
                 Animated.timing(backdropAnim, {
-                    toValue: backdropToValue,
+                    toValue: open ? 1 : 0,
                     duration: 250,
                     useNativeDriver: true,
                 }),
-            ]).start(() => {
-                if (!open && isDrawerOpen) {
-                    toggleDrawer(false)
-                }
-            })
+            ]).start()
         },
-        [drawerAnim, backdropAnim, isDrawerOpen, toggleDrawer]
+        [drawerAnim, backdropAnim]
     )
 
     useEffect(() => {
         animateToValue(isDrawerOpen)
     }, [isDrawerOpen, animateToValue])
 
-    // PanResponder for drag-to-close
+    // Drag to close (drag right)
     const panResponder = useMemo(
         () =>
             PanResponder.create({
                 onStartShouldSetPanResponder: () => isDrawerOpen,
-                onMoveShouldSetPanResponder: (_, gestureState) => {
-                    return isDrawerOpen && Math.abs(gestureState.dx) > 5
-                },
-                onPanResponderMove: (_, gestureState) => {
-                    if (gestureState.dx < 0) {
-                        const newX = Math.max(-DRAWER_WIDTH, gestureState.dx)
+                onMoveShouldSetPanResponder: (_, g) => isDrawerOpen && g.dx > 5,
+
+                onPanResponderMove: (_, g) => {
+                    if (g.dx >= 0) {
+                        const newX = Math.min(DRAWER_WIDTH, g.dx)
                         drawerAnim.setValue(newX)
-                        const progress = (DRAWER_WIDTH + newX) / DRAWER_WIDTH
+
+                        const progress = 1 - newX / DRAWER_WIDTH
                         backdropAnim.setValue(progress)
                     }
                 },
-                onPanResponderRelease: (_, gestureState) => {
-                    if (gestureState.dx < -DRAWER_WIDTH / 4 || gestureState.vx < -0.3) {
-                        animateToValue(false)
-                    } else {
-                        animateToValue(true)
+
+                onPanResponderRelease: (_, g) => {
+                    const shouldClose = g.dx > DRAWER_WIDTH / 3 || g.vx > 0.5
+
+                    animateToValue(!shouldClose)
+
+                    if (shouldClose) {
+                        toggleDrawer(false)
                     }
                 },
             }),
-        [isDrawerOpen, drawerAnim, backdropAnim, animateToValue]
+        [isDrawerOpen, drawerAnim, backdropAnim, animateToValue, toggleDrawer]
     )
 
     return (
@@ -82,7 +78,7 @@ export const MainLayout = ({children}: MainLayoutProps) => {
 
             <BottomNav />
 
-            {/* Backdrop - Always in tree but pointerEvents handles touchability */}
+            {/* Backdrop */}
             <Animated.View pointerEvents={isDrawerOpen ? 'auto' : 'none'} style={[styles.backdrop, {opacity: backdropAnim}]}>
                 <TouchableWithoutFeedback onPress={() => toggleDrawer(false)}>
                     <View style={StyleSheet.absoluteFill} />
@@ -101,12 +97,10 @@ export const MainLayout = ({children}: MainLayoutProps) => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
+    container: {flex: 1},
     content: {
         flex: 1,
-        paddingBottom: 60, // BottomNav height
+        paddingBottom: 60,
     },
     backdrop: {
         ...StyleSheet.absoluteFillObject,
@@ -116,7 +110,7 @@ const styles = StyleSheet.create({
     drawerContainer: {
         position: 'absolute',
         top: 0,
-        left: 0,
+        start: 0,
         bottom: 0,
         width: DRAWER_WIDTH,
         zIndex: 100,

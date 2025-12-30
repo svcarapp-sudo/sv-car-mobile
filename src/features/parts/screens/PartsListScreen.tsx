@@ -1,9 +1,21 @@
 import {FlatList, StyleSheet, View} from 'react-native'
 import {Card, Text, Chip, IconButton, useTheme} from 'react-native-paper'
-import type {RootStackParamList} from '@/shared/navigation/types'
 import {PART_CATEGORIES} from '@/shared/constants'
 import {useParts} from '../hooks'
+import type {RootStackParamList} from '@/shared/navigation/types'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
+
+const ARABIC_TEXT = {
+    IN_STOCK: 'متوفر',
+    OUT_OF_STOCK: 'غير متوفر',
+    SKU_LABEL: 'الرمز:',
+    NO_PARTS_FOUND: 'لم يتم العثور على قطع',
+    NO_PARTS_IN_CATEGORY: (category: string) => `لم يتم العثور على قطع في فئة ${category}`,
+    NO_PARTS_DESC: 'لا توجد قطع متاحة. يرجى التأكد من اختيار مركبة.',
+    LOADING: 'جاري تحميل القطع...',
+    NO_PARTS_VEHICLE: 'لا توجد قطع متاحة لهذه المركبة',
+    PARTS_COUNT: (count: number) => `${count} قطعة`,
+}
 
 interface PartsListScreenProps {
     route?: RouteProp<RootStackParamList, 'PartsList'>
@@ -39,14 +51,14 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
                                 icon='check-circle'
                                 style={[styles.inStockChip, {backgroundColor: '#E8F5E9'}]}
                                 textStyle={{color: '#2E7D32'}}>
-                                In Stock
+                                {ARABIC_TEXT.IN_STOCK}
                             </Chip>
                         ) : (
                             <Chip
                                 icon='alert-circle'
                                 style={[styles.outOfStockChip, {backgroundColor: '#FFEBEE'}]}
                                 textStyle={{color: '#C62828'}}>
-                                Out of Stock
+                                {ARABIC_TEXT.OUT_OF_STOCK}
                             </Chip>
                         )}
                     </View>
@@ -66,7 +78,7 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
                         </Text>
                         {part.sku && (
                             <Text variant='bodySmall' style={[styles.partSku, {color: theme.colors.outline}]}>
-                                SKU: {part.sku}
+                                {ARABIC_TEXT.SKU_LABEL} {part.sku}
                             </Text>
                         )}
                     </View>
@@ -84,12 +96,10 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
             <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
                 <View style={styles.emptyContainer}>
                     <Text variant='headlineSmall' style={[styles.emptyTitle, {color: theme.colors.onBackground}]}>
-                        No Parts Found
+                        {ARABIC_TEXT.NO_PARTS_FOUND}
                     </Text>
                     <Text variant='bodyMedium' style={[styles.emptyText, {color: theme.colors.onSurfaceVariant}]}>
-                        {categoryInfo
-                            ? `No parts found in ${categoryInfo.name} category`
-                            : 'No parts available. Please ensure a vehicle is selected.'}
+                        {categoryInfo ? ARABIC_TEXT.NO_PARTS_IN_CATEGORY(categoryInfo.name) : ARABIC_TEXT.NO_PARTS_DESC}
                     </Text>
                     <IconButton
                         icon='car'
@@ -111,7 +121,7 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
                         {categoryInfo.name}
                     </Text>
                     <Text variant='bodyMedium' style={[styles.headerSubtitle, {color: theme.colors.onSurfaceVariant}]}>
-                        {parts.length} part{parts.length !== 1 ? 's' : ''}
+                        {ARABIC_TEXT.PARTS_COUNT(parts.length)}
                     </Text>
                 </View>
             )}
@@ -124,7 +134,7 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
                         <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant}}>
-                            {loading ? 'Loading parts...' : 'No parts available for this vehicle'}
+                            {loading ? ARABIC_TEXT.LOADING : ARABIC_TEXT.NO_PARTS_VEHICLE}
                         </Text>
                     </View>
                 }
@@ -140,7 +150,6 @@ const styles = StyleSheet.create({
     header: {
         padding: 16,
         paddingBottom: 8,
-        backgroundColor: '#f5f5f5',
     },
     headerTitle: {
         marginBottom: 4,
@@ -163,7 +172,7 @@ const styles = StyleSheet.create({
     },
     partInfo: {
         flex: 1,
-        marginRight: 8,
+        marginEnd: 8,
     },
     partName: {
         marginBottom: 4,

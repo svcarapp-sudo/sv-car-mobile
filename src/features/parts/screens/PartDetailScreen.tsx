@@ -5,13 +5,26 @@ import {PART_CATEGORIES} from '@/shared/constants'
 import type {Part} from '@/shared/types'
 import {usePartApi} from '../hooks'
 import type {CompatibilityResponse} from '../types'
+import type {RootStackParamList} from '@/shared/navigation/types'
+import type {RouteProp} from '@react-navigation/native'
+
+const ARABIC_TEXT = {
+    LOADING: 'جاري التحميل...',
+    NOT_FOUND: 'لم يتم العثور على القطعة',
+    IN_STOCK: 'متوفر',
+    OUT_OF_STOCK: 'غير متوفر',
+    DESCRIPTION: 'الوصف',
+    SKU: 'الرمز',
+    COMPATIBILITY: 'التوافق',
+    PERFECT_MATCH: 'مطابقة تماماً',
+    COMPATIBLE: 'متوافقة',
+    NOT_COMPATIBLE: 'غير متوافقة',
+    ADD_TO_CART: 'أضف إلى السلة',
+    SAVE_TO_FAVORITES: 'إضافة إلى المفضلة',
+}
 
 interface PartDetailScreenProps {
-    route?: {
-        params?: {
-            partId: string
-        }
-    }
+    route?: RouteProp<RootStackParamList, 'PartDetail'>
 }
 
 export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
@@ -62,7 +75,7 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                     {backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center'},
                 ]}>
                 <Text variant='headlineSmall' style={{color: theme.colors.primary}}>
-                    Loading...
+                    {ARABIC_TEXT.LOADING}
                 </Text>
             </View>
         )
@@ -76,7 +89,7 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                     {backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center'},
                 ]}>
                 <Text variant='headlineSmall' style={{color: theme.colors.error}}>
-                    Part not found
+                    {ARABIC_TEXT.NOT_FOUND}
                 </Text>
             </View>
         )
@@ -99,11 +112,11 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                         </View>
                         {part.inStock ? (
                             <Chip icon='check-circle' style={{backgroundColor: '#E8F5E9'}} textStyle={{color: '#2E7D32'}}>
-                                In Stock
+                                {ARABIC_TEXT.IN_STOCK}
                             </Chip>
                         ) : (
                             <Chip icon='alert-circle' style={{backgroundColor: '#FFEBEE'}} textStyle={{color: '#C62828'}}>
-                                Out of Stock
+                                {ARABIC_TEXT.OUT_OF_STOCK}
                             </Chip>
                         )}
                     </View>
@@ -121,7 +134,7 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                     {part.description && (
                         <View style={styles.section}>
                             <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
-                                Description
+                                {ARABIC_TEXT.DESCRIPTION}
                             </Text>
                             <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant}}>
                                 {part.description}
@@ -132,7 +145,7 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                     {part.sku && (
                         <View style={styles.section}>
                             <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
-                                SKU
+                                {ARABIC_TEXT.SKU}
                             </Text>
                             <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant}}>
                                 {part.sku}
@@ -143,7 +156,7 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                     {compatibility && (
                         <View style={styles.section}>
                             <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
-                                Compatibility
+                                {ARABIC_TEXT.COMPATIBILITY}
                             </Text>
                             <Chip
                                 icon={compatibility.isCompatible ? 'check-circle' : 'close-circle'}
@@ -154,14 +167,14 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                                 textStyle={{color: compatibility.isCompatible ? '#2E7D32' : '#C62828'}}>
                                 {(() => {
                                     if (compatibility.isCompatible && compatibility.exactMatch) {
-                                        return 'Perfect Match'
+                                        return ARABIC_TEXT.PERFECT_MATCH
                                     }
 
                                     if (compatibility.isCompatible) {
-                                        return 'Compatible'
+                                        return ARABIC_TEXT.COMPATIBLE
                                     }
 
-                                    return 'Not Compatible'
+                                    return ARABIC_TEXT.NOT_COMPATIBLE
                                 })()}
                             </Chip>
                             {compatibility.reason && (
@@ -176,10 +189,10 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
 
                     <View style={styles.buttonContainer}>
                         <Button mode='contained' style={styles.actionButton} disabled={!part.inStock}>
-                            Add to Cart
+                            {ARABIC_TEXT.ADD_TO_CART}
                         </Button>
                         <Button mode='outlined' style={styles.actionButton}>
-                            Save to Favorites
+                            {ARABIC_TEXT.SAVE_TO_FAVORITES}
                         </Button>
                     </View>
                 </Card.Content>
@@ -206,7 +219,7 @@ const styles = StyleSheet.create({
     },
     headerInfo: {
         flex: 1,
-        marginRight: 8,
+        marginEnd: 8,
     },
     partName: {
         marginBottom: 4,

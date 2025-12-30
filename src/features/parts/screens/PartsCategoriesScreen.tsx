@@ -6,6 +6,15 @@ import type {RootStackParamList} from '@/shared/navigation/types'
 import type {PartCategory} from '@/shared/types'
 import {useParts} from '../hooks'
 
+const ARABIC_TEXT = {
+    TITLE: 'تصفح قطع الغيار',
+    SUBTITLE: 'تصفح قطع الغيار حسب الفئة',
+    CHANGE_VEHICLE: 'تغيير المركبة',
+    VIEW_ALL: 'عرض جميع القطع',
+    CATEGORIES: 'الفئات',
+    VIEW_PARTS: 'عرض القطع',
+}
+
 interface PartsCategoriesScreenProps {
     navigation?: NavigationProp<RootStackParamList>
 }
@@ -29,23 +38,23 @@ export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({nav
             <View style={styles.header}>
                 <View>
                     <Text variant='headlineMedium' style={[styles.title, {color: theme.colors.primary}]}>
-                        Browse Parts
+                        {ARABIC_TEXT.TITLE}
                     </Text>
                     <Text variant='bodyMedium' style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>
-                        Browse parts by category
+                        {ARABIC_TEXT.SUBTITLE}
                     </Text>
                 </View>
                 <Button mode='outlined' onPress={() => navigation?.navigate('Vehicles')} style={styles.changeButton}>
-                    Change Vehicle
+                    {ARABIC_TEXT.CHANGE_VEHICLE}
                 </Button>
             </View>
 
             <Button mode='contained' onPress={handleViewAllParts} style={styles.allPartsButton}>
-                View All Parts
+                {ARABIC_TEXT.VIEW_ALL}
             </Button>
 
             <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
-                Categories
+                {ARABIC_TEXT.CATEGORIES}
             </Text>
 
             <View style={styles.categoriesGrid}>
@@ -69,7 +78,7 @@ export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({nav
                                 <Chip
                                     icon='package-variant'
                                     style={[styles.countChip, {backgroundColor: theme.colors.secondaryContainer}]}>
-                                    View Parts
+                                    {ARABIC_TEXT.VIEW_PARTS}
                                 </Chip>
                             </Card.Content>
                         </Card>
@@ -100,7 +109,7 @@ const styles = StyleSheet.create({
         opacity: 0.7,
     },
     changeButton: {
-        marginLeft: 8,
+        marginStart: 8,
     },
     allPartsButton: {
         marginBottom: 24,

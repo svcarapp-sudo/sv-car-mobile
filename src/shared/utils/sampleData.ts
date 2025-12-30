@@ -8,8 +8,8 @@ export const SAMPLE_PARTS: Part[] = [
     // Engine parts
     {
         id: 'part_1',
-        name: 'Engine Oil Filter',
-        description: 'High-quality engine oil filter for optimal engine protection',
+        name: 'فلتر زيت المحرك',
+        description: 'فلتر زيت محرك عالي الجودة لحماية مثالية للمحرك',
         category: 'engine',
         price: 12.99,
         brand: 'ACDelco',
@@ -22,8 +22,8 @@ export const SAMPLE_PARTS: Part[] = [
     },
     {
         id: 'part_2',
-        name: 'Spark Plugs Set (4pc)',
-        description: 'Iridium spark plugs for improved fuel efficiency and performance',
+        name: 'طقم بواجي (4 قطع)',
+        description: 'بواجي إيريديوم لتحسين كفاءة الوقود والأداء',
         category: 'engine',
         price: 45.99,
         brand: 'NGK',
@@ -36,8 +36,8 @@ export const SAMPLE_PARTS: Part[] = [
     },
     {
         id: 'part_3',
-        name: 'Timing Belt',
-        description: 'OE-quality timing belt with proper tensioning',
+        name: 'سير التيمن',
+        description: 'سير تيمن بجودة أصلية مع شد مثالي',
         category: 'engine',
         price: 89.99,
         brand: 'Gates',
@@ -48,8 +48,8 @@ export const SAMPLE_PARTS: Part[] = [
     // Brakes
     {
         id: 'part_4',
-        name: 'Brake Pad Set (Front)',
-        description: 'Premium ceramic brake pads for smooth, quiet braking',
+        name: 'طقم فحمات فرامل (أمامي)',
+        description: 'فحمات فرامل سيراميك ممتازة لفرملة ناعمة وهادئة',
         category: 'brakes',
         price: 65.99,
         brand: 'PowerStop',
@@ -62,8 +62,8 @@ export const SAMPLE_PARTS: Part[] = [
     },
     {
         id: 'part_5',
-        name: 'Brake Rotor (Front Pair)',
-        description: 'Slotted and drilled rotors for enhanced brake performance',
+        name: 'ديسكات فرامل (زوج أمامي)',
+        description: 'ديسكات فرامل مخرمة ومشققة لتحسين أداء الفرامل',
         category: 'brakes',
         price: 129.99,
         brand: 'PowerStop',
@@ -74,8 +74,8 @@ export const SAMPLE_PARTS: Part[] = [
     // Suspension
     {
         id: 'part_6',
-        name: 'Front Strut Assembly',
-        description: 'Complete strut assembly with coil spring',
+        name: 'مساعد أمامي كامل',
+        description: 'مساعد كامل مع ياي',
         category: 'suspension',
         price: 189.99,
         brand: 'Monroe',
@@ -85,8 +85,8 @@ export const SAMPLE_PARTS: Part[] = [
     },
     {
         id: 'part_7',
-        name: 'Shock Absorber (Rear)',
-        description: 'Heavy-duty shock absorber for improved ride comfort',
+        name: 'مساعد خلفي',
+        description: 'مساعد خلفي شديد التحمل لراحة أفضل أثناء القيادة',
         category: 'suspension',
         price: 79.99,
         brand: 'Monroe',
@@ -97,8 +97,8 @@ export const SAMPLE_PARTS: Part[] = [
     // Electrical
     {
         id: 'part_8',
-        name: 'Car Battery 12V',
-        description: 'Maintenance-free AGM battery with 3-year warranty',
+        name: 'بطارية سيارة 12 فولت',
+        description: 'بطارية AGM لا تحتاج لصيانة مع ضمان 3 سنوات',
         category: 'electrical',
         price: 149.99,
         brand: 'Optima',
@@ -111,8 +111,8 @@ export const SAMPLE_PARTS: Part[] = [
     },
     {
         id: 'part_9',
-        name: 'Headlight Bulb (H7)',
-        description: 'Bright LED headlight bulb, 6000K white light',
+        name: 'لمبة شمعة (H7)',
+        description: 'لمبة شمعة LED ساطعة، ضوء أبيض 6000K',
         category: 'electrical',
         price: 34.99,
         brand: 'Philips',
@@ -126,8 +126,8 @@ export const SAMPLE_PARTS: Part[] = [
     // Body
     {
         id: 'part_10',
-        name: 'Front Bumper Cover',
-        description: 'OEM-style front bumper cover, unpainted',
+        name: 'غطاء صدام أمامي',
+        description: 'غطاء صدام أمامي بنمط الأصلي، غير مصبوغ',
         category: 'body',
         price: 299.99,
         brand: 'OEM Plus',
@@ -138,8 +138,8 @@ export const SAMPLE_PARTS: Part[] = [
     // Interior
     {
         id: 'part_11',
-        name: 'Floor Mat Set (4pc)',
-        description: 'All-weather rubber floor mats, custom fit',
+        name: 'طقم دعاسات (4 قطع)',
+        description: 'دعاسات مطاطية لجميع الأحوال الجوية، تفصيل خاص',
         category: 'interior',
         price: 89.99,
         brand: 'WeatherTech',
@@ -153,8 +153,8 @@ export const SAMPLE_PARTS: Part[] = [
     // Exhaust
     {
         id: 'part_12',
-        name: 'Catalytic Converter',
-        description: 'OEM replacement catalytic converter, EPA compliant',
+        name: 'دبة تلوث (محول حفاز)',
+        description: 'بديل أصلي لدبة التلوث، متوافق مع معايير EPA',
         category: 'exhaust',
         price: 459.99,
         brand: 'Bosch',
@@ -165,8 +165,8 @@ export const SAMPLE_PARTS: Part[] = [
     // Cooling
     {
         id: 'part_13',
-        name: 'Radiator',
-        description: 'Aluminum radiator for improved cooling efficiency',
+        name: 'رديتر',
+        description: 'رديتر ألمنيوم لتحسين كفاءة التبريد',
         category: 'cooling',
         price: 199.99,
         brand: 'Mishimoto',
@@ -177,8 +177,8 @@ export const SAMPLE_PARTS: Part[] = [
     // Transmission
     {
         id: 'part_14',
-        name: 'Transmission Filter Kit',
-        description: 'Complete transmission filter and gasket kit',
+        name: 'طقم فلتر ناقل الحركة',
+        description: 'طقم فلتر ووجه ناقل حركة كامل',
         category: 'transmission',
         price: 39.99,
         brand: 'WIX',
@@ -189,8 +189,8 @@ export const SAMPLE_PARTS: Part[] = [
     // Fuel
     {
         id: 'part_15',
-        name: 'Fuel Pump Assembly',
-        description: 'Electric fuel pump with integrated filter',
+        name: 'طقم مضخة الوقود',
+        description: 'مضخة وقود كهربائية مع فلتر مدمج',
         category: 'fuel',
         price: 189.99,
         brand: 'Bosch',
@@ -201,8 +201,8 @@ export const SAMPLE_PARTS: Part[] = [
     // Tires
     {
         id: 'part_16',
-        name: 'All-Season Tire (Set of 4)',
-        description: 'Premium all-season tire, 225/65R17',
+        name: 'طقم إطارات لكل الفصول (4 قطع)',
+        description: 'إطار ممتاز لجميع الفصول، 225/65R17',
         category: 'tires',
         price: 599.99,
         brand: 'Michelin',
