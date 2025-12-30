@@ -1,13 +1,12 @@
 import {useState} from 'react'
 
-import {ScrollView, StyleSheet} from 'react-native'
+import {ScrollView, StyleSheet, View, TouchableOpacity, FlatList} from 'react-native'
 
-import {TextInput, Button, Text, Card} from 'react-native-paper'
+import {TextInput, Button, Text, Card, ProgressBar, List, IconButton, useTheme} from 'react-native-paper'
 
-import type {RootStackParamList} from '@/core/navigation/types'
-import {CURRENT_YEAR, MIN_YEAR, MAX_YEAR} from '@/shared/constants'
+import type {RootStackParamList} from '@/shared/navigation/types'
 
-import {useVehicles} from '../hooks'
+import {useVehicles, useVehicleInfo} from '../hooks'
 
 import type {NavigationProp} from '@react-navigation/native'
 
@@ -15,137 +14,334 @@ interface AddVehicleScreenProps {
     navigation?: NavigationProp<RootStackParamList>
 }
 
-export const AddVehicleScreen: React.FC<AddVehicleScreenProps> = ({navigation}) => {
-    const {addVehicle} = useVehicles()
+enum Step {
+    Manufacturer = 0,
+    Model = 1,
+    Year = 2,
+    Fuel = 3,
+    Engine = 4,
+    Details = 5,
+}
 
+const STEPS_INFO = [
+    {label: 'Brand', icon: 'car-outline'},
+    {label: 'Model', icon: 'car-info'},
+    {label: 'Year', icon: 'calendar'},
+    {label: 'Fuel', icon: 'gas-station'},
+    {label: 'Engine', icon: 'engine-outline'},
+    {label: 'VIN', icon: 'numeric'},
+]
+
+export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
+    const {setVehicle} = useVehicles()
+    const {manufacturers, fuelTypes, years, commonEngines, getModels} = useVehicleInfo()
+    const theme = useTheme()
+
+    const [currentStep, setCurrentStep] = useState<Step>(Step.Manufacturer)
     const [make, setMake] = useState('')
     const [model, setModel] = useState('')
-    const [year, setYear] = useState(String(CURRENT_YEAR))
+    const [year, setYear] = useState('')
+    const [fuelType, setFuelType] = useState('')
     const [engine, setEngine] = useState('')
-    const [trim, setTrim] = useState('')
+    const [vin, setVin] = useState('')
     const [displayName, setDisplayName] = useState('')
-    const [errors, setErrors] = useState<Record<string, string>>({})
+    const [searchQuery, setSearchQuery] = useState('')
+    const [models, setModels] = useState<string[]>([])
 
-    const validateForm = () => {
-        const newErrors: Record<string, string> = {}
+    const progress = (currentStep + 1) / STEPS_INFO.length
 
-        if (!make.trim()) {
-            newErrors.make = 'Make is required'
+    const handleNext = async () => {
+        if (currentStep === Step.Manufacturer && make) {
+            const fetchedModels = await getModels(make)
+            setModels(fetchedModels)
         }
 
-        if (!model.trim()) {
-            newErrors.model = 'Model is required'
+        if (currentStep < Step.Details) {
+            setCurrentStep(currentStep + 1)
         }
+    }
 
-        if (!year.trim()) {
-            newErrors.year = 'Year is required'
+    const handleBack = () => {
+        if (currentStep > Step.Manufacturer) {
+            setCurrentStep(currentStep - 1)
         } else {
-            const yearNum = parseInt(year, 10)
-
-            if (isNaN(yearNum) || yearNum < MIN_YEAR || yearNum > MAX_YEAR) {
-                newErrors.year = `Year must be between ${MIN_YEAR} and ${MAX_YEAR}`
-            }
+            navigation?.goBack()
         }
-
-        setErrors(newErrors)
-
-        return Object.keys(newErrors).length === 0
     }
 
     const handleSubmit = () => {
-        if (!validateForm()) {
-            return
-        }
-
-        addVehicle({
-            make: make.trim(),
-            model: model.trim(),
+        setVehicle({
+            make,
+            model,
             year: parseInt(year, 10),
-            engine: engine.trim() || undefined,
-            trim: trim.trim() || undefined,
+            fuelType,
+            engine,
+            vin: vin.trim() || undefined,
             displayName: displayName.trim() || undefined,
         })
-
         navigation?.goBack()
     }
 
-    return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-            <Card style={styles.card}>
+    const renderStepper = () => (
+        <View style={[styles.stepperContainer, {backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.outline}]}>
+            <View style={styles.stepperHeader}>
+                {STEPS_INFO.map((step, index) => {
+                    const isActive = index === currentStep
+                    const isCompleted = index < currentStep
+                    let color = theme.colors.outline
+
+                    if (isActive) {
+                        color = theme.colors.primary
+                    } else if (isCompleted) {
+                        color = theme.colors.secondary
+                    }
+
+                    return (
+                        <View key={step.label} style={styles.stepItem}>
+                            <IconButton
+                                icon={step.icon}
+                                size={20}
+                                iconColor={color}
+                                style={[styles.stepIcon, isActive && {backgroundColor: theme.colors.primaryContainer}]}
+                            />
+                            <Text variant='labelSmall' style={{color, fontWeight: isActive ? 'bold' : 'normal'}}>
+                                {step.label}
+                            </Text>
+                        </View>
+                    )
+                })}
+            </View>
+            <ProgressBar progress={progress} color={theme.colors.primary} style={styles.progressBar} />
+        </View>
+    )
+
+    const renderManufacturer = () => {
+        const filteredMakes = manufacturers.filter(m => m.name.toLowerCase().includes(searchQuery.toLowerCase()))
+
+        return (
+            <View style={styles.stepContent}>
+                <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
+                    Select Manufacturer
+                </Text>
+                <TextInput
+                    placeholder='Search brands...'
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    mode='outlined'
+                    left={<TextInput.Icon icon='magnify' />}
+                    style={styles.searchInput}
+                />
+                <ScrollView style={styles.listContainer}>
+                    {filteredMakes.map(m => (
+                        <List.Item
+                            key={m.name}
+                            title={m.name}
+                            left={props => <List.Icon {...props} icon='chevron-right' />}
+                            onPress={async () => {
+                                setMake(m.name)
+                                const fetchedModels = await getModels(m.name)
+                                setModels(fetchedModels)
+                                setCurrentStep(Step.Model)
+                            }}
+                            style={[styles.listItem, make === m.name && {backgroundColor: theme.colors.primaryContainer}]}
+                        />
+                    ))}
+                </ScrollView>
+            </View>
+        )
+    }
+
+    const renderModel = () => {
+        return (
+            <View style={styles.stepContent}>
+                <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
+                    Select Model
+                </Text>
+                <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
+                    For {make}
+                </Text>
+                <ScrollView style={styles.listContainer}>
+                    {models.map(m => (
+                        <List.Item
+                            key={m}
+                            title={m}
+                            onPress={() => {
+                                setModel(m)
+                                handleNext()
+                            }}
+                            style={[styles.listItem, model === m && {backgroundColor: theme.colors.primaryContainer}]}
+                        />
+                    ))}
+                </ScrollView>
+            </View>
+        )
+    }
+
+    const renderYear = () => (
+        <View style={styles.stepContent}>
+            <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
+                Production Year
+            </Text>
+            <FlatList
+                data={years.map(String)}
+                numColumns={3}
+                keyExtractor={item => item}
+                renderItem={({item}) => (
+                    <TouchableOpacity
+                        style={[
+                            styles.yearItem,
+                            {backgroundColor: theme.colors.surfaceVariant},
+                            year === item && {borderColor: theme.colors.primary, borderWidth: 2},
+                        ]}
+                        onPress={() => {
+                            setYear(item)
+                            handleNext()
+                        }}>
+                        <Text variant='titleMedium' style={{color: theme.colors.onSurfaceVariant}}>
+                            {item}
+                        </Text>
+                    </TouchableOpacity>
+                )}
+                contentContainerStyle={styles.yearGrid}
+            />
+        </View>
+    )
+
+    const renderFuel = () => (
+        <View style={styles.stepContent}>
+            <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
+                Fuel Type
+            </Text>
+            <View style={styles.fuelContainer}>
+                {fuelTypes.map(f => (
+                    <Card
+                        key={f.id}
+                        style={[
+                            styles.fuelCard,
+                            {backgroundColor: theme.colors.surface},
+                            fuelType === f.name && {backgroundColor: theme.colors.primaryContainer},
+                        ]}
+                        onPress={() => {
+                            setFuelType(f.name)
+                            handleNext()
+                        }}>
+                        <Card.Content style={styles.fuelCardContent}>
+                            <IconButton icon={f.icon} size={32} iconColor={theme.colors.primary} />
+                            <Text variant='titleMedium' style={{color: theme.colors.onSurface}}>
+                                {f.name}
+                            </Text>
+                        </Card.Content>
+                    </Card>
+                ))}
+            </View>
+        </View>
+    )
+
+    const renderEngine = () => (
+        <View style={styles.stepContent}>
+            <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
+                Engine Information
+            </Text>
+            <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
+                Select displacement or engine type
+            </Text>
+            <View style={styles.commonEngines}>
+                {commonEngines.map(e => (
+                    <Button
+                        key={e}
+                        mode={engine === e ? 'contained' : 'outlined'}
+                        style={styles.chipButton}
+                        onPress={() => {
+                            setEngine(e)
+                            handleNext()
+                        }}>
+                        {e}
+                    </Button>
+                ))}
+            </View>
+        </View>
+    )
+
+    const renderDetails = () => (
+        <ScrollView style={styles.stepContent}>
+            <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
+                Almost Done!
+            </Text>
+            <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
+                Add final details for your {year} {make} {model}
+            </Text>
+
+            <TextInput
+                label='VIN (Optional)'
+                value={vin}
+                onChangeText={setVin}
+                mode='outlined'
+                style={styles.input}
+                placeholder='Vehicle Identification Number'
+            />
+
+            <TextInput
+                label='Nickname (Optional)'
+                value={displayName}
+                onChangeText={setDisplayName}
+                mode='outlined'
+                style={styles.input}
+                placeholder='e.g., My Daily Driver'
+            />
+
+            <Card style={[styles.summaryCard, {backgroundColor: theme.colors.surfaceVariant}]}>
+                <Card.Title
+                    title='Summary'
+                    titleStyle={{color: theme.colors.onSurfaceVariant}}
+                    left={props => <List.Icon {...props} icon='information' color={theme.colors.primary} />}
+                />
                 <Card.Content>
-                    <Text variant='headlineSmall' style={styles.title}>
-                        Add Vehicle
+                    <Text style={{color: theme.colors.onSurfaceVariant}}>
+                        <Text style={{fontWeight: 'bold'}}>Vehicle:</Text> {year} {make} {model}
                     </Text>
-
-                    <TextInput
-                        label='Make *'
-                        value={make}
-                        onChangeText={setMake}
-                        error={Boolean(errors.make)}
-                        mode='outlined'
-                        style={styles.input}
-                        placeholder='e.g., Toyota, Honda, Ford'
-                    />
-                    {errors.make && <Text style={styles.error}>{errors.make}</Text>}
-
-                    <TextInput
-                        label='Model *'
-                        value={model}
-                        onChangeText={setModel}
-                        error={Boolean(errors.model)}
-                        mode='outlined'
-                        style={styles.input}
-                    />
-                    {errors.model && <Text style={styles.error}>{errors.model}</Text>}
-
-                    <TextInput
-                        label='Year *'
-                        value={year}
-                        onChangeText={setYear}
-                        error={Boolean(errors.year)}
-                        mode='outlined'
-                        style={styles.input}
-                        keyboardType='numeric'
-                    />
-                    {errors.year && <Text style={styles.error}>{errors.year}</Text>}
-
-                    <TextInput
-                        label='Engine / Displacement (Optional)'
-                        value={engine}
-                        onChangeText={setEngine}
-                        mode='outlined'
-                        style={styles.input}
-                        placeholder='e.g., 2.4L, V6 3.5L'
-                    />
-
-                    <TextInput
-                        label='Trim (Optional)'
-                        value={trim}
-                        onChangeText={setTrim}
-                        mode='outlined'
-                        style={styles.input}
-                        placeholder='e.g., LE, EX, Limited'
-                    />
-
-                    <TextInput
-                        label='Display Name (Optional)'
-                        value={displayName}
-                        onChangeText={setDisplayName}
-                        mode='outlined'
-                        style={styles.input}
-                        placeholder='Custom name for this vehicle'
-                    />
-
-                    <Button mode='contained' onPress={handleSubmit} style={styles.submitButton}>
-                        Add Vehicle
-                    </Button>
-
-                    <Button mode='outlined' onPress={() => navigation?.goBack()} style={styles.cancelButton}>
-                        Cancel
-                    </Button>
+                    <Text style={{color: theme.colors.onSurfaceVariant}}>
+                        <Text style={{fontWeight: 'bold'}}>Engine:</Text> {engine} ({fuelType})
+                    </Text>
                 </Card.Content>
             </Card>
+
+            <Button mode='contained' onPress={handleSubmit} style={styles.submitButton}>
+                Confirm & Add Vehicle
+            </Button>
         </ScrollView>
+    )
+
+    const renderContent = () => {
+        switch (currentStep) {
+            case Step.Manufacturer:
+                return renderManufacturer()
+            case Step.Model:
+                return renderModel()
+            case Step.Year:
+                return renderYear()
+            case Step.Fuel:
+                return renderFuel()
+            case Step.Engine:
+                return renderEngine()
+            case Step.Details:
+                return renderDetails()
+            default:
+                return null
+        }
+    }
+
+    return (
+        <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+            {renderStepper()}
+            <View style={styles.mainContent}>
+                {renderContent()}
+                {currentStep > Step.Manufacturer && (
+                    <Button mode='text' onPress={handleBack} style={styles.backButton}>
+                        Back
+                    </Button>
+                )}
+            </View>
+        </View>
     )
 }
 
@@ -153,28 +349,102 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    content: {
+    stepperContainer: {
+        paddingTop: 16,
+    },
+    stepperHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        paddingHorizontal: 8,
+        marginBottom: 8,
+    },
+    stepItem: {
+        alignItems: 'center',
+        flex: 1,
+    },
+    stepIcon: {
+        margin: 0,
+    },
+    progressBar: {
+        height: 4,
+    },
+    mainContent: {
+        flex: 1,
         padding: 16,
     },
-    card: {
-        elevation: 2,
+    stepContent: {
+        flex: 1,
     },
-    title: {
-        marginBottom: 24,
+    stepTitle: {
+        marginBottom: 8,
+        fontWeight: 'bold',
+    },
+    stepSubtitle: {
+        marginBottom: 16,
+    },
+    searchInput: {
+        marginBottom: 16,
+    },
+    listContainer: {
+        flex: 1,
+    },
+    listItem: {
+        borderRadius: 8,
+        marginVertical: 2,
+    },
+    customInput: {
+        backgroundColor: 'transparent',
+        marginTop: 8,
+    },
+    yearGrid: {
+        paddingBottom: 24,
+    },
+    yearItem: {
+        flex: 1,
+        aspectRatio: 1.5,
+        margin: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 8,
+    },
+    fuelContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 12,
+    },
+    fuelCard: {
+        width: '47%',
+        marginBottom: 8,
+    },
+    fuelCardContent: {
+        alignItems: 'center',
+        paddingVertical: 16,
     },
     input: {
-        marginBottom: 8,
+        marginBottom: 16,
     },
-    error: {
-        color: '#b00020',
-        fontSize: 12,
-        marginBottom: 8,
-        marginLeft: 16,
+    commonEngines: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+        marginBottom: 24,
+    },
+    chipButton: {
+        borderRadius: 20,
+    },
+    nextButton: {
+        marginTop: 'auto',
+        paddingVertical: 6,
     },
     submitButton: {
-        marginTop: 16,
+        marginTop: 24,
+        paddingVertical: 8,
     },
-    cancelButton: {
-        marginTop: 8,
+    backButton: {
+        marginTop: 16,
+        alignSelf: 'center',
+    },
+    summaryCard: {
+        marginTop: 16,
     },
 })

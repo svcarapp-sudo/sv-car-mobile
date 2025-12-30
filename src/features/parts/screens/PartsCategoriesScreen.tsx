@@ -1,14 +1,10 @@
 import {ScrollView, StyleSheet, View} from 'react-native'
-
-import {Card, Text, Button, Chip} from 'react-native-paper'
-
-import type {RootStackParamList} from '@/core/navigation/types'
-import {PART_CATEGORIES_LIST} from '@/shared/constants'
-import type {PartCategory} from '@/shared/types'
-
-import {useParts} from '../hooks'
-
 import type {NavigationProp} from '@react-navigation/native'
+import {Card, Text, Button, Chip, useTheme} from 'react-native-paper'
+import {PART_CATEGORIES_LIST} from '@/shared/constants'
+import type {RootStackParamList} from '@/shared/navigation/types'
+import type {PartCategory} from '@/shared/types'
+import {useParts} from '../hooks'
 
 interface PartsCategoriesScreenProps {
     navigation?: NavigationProp<RootStackParamList>
@@ -16,6 +12,7 @@ interface PartsCategoriesScreenProps {
 
 export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({navigation}) => {
     const {selectCategory} = useParts()
+    const theme = useTheme()
 
     const handleSelectCategory = (category: PartCategory) => {
         selectCategory(category)
@@ -28,13 +25,13 @@ export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({nav
     }
 
     return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <ScrollView style={[styles.container, {backgroundColor: theme.colors.background}]} contentContainerStyle={styles.content}>
             <View style={styles.header}>
                 <View>
-                    <Text variant='headlineMedium' style={styles.title}>
+                    <Text variant='headlineMedium' style={[styles.title, {color: theme.colors.primary}]}>
                         Browse Parts
                     </Text>
-                    <Text variant='bodyMedium' style={styles.subtitle}>
+                    <Text variant='bodyMedium' style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>
                         Browse parts by category
                     </Text>
                 </View>
@@ -47,24 +44,31 @@ export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({nav
                 View All Parts
             </Button>
 
-            <Text variant='titleMedium' style={styles.sectionTitle}>
+            <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
                 Categories
             </Text>
 
             <View style={styles.categoriesGrid}>
                 {PART_CATEGORIES_LIST.map(category => {
                     return (
-                        <Card key={category.id} style={styles.categoryCard} onPress={() => handleSelectCategory(category.id)}>
+                        <Card
+                            key={category.id}
+                            style={[styles.categoryCard, {backgroundColor: theme.colors.surface}]}
+                            onPress={() => handleSelectCategory(category.id)}>
                             <Card.Content style={styles.categoryContent}>
-                                <Text variant='titleMedium' style={styles.categoryName}>
+                                <Text variant='titleMedium' style={[styles.categoryName, {color: theme.colors.primary}]}>
                                     {category.name}
                                 </Text>
                                 {category.description && (
-                                    <Text variant='bodySmall' style={styles.categoryDescription}>
+                                    <Text
+                                        variant='bodySmall'
+                                        style={[styles.categoryDescription, {color: theme.colors.onSurfaceVariant}]}>
                                         {category.description}
                                     </Text>
                                 )}
-                                <Chip icon='package-variant' style={styles.countChip}>
+                                <Chip
+                                    icon='package-variant'
+                                    style={[styles.countChip, {backgroundColor: theme.colors.secondaryContainer}]}>
                                     View Parts
                                 </Chip>
                             </Card.Content>

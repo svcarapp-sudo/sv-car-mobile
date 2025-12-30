@@ -1,14 +1,9 @@
 import {useState, useEffect} from 'react'
-
 import {ScrollView, StyleSheet, View} from 'react-native'
-
-import {Card, Text, Chip, Button} from 'react-native-paper'
-
+import {Card, Text, Chip, Button, useTheme} from 'react-native-paper'
 import {PART_CATEGORIES} from '@/shared/constants'
 import type {Part} from '@/shared/types'
-
 import {usePartApi} from '../hooks'
-
 import type {CompatibilityResponse} from '../types'
 
 interface PartDetailScreenProps {
@@ -22,6 +17,7 @@ interface PartDetailScreenProps {
 export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
     const partId = route?.params?.partId
     const {getPartById, checkCompatibility} = usePartApi()
+    const theme = useTheme()
     const [part, setPart] = useState<Part | null>(null)
     const [compatibility, setCompatibility] = useState<CompatibilityResponse | null>(null)
     const [loading, setLoading] = useState(true)
@@ -60,82 +56,102 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
 
     if (loading) {
         return (
-            <View style={styles.container}>
-                <Text variant='headlineSmall'>Loading...</Text>
+            <View
+                style={[
+                    styles.container,
+                    {backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center'},
+                ]}>
+                <Text variant='headlineSmall' style={{color: theme.colors.primary}}>
+                    Loading...
+                </Text>
             </View>
         )
     }
 
     if (!part) {
         return (
-            <View style={styles.container}>
-                <Text variant='headlineSmall'>Part not found</Text>
+            <View
+                style={[
+                    styles.container,
+                    {backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center'},
+                ]}>
+                <Text variant='headlineSmall' style={{color: theme.colors.error}}>
+                    Part not found
+                </Text>
             </View>
         )
     }
 
     return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-            <Card style={styles.card}>
+        <ScrollView style={[styles.container, {backgroundColor: theme.colors.background}]} contentContainerStyle={styles.content}>
+            <Card style={[styles.card, {backgroundColor: theme.colors.surface}]}>
                 <Card.Content>
                     <View style={styles.header}>
                         <View style={styles.headerInfo}>
-                            <Text variant='headlineMedium' style={styles.partName}>
+                            <Text variant='headlineMedium' style={[styles.partName, {color: theme.colors.primary}]}>
                                 {part.name}
                             </Text>
                             {part.brand && (
-                                <Text variant='titleMedium' style={styles.partBrand}>
+                                <Text variant='titleMedium' style={[styles.partBrand, {color: theme.colors.onSurfaceVariant}]}>
                                     {part.brand}
                                 </Text>
                             )}
                         </View>
                         {part.inStock ? (
-                            <Chip icon='check-circle' style={styles.inStockChip}>
+                            <Chip icon='check-circle' style={{backgroundColor: '#E8F5E9'}} textStyle={{color: '#2E7D32'}}>
                                 In Stock
                             </Chip>
                         ) : (
-                            <Chip icon='alert-circle' style={styles.outOfStockChip}>
+                            <Chip icon='alert-circle' style={{backgroundColor: '#FFEBEE'}} textStyle={{color: '#C62828'}}>
                                 Out of Stock
                             </Chip>
                         )}
                     </View>
 
                     <View style={styles.priceContainer}>
-                        <Text variant='displaySmall' style={styles.price}>
+                        <Text variant='displaySmall' style={[styles.price, {color: theme.colors.tertiary}]}>
                             ${part.price.toFixed(2)}
                         </Text>
                     </View>
 
-                    <Chip icon='tag' style={styles.categoryChip}>
+                    <Chip icon='tag' style={[styles.categoryChip, {backgroundColor: theme.colors.secondaryContainer}]}>
                         {PART_CATEGORIES[part.category].name}
                     </Chip>
 
                     {part.description && (
                         <View style={styles.section}>
-                            <Text variant='titleMedium' style={styles.sectionTitle}>
+                            <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
                                 Description
                             </Text>
-                            <Text variant='bodyMedium'>{part.description}</Text>
+                            <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant}}>
+                                {part.description}
+                            </Text>
                         </View>
                     )}
 
                     {part.sku && (
                         <View style={styles.section}>
-                            <Text variant='titleMedium' style={styles.sectionTitle}>
+                            <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
                                 SKU
                             </Text>
-                            <Text variant='bodyMedium'>{part.sku}</Text>
+                            <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant}}>
+                                {part.sku}
+                            </Text>
                         </View>
                     )}
 
                     {compatibility && (
                         <View style={styles.section}>
-                            <Text variant='titleMedium' style={styles.sectionTitle}>
+                            <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
                                 Compatibility
                             </Text>
                             <Chip
                                 icon={compatibility.isCompatible ? 'check-circle' : 'close-circle'}
-                                style={compatibility.isCompatible ? styles.compatibleChip : styles.incompatibleChip}>
+                                style={{
+                                    backgroundColor: compatibility.isCompatible ? '#E8F5E9' : '#FFEBEE',
+                                    marginBottom: 8,
+                                }}
+                                textStyle={{color: compatibility.isCompatible ? '#2E7D32' : '#C62828'}}>
                                 {(() => {
                                     if (compatibility.isCompatible && compatibility.exactMatch) {
                                         return 'Perfect Match'
@@ -149,7 +165,9 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                                 })()}
                             </Chip>
                             {compatibility.reason && (
-                                <Text variant='bodySmall' style={styles.compatibilityReason}>
+                                <Text
+                                    variant='bodySmall'
+                                    style={[styles.compatibilityReason, {color: theme.colors.onSurfaceVariant}]}>
                                     {compatibility.reason}
                                 </Text>
                             )}

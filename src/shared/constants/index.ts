@@ -1,4 +1,3 @@
-// App constants
 // Part Categories
 import type {PartCategoryInfo, PartCategory} from '@/shared/types'
 
@@ -82,32 +81,3 @@ export const PART_CATEGORIES: Record<PartCategory, PartCategoryInfo> = {
 }
 
 export const PART_CATEGORIES_LIST = Object.values(PART_CATEGORIES)
-
-// Common vehicle makes (sample data - can be expanded)
-export const COMMON_MAKES = [
-    'Toyota',
-    'Honda',
-    'Ford',
-    'Chevrolet',
-    'BMW',
-    'Mercedes-Benz',
-    'Audi',
-    'Volkswagen',
-    'Nissan',
-    'Hyundai',
-    'Kia',
-    'Mazda',
-    'Subaru',
-    'Jeep',
-    'Dodge',
-    'Ram',
-    'Lexus',
-    'Acura',
-    'Infiniti',
-    'Cadillac',
-]
-
-// Year range for vehicles
-export const CURRENT_YEAR = new Date().getFullYear()
-export const MIN_YEAR = 1900
-export const MAX_YEAR = CURRENT_YEAR + 1

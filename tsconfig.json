@@ -13,9 +13,6 @@
       "@/shared/*": [
         "./src/shared/*"
       ],
-      "@/core/*": [
-        "./src/core/*"
-      ],
       "@/components/*": [
         "./src/shared/components/*"
       ],
@@ -35,10 +32,10 @@
         "./src/shared/services/*"
       ],
       "@/navigation/*": [
-        "./src/core/navigation/*"
+        "./src/shared/navigation/*"
       ],
       "@/store/*": [
-        "./src/core/store/*"
+        "./src/shared/store/*"
       ]
     }
   },

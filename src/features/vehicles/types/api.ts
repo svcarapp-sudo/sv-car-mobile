@@ -27,6 +27,24 @@ export interface VehiclesListResponse {
     total: number
 }
 
+// Vehicle Option types
+export interface Manufacturer {
+    name: string
+    icon: string
+}
+
+export interface FuelType {
+    id: string
+    name: string
+    icon: string
+}
+
+export interface VehicleOptionsResponse {
+    manufacturers: Manufacturer[]
+    fuelTypes: FuelType[]
+    years: number[]
+}
+
 // API Error types
 export interface VehicleApiError {
     message: string

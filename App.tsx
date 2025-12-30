@@ -1,9 +1,8 @@
 import {useEffect} from 'react'
-
 import {StatusBar} from 'expo-status-bar'
 
-import {AppNavigator} from '@/core/navigation'
-import {ThemeProvider} from '@/core/providers'
+import {AppNavigator} from '@/shared/navigation'
+import {ThemeProvider} from '@/shared/providers'
 import {usePartsStore} from '@/features/parts/store'
 import {SAMPLE_PARTS} from '@/shared/utils'
 
@@ -18,7 +17,7 @@ export default function App() {
     return (
         <ThemeProvider>
             <AppNavigator />
-                <StatusBar style='auto' />
+            <StatusBar style='auto' />
         </ThemeProvider>
     )
 }

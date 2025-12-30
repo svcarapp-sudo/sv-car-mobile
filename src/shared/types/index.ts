@@ -11,8 +11,10 @@ export interface Vehicle {
     make: string
     model: string
     year: number
+    fuelType?: string
     engine?: string
     trim?: string
+    vin?: string
     displayName?: string
     createdAt: number
 }

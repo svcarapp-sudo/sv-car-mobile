@@ -1,12 +1,8 @@
 import {FlatList, StyleSheet, View} from 'react-native'
-
-import {Card, Text, Chip, IconButton} from 'react-native-paper'
-
-import type {RootStackParamList} from '@/core/navigation/types'
+import {Card, Text, Chip, IconButton, useTheme} from 'react-native-paper'
+import type {RootStackParamList} from '@/shared/navigation/types'
 import {PART_CATEGORIES} from '@/shared/constants'
-
 import {useParts} from '../hooks'
-
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
 interface PartsListScreenProps {
@@ -14,56 +10,68 @@ interface PartsListScreenProps {
     navigation?: NavigationProp<RootStackParamList>
 }
 
-export const PartsListScreen: React.FC<PartsListScreenProps> = ({route, navigation}) => {
+export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
     const {parts, selectedCategory, loading} = useParts()
+    const theme = useTheme()
 
     const category = route?.params?.category ?? selectedCategory
     const categoryInfo = category ? PART_CATEGORIES[category] : null
 
     const renderPart = ({item: part}: {item: (typeof parts)[0]}) => {
         return (
-            <Card style={styles.partCard} onPress={() => navigation?.navigate('PartDetail', {partId: part.id})}>
+            <Card
+                style={[styles.partCard, {backgroundColor: theme.colors.surface}]}
+                onPress={() => navigation?.navigate('PartDetail', {partId: part.id})}>
                 <Card.Content>
                     <View style={styles.partHeader}>
                         <View style={styles.partInfo}>
-                            <Text variant='titleMedium' style={styles.partName}>
+                            <Text variant='titleMedium' style={[styles.partName, {color: theme.colors.primary}]}>
                                 {part.name}
                             </Text>
                             {part.brand && (
-                                <Text variant='bodySmall' style={styles.partBrand}>
+                                <Text variant='bodySmall' style={[styles.partBrand, {color: theme.colors.onSurfaceVariant}]}>
                                     {part.brand}
                                 </Text>
                             )}
                         </View>
                         {part.inStock ? (
-                            <Chip icon='check-circle' style={styles.inStockChip}>
+                            <Chip
+                                icon='check-circle'
+                                style={[styles.inStockChip, {backgroundColor: '#E8F5E9'}]}
+                                textStyle={{color: '#2E7D32'}}>
                                 In Stock
                             </Chip>
                         ) : (
-                            <Chip icon='alert-circle' style={styles.outOfStockChip}>
+                            <Chip
+                                icon='alert-circle'
+                                style={[styles.outOfStockChip, {backgroundColor: '#FFEBEE'}]}
+                                textStyle={{color: '#C62828'}}>
                                 Out of Stock
                             </Chip>
                         )}
                     </View>
 
                     {part.description && (
-                        <Text variant='bodyMedium' style={styles.partDescription} numberOfLines={2}>
+                        <Text
+                            variant='bodyMedium'
+                            style={[styles.partDescription, {color: theme.colors.onSurfaceVariant}]}
+                            numberOfLines={2}>
                             {part.description}
                         </Text>
                     )}
 
                     <View style={styles.partFooter}>
-                        <Text variant='titleLarge' style={styles.partPrice}>
+                        <Text variant='titleLarge' style={[styles.partPrice, {color: theme.colors.tertiary}]}>
                             ${part.price.toFixed(2)}
                         </Text>
                         {part.sku && (
-                            <Text variant='bodySmall' style={styles.partSku}>
+                            <Text variant='bodySmall' style={[styles.partSku, {color: theme.colors.outline}]}>
                                 SKU: {part.sku}
                             </Text>
                         )}
                     </View>
 
-                    <Chip icon='tag' style={styles.categoryChip}>
+                    <Chip icon='tag' style={[styles.categoryChip, {backgroundColor: theme.colors.secondaryContainer}]}>
                         {PART_CATEGORIES[part.category].name}
                     </Chip>
                 </Card.Content>
@@ -73,30 +81,36 @@ export const PartsListScreen: React.FC<PartsListScreenProps> = ({route, navigati
 
     if (parts.length === 0 && !loading) {
         return (
-            <View style={styles.container}>
+            <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
                 <View style={styles.emptyContainer}>
-                    <Text variant='headlineSmall' style={styles.emptyTitle}>
+                    <Text variant='headlineSmall' style={[styles.emptyTitle, {color: theme.colors.onBackground}]}>
                         No Parts Found
                     </Text>
-                    <Text variant='bodyMedium' style={styles.emptyText}>
+                    <Text variant='bodyMedium' style={[styles.emptyText, {color: theme.colors.onSurfaceVariant}]}>
                         {categoryInfo
                             ? `No parts found in ${categoryInfo.name} category`
                             : 'No parts available. Please ensure a vehicle is selected.'}
                     </Text>
-                    <IconButton icon='car' size={48} onPress={() => navigation?.navigate('Vehicles')} style={styles.iconButton} />
+                    <IconButton
+                        icon='car'
+                        size={48}
+                        iconColor={theme.colors.primary}
+                        onPress={() => navigation?.navigate('Vehicles')}
+                        style={styles.iconButton}
+                    />
                 </View>
             </View>
         )
     }
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
             {categoryInfo && (
-                <View style={styles.header}>
-                    <Text variant='headlineSmall' style={styles.headerTitle}>
+                <View style={[styles.header, {backgroundColor: theme.colors.surfaceVariant}]}>
+                    <Text variant='headlineSmall' style={[styles.headerTitle, {color: theme.colors.primary}]}>
                         {categoryInfo.name}
                     </Text>
-                    <Text variant='bodyMedium' style={styles.headerSubtitle}>
+                    <Text variant='bodyMedium' style={[styles.headerSubtitle, {color: theme.colors.onSurfaceVariant}]}>
                         {parts.length} part{parts.length !== 1 ? 's' : ''}
                     </Text>
                 </View>
@@ -109,7 +123,9 @@ export const PartsListScreen: React.FC<PartsListScreenProps> = ({route, navigati
                 refreshing={loading}
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
-                        <Text variant='bodyMedium'>{loading ? 'Loading parts...' : 'No parts available'}</Text>
+                        <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant}}>
+                            {loading ? 'Loading parts...' : 'No parts available for this vehicle'}
+                        </Text>
                     </View>
                 }
             />
