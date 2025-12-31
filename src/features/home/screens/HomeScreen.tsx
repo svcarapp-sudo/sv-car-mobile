@@ -3,7 +3,7 @@ import {ScrollView, StyleSheet, View} from 'react-native'
 import {Card, Text, Button, IconButton, useTheme} from 'react-native-paper'
 
 import type {RootStackParamList} from '@/shared/navigation/types'
-import {useVehicles} from '../hooks'
+import {useVehicles} from '@/features/addVehicle/hooks'
 
 import type {NavigationProp} from '@react-navigation/native'
 
@@ -22,11 +22,11 @@ const ARABIC_TEXT = {
     INFO_MESSAGE: (make: string, model: string) => `نحن نعرض النتائج والمعلومات المخصصة لمركبتك ${make} ${model}.`,
 }
 
-interface VehicleListScreenProps {
+interface HomeScreenProps {
     navigation?: NavigationProp<RootStackParamList>
 }
 
-export const VehicleListScreen = ({navigation}: VehicleListScreenProps) => {
+export const HomeScreen = ({navigation}: HomeScreenProps) => {
     const {vehicle, removeVehicle} = useVehicles()
     const theme = useTheme()
 

@@ -18,7 +18,7 @@ type AppStore = AppState & AppActions
 
 const initialState: AppState = {
     isLoading: false,
-    language: 'en',
+    language: 'ar',
 }
 
 export const useAppStore = create<AppStore>()(

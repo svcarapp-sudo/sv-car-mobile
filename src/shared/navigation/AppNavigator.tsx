@@ -2,7 +2,8 @@ import {NavigationContainer} from '@react-navigation/native'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 
 import {PartsCategoriesScreen, PartsListScreen, PartDetailScreen} from '@/features/parts'
-import {VehicleListScreen, AddVehicleScreen} from '@/features/vehicles'
+import {HomeScreen} from '@/features/home'
+import {AddVehicleScreen} from '@/features/addVehicle'
 import {AppHeader, MainLayout} from '@/shared/layouts'
 
 import {LaunchScreen} from '../screens/LaunchScreen'
@@ -23,13 +24,13 @@ const MainFlow = () => {
     return (
         <MainLayout>
             <Stack.Navigator
-                initialRouteName='Vehicles'
+                initialRouteName='Home'
                 screenOptions={{
                     header: props => <AppHeader {...props} />,
                 }}>
                 <Stack.Screen
-                    name='Vehicles'
-                    component={VehicleListScreen}
+                    name='Home'
+                    component={HomeScreen}
                     options={{
                         title: ARABIC_TEXT.MY_VEHICLE,
                     }}

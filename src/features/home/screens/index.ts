@@ -1,1 +1,1 @@
-// Home feature screens
+export {HomeScreen} from './HomeScreen'

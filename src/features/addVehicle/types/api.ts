@@ -31,6 +31,7 @@ export interface VehiclesListResponse {
 export interface Manufacturer {
     name: string
     icon: string
+    country?: string
 }
 
 export interface FuelType {
