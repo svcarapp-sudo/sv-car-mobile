@@ -1,10 +1,8 @@
-import {StyleSheet, View, TouchableOpacity, I18nManager} from 'react-native'
-// @ts-expect-error - react-native-vector-icons types may not be available
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import {StyleSheet, View, I18nManager} from 'react-native'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 
 import {NativeStackHeaderProps} from '@react-navigation/native-stack'
-import {Text, useTheme} from 'react-native-paper'
+import {Text, IconButton, useTheme} from 'react-native-paper'
 
 import {useLayoutStore} from './layoutStore'
 
@@ -18,7 +16,6 @@ export const AppHeader = ({navigation, back}: NativeStackHeaderProps) => {
 
     // Use consistent header height across platforms (56px is Material Design standard)
     const headerHeight = 56 + insets.top
-    const iconSize = 28
 
     return (
         <View
@@ -34,14 +31,14 @@ export const AppHeader = ({navigation, back}: NativeStackHeaderProps) => {
             {/* Left side - Menu button (when back is false) */}
             <View style={styles.leftContainer}>
                 {!back && (
-                    <TouchableOpacity
+                    <IconButton
+                        icon='menu'
+                        size={28}
+                        iconColor={theme.colors.primary}
                         onPress={openMenu}
-                        style={styles.iconButton}
-                        activeOpacity={0.7}
                         accessibilityLabel='Open menu'
-                        accessibilityRole='button'>
-                        <Icon name='menu' size={iconSize} color={theme.colors.primary} />
-                    </TouchableOpacity>
+                        accessibilityRole='button'
+                    />
                 )}
             </View>
 
@@ -57,18 +54,14 @@ export const AppHeader = ({navigation, back}: NativeStackHeaderProps) => {
             {/* Right side - Back button (when back is true) */}
             <View style={styles.rightContainer}>
                 {back && (
-                    <TouchableOpacity
+                    <IconButton
+                        icon={I18nManager.isRTL ? 'arrow-right' : 'arrow-left'}
+                        size={28}
+                        iconColor={theme.colors.primary}
                         onPress={navigation.goBack}
-                        style={styles.iconButton}
-                        activeOpacity={0.7}
                         accessibilityLabel='Go back'
-                        accessibilityRole='button'>
-                        <Icon
-                            name={I18nManager.isRTL ? 'arrow-right' : 'arrow-left'}
-                            size={iconSize}
-                            color={theme.colors.primary}
-                        />
-                    </TouchableOpacity>
+                        accessibilityRole='button'
+                    />
                 )}
             </View>
         </View>
@@ -107,13 +100,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'flex-end',
         paddingEnd: 8,
-    },
-    iconButton: {
-        width: 48,
-        height: 48,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 24,
     },
     titleContainer: {
         flexDirection: 'row',

@@ -1,4 +1,4 @@
-import {StyleSheet, View} from 'react-native'
+import {StyleSheet, View, TouchableOpacity} from 'react-native'
 import {ProgressBar, Text, IconButton, useTheme} from 'react-native-paper'
 
 const ARABIC_TEXT = {
@@ -32,9 +32,10 @@ export enum Step {
 
 interface AddVehicleStepperProps {
     currentStep: Step
+    onStepPress?: (step: Step) => void
 }
 
-export const AddVehicleStepper = ({currentStep}: AddVehicleStepperProps) => {
+export const AddVehicleStepper = ({currentStep, onStepPress}: AddVehicleStepperProps) => {
     const theme = useTheme()
     const progress = (currentStep + 1) / STEPS_INFO.length
 
@@ -45,9 +46,17 @@ export const AddVehicleStepper = ({currentStep}: AddVehicleStepperProps) => {
                     const isActive = index === currentStep
                     const isCompleted = index < currentStep
                     const isLast = index === STEPS_INFO.length - 1
+                    const stepValue = index as Step
+                    const isClickable = isCompleted || isActive
 
-                    return (
-                        <View key={step.label} style={styles.stepItem}>
+                    const handlePress = () => {
+                        if (isClickable && onStepPress) {
+                            onStepPress(stepValue)
+                        }
+                    }
+
+                    const StepContent = (
+                        <>
                             {!isLast && (
                                 <View
                                     style={[
@@ -93,6 +102,18 @@ export const AddVehicleStepper = ({currentStep}: AddVehicleStepperProps) => {
                                 ]}>
                                 {step.label}
                             </Text>
+                        </>
+                    )
+
+                    return (
+                        <View key={step.label} style={styles.stepItem}>
+                            {isClickable ? (
+                                <TouchableOpacity onPress={handlePress} activeOpacity={0.7} style={styles.stepTouchable}>
+                                    {StepContent}
+                                </TouchableOpacity>
+                            ) : (
+                                StepContent
+                            )}
                         </View>
                     )
                 })}
@@ -120,6 +141,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
         position: 'relative',
+    },
+    stepTouchable: {
+        alignItems: 'center',
+        width: '100%',
     },
     stepLine: {
         position: 'absolute',

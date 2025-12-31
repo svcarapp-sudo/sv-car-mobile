@@ -27,12 +27,8 @@ export const BottomNav = () => {
 
 const styles = StyleSheet.create({
     bottom: {
-        position: 'absolute',
-        start: 0,
-        end: 0,
-        bottom: 0,
         justifyContent: 'space-around',
-        elevation: 10,
+        elevation: 1,
         borderTopWidth: 1,
         borderTopColor: 'rgba(0,0,0,0.05)',
     },

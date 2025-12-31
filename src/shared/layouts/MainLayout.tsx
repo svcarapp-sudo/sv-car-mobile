@@ -75,7 +75,6 @@ export const MainLayout = ({children}: MainLayoutProps) => {
     return (
         <View style={styles.container}>
             <View style={styles.content}>{children}</View>
-
             <BottomNav />
 
             {/* Backdrop */}
@@ -100,7 +99,6 @@ const styles = StyleSheet.create({
     container: {flex: 1},
     content: {
         flex: 1,
-        paddingBottom: 60,
     },
     backdrop: {
         ...StyleSheet.absoluteFillObject,

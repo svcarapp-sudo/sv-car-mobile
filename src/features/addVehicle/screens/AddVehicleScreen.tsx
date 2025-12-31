@@ -38,6 +38,13 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
         }
     }
 
+    const handleStepChange = (step: Step) => {
+        // Only allow going back to previous steps, not forward
+        if (step <= currentStep) {
+            setCurrentStep(step)
+        }
+    }
+
     const handleSubmit = () => {
         setVehicle({
             make,
@@ -85,7 +92,7 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
-            <AddVehicleStepper currentStep={currentStep} />
+            <AddVehicleStepper currentStep={currentStep} onStepPress={handleStepChange} />
             <View style={styles.mainContent}>{renderContent()}</View>
         </View>
     )
