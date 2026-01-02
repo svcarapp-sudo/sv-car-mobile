@@ -7,7 +7,6 @@ const ARABIC_TEXT = {
         MODEL: 'الموديل',
         YEAR: 'السنة',
         FUEL: 'الوقود',
-        ENGINE: 'المحرك',
         VIN: 'رقم الهيكل',
     },
 }
@@ -17,7 +16,6 @@ const STEPS_INFO = [
     {label: ARABIC_TEXT.STEPS.MODEL, icon: 'car-info'},
     {label: ARABIC_TEXT.STEPS.YEAR, icon: 'calendar'},
     {label: ARABIC_TEXT.STEPS.FUEL, icon: 'gas-station'},
-    {label: ARABIC_TEXT.STEPS.ENGINE, icon: 'engine-outline'},
     {label: ARABIC_TEXT.STEPS.VIN, icon: 'numeric'},
 ]
 
@@ -26,8 +24,7 @@ export enum Step {
     Model = 1,
     Year = 2,
     Fuel = 3,
-    Engine = 4,
-    Details = 5,
+    Details = 4,
 }
 
 interface AddVehicleStepperProps {
@@ -118,11 +115,13 @@ export const AddVehicleStepper = ({currentStep, onStepPress}: AddVehicleStepperP
                     )
                 })}
             </View>
-            <ProgressBar
-                progress={progress}
-                color={theme.colors.primary}
-                style={[styles.progressBar, {transform: [{scaleX: -1}]}]}
-            />
+            <View style={styles.progressBarContainer}>
+                <ProgressBar
+                    progress={progress}
+                    color={theme.colors.primary}
+                    style={[styles.progressBar, {transform: [{scaleX: -1}]}]}
+                />
+            </View>
         </View>
     )
 }
@@ -173,8 +172,20 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 10,
     },
-    progressBar: {
-        height: 4,
+    progressBarContainer: {
         marginTop: 8,
+        marginHorizontal: 16,
+        borderRadius: 8,
+        overflow: 'hidden',
+        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        elevation: 1,
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 1},
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+    },
+    progressBar: {
+        height: 6,
+        borderRadius: 8,
     },
 })

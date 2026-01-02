@@ -5,6 +5,7 @@ import {useVehicleInfo} from '../hooks'
 
 const ARABIC_TEXT = {
     PRODUCTION_YEAR: 'سنة الصنع',
+    SELECT_YEAR: 'اختر سنة صنع المركبة',
 }
 
 interface YearScreenProps {
@@ -24,9 +25,14 @@ export const YearScreen = ({value, onSelect, onNext}: YearScreenProps) => {
 
     return (
         <View style={styles.stepContent}>
-            <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                {ARABIC_TEXT.PRODUCTION_YEAR}
-            </Text>
+            <View style={styles.headerContainer}>
+                <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
+                    {ARABIC_TEXT.PRODUCTION_YEAR}
+                </Text>
+                <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
+                    {ARABIC_TEXT.SELECT_YEAR}
+                </Text>
+            </View>
             <FlatList
                 data={years.map(String)}
                 numColumns={3}
@@ -63,9 +69,15 @@ const styles = StyleSheet.create({
     stepContent: {
         flex: 1,
     },
+    headerContainer: {
+        marginBottom: 24,
+    },
     stepTitle: {
         marginBottom: 4,
         fontWeight: 'bold',
+    },
+    stepSubtitle: {
+        opacity: 0.7,
     },
     yearGrid: {
         paddingBottom: 24,

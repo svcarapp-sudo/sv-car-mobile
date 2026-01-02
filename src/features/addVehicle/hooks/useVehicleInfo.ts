@@ -12,7 +12,6 @@ export const useVehicleInfo = () => {
     const [manufacturers, setManufacturers] = useState<Manufacturer[]>([])
     const [fuelTypes, setFuelTypes] = useState<FuelType[]>([])
     const [years, setYears] = useState<number[]>([])
-    const [commonEngines, setCommonEngines] = useState<string[]>([])
 
     const fetchOptions = useCallback(async () => {
         setLoading(true)
@@ -21,9 +20,6 @@ export const useVehicleInfo = () => {
             setManufacturers(options.manufacturers)
             setFuelTypes(options.fuelTypes)
             setYears(options.years)
-
-            const engines = await vehicleInfoService.getCommonEngines()
-            setCommonEngines(engines)
         } catch (error) {
             console.error('Failed to fetch vehicle options:', error)
         } finally {
@@ -53,7 +49,6 @@ export const useVehicleInfo = () => {
         manufacturers,
         fuelTypes,
         years,
-        commonEngines,
         getModels,
         refresh: fetchOptions,
     }

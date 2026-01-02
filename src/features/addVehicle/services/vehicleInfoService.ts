@@ -34,12 +34,6 @@ class VehicleInfoService {
         return SAMPLE_MODELS[manufacturer] || []
     }
 
-    /**
-     * Get common engine options
-     */
-    async getCommonEngines(): Promise<string[]> {
-        return ['1.6L', '2.0L', '2.4L', '3.0L V6', 'كهرباء', 'هجين']
-    }
 }
 
 export const vehicleInfoService = new VehicleInfoService()

@@ -9,7 +9,7 @@ const ARABIC_TEXT = {
     SELECT_MANUFACTURER: 'اختر الشركة المصنعة',
 }
 
-const getLogoUrl = (name: string) => {
+export const getLogoUrl = (name: string) => {
     const fileName = name.toLowerCase().replace(/\s+/g, '-')
 
     return `https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/optimized/${fileName}.png`

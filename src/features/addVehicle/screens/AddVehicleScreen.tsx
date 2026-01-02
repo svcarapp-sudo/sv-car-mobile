@@ -1,6 +1,6 @@
 import {useState} from 'react'
-import {StyleSheet, View} from 'react-native'
-import {useTheme} from 'react-native-paper'
+import {StyleSheet, View, Image} from 'react-native'
+import {useTheme, Card, Text, IconButton} from 'react-native-paper'
 
 import type {RootStackParamList} from '@/shared/navigation/types'
 
@@ -9,12 +9,11 @@ import {useVehicles} from '../hooks'
 import type {NavigationProp} from '@react-navigation/native'
 
 import {AddVehicleStepper, Step} from './AddVehicleStepper'
-import {ManufacturerScreen} from './ManufacturerScreen'
+import {ManufacturerScreen, getLogoUrl} from './ManufacturerScreen'
 import {ModelScreen} from './ModelScreen'
 import {YearScreen} from './YearScreen'
 import {FuelScreen} from './FuelScreen'
-import {EngineScreen} from './EngineScreen'
-import {DetailsScreen} from './DetailsScreen'
+import {AddVinScreen} from './AddVinScreen'
 
 interface AddVehicleScreenProps {
     navigation?: NavigationProp<RootStackParamList>
@@ -28,7 +27,6 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
     const [model, setModel] = useState('')
     const [year, setYear] = useState('')
     const [fuelType, setFuelType] = useState('')
-    const [engine, setEngine] = useState('')
     const [vin, setVin] = useState('')
     const [displayName, setDisplayName] = useState('')
 
@@ -40,7 +38,29 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
 
     const handleStepChange = (step: Step) => {
         // Only allow going back to previous steps, not forward
-        if (step <= currentStep) {
+        if (step < currentStep) {
+            // Clear states of subsequent steps
+            if (step < Step.Details) {
+                setVin('')
+                setDisplayName('')
+            }
+
+            if (step < Step.Fuel) {
+                setFuelType('')
+            }
+
+            if (step < Step.Year) {
+                setYear('')
+            }
+
+            if (step < Step.Model) {
+                setModel('')
+            }
+
+            if (step < Step.Manufacturer) {
+                setMake('')
+            }
+
             setCurrentStep(step)
         }
     }
@@ -51,11 +71,94 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
             model,
             year: parseInt(year, 10),
             fuelType,
-            engine,
             vin: vin.trim() || undefined,
             displayName: displayName.trim() || undefined,
         })
         navigation?.goBack()
+    }
+
+    const renderSummaryCard = () => {
+        if (!make && !model && !year && !fuelType) {
+            return null
+        }
+
+        return (
+            <Card style={styles.summaryCard} mode='outlined'>
+                <Card.Content style={styles.summaryContent}>
+                    <View style={styles.summaryInfo}>
+                        {make && (
+                            <View style={styles.summaryItem}>
+                                <View style={styles.logoCircle}>
+                                    <Image source={{uri: getLogoUrl(make)}} style={styles.summaryLogo} resizeMode='contain' />
+                                </View>
+                                <View style={styles.textGroup}>
+                                    <Text variant='labelSmall' style={styles.label}>
+                                        الماركة
+                                    </Text>
+                                    <Text variant='titleSmall' style={styles.value}>
+                                        {make}
+                                    </Text>
+                                </View>
+                            </View>
+                        )}
+
+                        {model && (
+                            <>
+                                <View style={styles.divider} />
+                                <View style={styles.summaryItem}>
+                                    <View style={styles.textGroup}>
+                                        <Text variant='labelSmall' style={styles.label}>
+                                            الموديل
+                                        </Text>
+                                        <Text variant='titleSmall' style={styles.value}>
+                                            {model}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </>
+                        )}
+
+                        {year && (
+                            <>
+                                <View style={styles.divider} />
+                                <View style={styles.summaryItem}>
+                                    <View style={styles.textGroup}>
+                                        <Text variant='labelSmall' style={styles.label}>
+                                            السنة
+                                        </Text>
+                                        <Text variant='titleSmall' style={styles.value}>
+                                            {year}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </>
+                        )}
+
+                        {fuelType && (
+                            <>
+                                <View style={styles.divider} />
+                                <View style={styles.summaryItem}>
+                                    <View style={styles.textGroup}>
+                                        <Text variant='labelSmall' style={styles.label}>
+                                            الوقود
+                                        </Text>
+                                        <Text variant='titleSmall' style={styles.value}>
+                                            {fuelType}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </>
+                        )}
+                    </View>
+                    <IconButton
+                        icon='pencil-outline'
+                        size={20}
+                        onPress={() => handleStepChange(Step.Manufacturer)}
+                        style={styles.editButton}
+                    />
+                </Card.Content>
+            </Card>
+        )
     }
 
     const renderContent = () => {
@@ -68,16 +171,9 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
                 return <YearScreen value={year} onSelect={setYear} onNext={handleNext} />
             case Step.Fuel:
                 return <FuelScreen value={fuelType} onSelect={setFuelType} onNext={handleNext} />
-            case Step.Engine:
-                return <EngineScreen value={engine} onSelect={setEngine} onNext={handleNext} />
             case Step.Details:
                 return (
-                    <DetailsScreen
-                        make={make}
-                        model={model}
-                        year={year}
-                        fuelType={fuelType}
-                        engine={engine}
+                    <AddVinScreen
                         vin={vin}
                         displayName={displayName}
                         onVinChange={setVin}
@@ -93,7 +189,10 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
             <AddVehicleStepper currentStep={currentStep} onStepPress={handleStepChange} />
-            <View style={styles.mainContent}>{renderContent()}</View>
+            <View style={styles.mainContent}>
+                {renderSummaryCard()}
+                <View style={{flex: 1}}>{renderContent()}</View>
+            </View>
         </View>
     )
 }
@@ -105,5 +204,63 @@ const styles = StyleSheet.create({
     mainContent: {
         flex: 1,
         padding: 16,
+    },
+    summaryCard: {
+        marginBottom: 16,
+        borderRadius: 12,
+        backgroundColor: '#fff',
+        borderColor: '#E2E8F0',
+    },
+    summaryContent: {
+        flexDirection: 'row-reverse',
+        alignItems: 'center',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+    },
+    summaryInfo: {
+        flex: 1,
+        flexDirection: 'row-reverse',
+        alignItems: 'center',
+    },
+    summaryItem: {
+        flexDirection: 'row-reverse',
+        alignItems: 'center',
+    },
+    logoCircle: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: '#F8FAFC',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: 8,
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+    },
+    summaryLogo: {
+        width: 20,
+        height: 20,
+    },
+    textGroup: {
+        alignItems: 'flex-end',
+    },
+    label: {
+        color: '#64748B',
+        fontSize: 10,
+    },
+    value: {
+        fontWeight: 'bold',
+        fontSize: 13,
+        lineHeight: 16,
+    },
+    divider: {
+        width: 1,
+        height: 24,
+        backgroundColor: '#E2E8F0',
+        marginHorizontal: 12,
+    },
+    editButton: {
+        margin: 0,
+        marginRight: 'auto',
     },
 })
