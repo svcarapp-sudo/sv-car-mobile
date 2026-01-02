@@ -105,7 +105,7 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
                         icon='car'
                         size={48}
                         iconColor={theme.colors.primary}
-                        onPress={() => navigation?.navigate('Vehicles')}
+                        onPress={() => navigation?.navigate('AddVehicle')}
                         style={styles.iconButton}
                     />
                 </View>

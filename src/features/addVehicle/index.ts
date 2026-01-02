@@ -1,5 +1,5 @@
 export {useVehicles} from './hooks'
-export {AddVehicleScreen} from './screens'
+export {AddVehicleScreen} from './components'
 export {vehicleService, vehicleInfoService} from './services'
 export {useVehicleStore} from './store'
 export type {Vehicle} from './types'

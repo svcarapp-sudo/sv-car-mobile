@@ -6,7 +6,7 @@ import {HomeScreen} from '@/features/home'
 import {AddVehicleScreen} from '@/features/addVehicle'
 import {AppHeader, MainLayout} from '@/shared/layouts'
 
-import {LaunchScreen} from '../screens/LaunchScreen'
+import {LaunchScreen} from '../components'
 
 import type {RootStackParamList} from './types'
 

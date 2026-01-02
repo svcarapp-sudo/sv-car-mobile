@@ -44,7 +44,7 @@ export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({nav
                         {ARABIC_TEXT.SUBTITLE}
                     </Text>
                 </View>
-                <Button mode='outlined' onPress={() => navigation?.navigate('Vehicles')} style={styles.changeButton}>
+                <Button mode='outlined' onPress={() => navigation?.navigate('AddVehicle')} style={styles.changeButton}>
                     {ARABIC_TEXT.CHANGE_VEHICLE}
                 </Button>
             </View>
