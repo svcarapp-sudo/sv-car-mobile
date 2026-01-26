@@ -36,68 +36,90 @@ export const VehicleSummary = ({vehicle, onChangeVehicle}: VehicleSummaryProps) 
     )
 
     return (
-        <Card style={[styles.card, {backgroundColor: theme.colors.surface}]} mode='elevated'>
-            <Card.Content style={styles.content}>
-                <View style={styles.header}>
-                    <View style={styles.vehicleInfo}>
-                        <View
-                            style={[
-                                styles.logoContainer,
-                                {
-                                    backgroundColor: theme.colors.surfaceVariant,
-                                    borderColor: theme.colors.outlineVariant,
-                                },
-                            ]}>
-                            {vehicle.make && (
-                                <Image source={{uri: getLogoUrl(vehicle.make)}} style={styles.logo} resizeMode='contain' />
-                            )}
+        <Card
+            style={[styles.card, {backgroundColor: theme.colors.surface}]}
+            mode='flat'
+            contentStyle={styles.cardContent}>
+            <View style={styles.cardInner}>
+                <Card.Content style={styles.content}>
+                    <View style={styles.header}>
+                        <View style={styles.vehicleInfo}>
+                            <View
+                                style={[
+                                    styles.logoContainer,
+                                    {
+                                        backgroundColor: theme.colors.surfaceVariant,
+                                        borderColor: theme.colors.outlineVariant,
+                                    },
+                                ]}>
+                                {vehicle.make && (
+                                    <Image source={{uri: getLogoUrl(vehicle.make)}} style={styles.logo} resizeMode='contain' />
+                                )}
+                            </View>
+                            <View style={styles.titleGroup}>
+                                <Text variant='headlineSmall' style={[styles.mainTitle, {color: theme.colors.onSurface}]}>
+                                    {vehicle.make} {vehicle.model}
+                                </Text>
+                                <Text variant='bodyLarge' style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>
+                                    {vehicle.year} • {vehicle.fuelType}
+                                </Text>
+                            </View>
                         </View>
-                        <View style={styles.titleGroup}>
-                            <Text variant='titleLarge' style={styles.mainTitle}>
-                                {vehicle.make} {vehicle.model}
-                            </Text>
-                            <Text variant='bodySmall' style={{color: theme.colors.onSurfaceVariant}}>
-                                {vehicle.year} • {vehicle.fuelType}
-                            </Text>
-                        </View>
+                        <IconButton
+                            icon='pencil-outline'
+                            size={20}
+                            mode='contained-tonal'
+                            onPress={onChangeVehicle}
+                            style={styles.editButton}
+                            iconColor={theme.colors.onSurfaceVariant}
+                        />
                     </View>
-                    <IconButton
-                        icon='pencil-outline'
-                        size={20}
-                        mode='contained-tonal'
-                        onPress={onChangeVehicle}
-                        style={styles.editButton}
-                    />
-                </View>
 
-                <View style={styles.detailsGrid}>
-                    {vehicle.make && renderInfoItem(ARABIC_TEXT.MAKE, vehicle.make)}
-                    {vehicle.model && renderInfoItem(ARABIC_TEXT.MODEL, vehicle.model)}
-                    {vehicle.year && renderInfoItem(ARABIC_TEXT.YEAR, vehicle.year.toString())}
-                    {vehicle.fuelType && renderInfoItem(ARABIC_TEXT.FUEL, vehicle.fuelType, false)}
-                </View>
-            </Card.Content>
+                    <View style={[styles.detailsGrid, {backgroundColor: theme.colors.surfaceVariant}]}>
+                        {vehicle.make && renderInfoItem(ARABIC_TEXT.MAKE, vehicle.make)}
+                        {vehicle.model && renderInfoItem(ARABIC_TEXT.MODEL, vehicle.model)}
+                        {vehicle.year && renderInfoItem(ARABIC_TEXT.YEAR, vehicle.year.toString())}
+                        {vehicle.fuelType && renderInfoItem(ARABIC_TEXT.FUEL, vehicle.fuelType, false)}
+                    </View>
+                </Card.Content>
+            </View>
         </Card>
     )
 }
 
 const styles = StyleSheet.create({
     card: {
-        marginBottom: 24,
-        borderRadius: 20,
-        elevation: 4,
+        marginBottom: 16,
+        borderRadius: 28,
+        // iOS shadow
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.06,
+        shadowRadius: 3,
+        // Android shadow
+        elevation: 0.5,
+    },
+    cardContent: {
+        overflow: 'hidden',
+    },
+    cardInner: {
+        borderRadius: 28,
+        overflow: 'hidden',
     },
     content: {
         padding: 16,
     },
     header: {
-        flexDirection: 'row-reverse',
+        flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 20,
+        alignItems: 'flex-start',
+        marginBottom: 16,
     },
     vehicleInfo: {
-        flexDirection: 'row-reverse',
+        flexDirection: 'row',
         alignItems: 'center',
         flex: 1,
     },
@@ -107,7 +129,7 @@ const styles = StyleSheet.create({
         borderRadius: 28,
         justifyContent: 'center',
         alignItems: 'center',
-        marginLeft: 12,
+        marginRight: 12,
         borderWidth: 1,
     },
     logo: {
@@ -115,38 +137,51 @@ const styles = StyleSheet.create({
         height: 36,
     },
     titleGroup: {
-        alignItems: 'flex-end',
+        alignItems: 'flex-start',
         flex: 1,
     },
     mainTitle: {
-        fontWeight: 'bold',
-        marginBottom: 2,
+        fontWeight: '400',
+        marginBottom: 4,
+        fontSize: 24,
+        letterSpacing: 0,
+        lineHeight: 32,
+    },
+    subtitle: {
+        letterSpacing: 0.5,
+        lineHeight: 20,
+        fontSize: 14,
+        opacity: 0.87,
     },
     editButton: {
         margin: 0,
     },
     detailsGrid: {
-        flexDirection: 'row-reverse',
-        backgroundColor: 'rgba(0,0,0,0.02)',
-        borderRadius: 12,
+        flexDirection: 'row',
+        borderRadius: 16,
         padding: 12,
         justifyContent: 'space-around',
+        gap: 8,
     },
     summaryItem: {
         alignItems: 'center',
         flex: 1,
     },
     label: {
-        fontSize: 10,
+        fontSize: 11,
         marginBottom: 4,
+        letterSpacing: 0.5,
+        opacity: 0.6,
     },
     value: {
-        fontWeight: 'bold',
-        fontSize: 13,
+        fontWeight: '400',
+        fontSize: 14,
+        letterSpacing: 0.25,
     },
     divider: {
         width: 1,
         height: 24,
         alignSelf: 'center',
+        opacity: 0.12,
     },
 })

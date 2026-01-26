@@ -21,10 +21,17 @@ export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) =
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text variant='titleLarge' style={styles.title}>
+                <Text variant='titleLarge' style={[styles.title, {color: theme.colors.onSurface}]}>
                     {ARABIC_TEXT.PARTS_CATEGORIES}
                 </Text>
-                <Button mode='text' onPress={onViewAll} compact textColor={theme.colors.primary}>
+                <Button
+                    mode='text'
+                    onPress={onViewAll}
+                    compact
+                    textColor={theme.colors.primary}
+                    labelStyle={styles.viewAllLabel}
+                    contentStyle={styles.viewAllContent}
+                    rippleColor={theme.colors.primaryContainer}>
                     {ARABIC_TEXT.VIEW_ALL_PARTS}
                 </Button>
             </View>
@@ -36,28 +43,31 @@ export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) =
                         onPress={() => onSelectCategory(category.id)}
                         activeOpacity={0.7}
                         style={styles.cardWrapper}>
-                        <Card style={[styles.card, {backgroundColor: theme.colors.surface}]} mode='elevated'>
-                            <Card.Content style={styles.cardContent}>
-                                <View style={[styles.iconContainer, {backgroundColor: theme.colors.primaryContainer}]}>
-                                    <IconButton
-                                        icon={category.icon}
-                                        size={28}
-                                        iconColor={theme.colors.primary}
-                                        style={styles.icon}
-                                    />
-                                </View>
-                                <Text variant='titleSmall' style={styles.categoryName} numberOfLines={1}>
-                                    {category.name}
-                                </Text>
-                                {category.description && (
+                        <Card style={[styles.card, {backgroundColor: theme.colors.surface}]}>
+                            <View style={styles.cardInner}>
+                                <Card.Content style={styles.cardContent}>
+                                    <View
+                                        style={[
+                                            styles.iconContainer,
+                                            {
+                                                backgroundColor: theme.colors.primaryContainer,
+                                            },
+                                        ]}>
+                                        <IconButton
+                                            icon={category.icon}
+                                            size={28}
+                                            iconColor={theme.colors.onPrimaryContainer}
+                                            style={styles.icon}
+                                        />
+                                    </View>
                                     <Text
-                                        variant='bodySmall'
-                                        style={[styles.categoryDescription, {color: theme.colors.onSurfaceVariant}]}
+                                        variant='labelLarge'
+                                        style={[styles.categoryName, {color: theme.colors.onSurface}]}
                                         numberOfLines={2}>
-                                        {category.description}
+                                        {category.name}
                                     </Text>
-                                )}
-                            </Card.Content>
+                                </Card.Content>
+                            </View>
                         </Card>
                     </TouchableOpacity>
                 ))}
@@ -71,31 +81,59 @@ const styles = StyleSheet.create({
         marginTop: 8,
     },
     header: {
-        flexDirection: 'row-reverse',
+        flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 16,
+        paddingHorizontal: 4,
     },
     title: {
-        fontWeight: 'bold',
+        fontWeight: '400',
+        letterSpacing: 0,
+        lineHeight: 28,
+    },
+    viewAllLabel: {
+        fontSize: 14,
+        fontWeight: '500',
+        letterSpacing: 0.1,
+    },
+    viewAllContent: {
+        paddingVertical: 4,
+        paddingHorizontal: 8,
+        minWidth: 0,
     },
     grid: {
-        flexDirection: 'row-reverse',
+        flexDirection: 'row',
         flexWrap: 'wrap',
-        marginHorizontal: -6,
+        marginHorizontal: -4,
     },
     cardWrapper: {
-        width: '50%',
-        padding: 6,
+        width: '33.333%',
+        padding: 4,
     },
     card: {
         borderRadius: 16,
-        elevation: 2,
+        // iOS shadow
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        // Android shadow
+        elevation: 0.5,
+    },
+    cardInner: {
+        overflow: 'hidden',
+        borderRadius: 16,
     },
     cardContent: {
         alignItems: 'center',
         paddingVertical: 16,
         paddingHorizontal: 8,
+        minHeight: 120,
+        justifyContent: 'center',
     },
     iconContainer: {
         width: 56,
@@ -110,12 +148,9 @@ const styles = StyleSheet.create({
     },
     categoryName: {
         textAlign: 'center',
-        fontWeight: 'bold',
-        marginBottom: 4,
-    },
-    categoryDescription: {
-        textAlign: 'center',
-        fontSize: 11,
-        lineHeight: 14,
+        fontWeight: '500',
+        fontSize: 12,
+        lineHeight: 16,
+        letterSpacing: 0.5,
     },
 })

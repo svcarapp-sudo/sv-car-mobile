@@ -36,13 +36,13 @@ export const PART_CATEGORIES: Record<PartCategory, PartCategoryInfo> = {
     engine: {
         id: 'engine',
         name: ARABIC_CATEGORIES.ENGINE,
-        icon: 'car-engine',
+        icon: 'engine-outline',
         description: ARABIC_CATEGORIES.ENGINE_DESC,
     },
     suspension: {
         id: 'suspension',
         name: ARABIC_CATEGORIES.SUSPENSION,
-        icon: 'car-suspension',
+        icon: 'cog-outline',
         description: ARABIC_CATEGORIES.SUSPENSION_DESC,
     },
     brakes: {
@@ -72,7 +72,7 @@ export const PART_CATEGORIES: Record<PartCategory, PartCategoryInfo> = {
     exhaust: {
         id: 'exhaust',
         name: ARABIC_CATEGORIES.EXHAUST,
-        icon: 'car-exhaust',
+        icon: 'pipe',
         description: ARABIC_CATEGORIES.EXHAUST_DESC,
     },
     cooling: {
@@ -96,7 +96,7 @@ export const PART_CATEGORIES: Record<PartCategory, PartCategoryInfo> = {
     tires: {
         id: 'tires',
         name: ARABIC_CATEGORIES.TIRES,
-        icon: 'car-wheel',
+        icon: 'circle-outline',
         description: ARABIC_CATEGORIES.TIRES_DESC,
     },
     other: {

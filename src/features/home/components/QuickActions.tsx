@@ -9,6 +9,8 @@ interface QuickActionsProps {
 const ARABIC_TEXT = {
     QUICK_ACTIONS: 'الإجراءات السريعة',
     BROWSE_PARTS: 'تصفح قطع الغيار',
+    MY_ORDERS: 'طلباتي',
+    SERVICE_HISTORY: 'سجل الصيانة',
 }
 
 export const QuickActions = ({onBrowseParts}: QuickActionsProps) => {
@@ -23,12 +25,27 @@ export const QuickActions = ({onBrowseParts}: QuickActionsProps) => {
                 <Button
                     mode='contained'
                     onPress={onBrowseParts}
-                    style={styles.actionButton}
+                    style={[styles.actionButton, {backgroundColor: theme.colors.primary}]}
+                    buttonColor={theme.colors.primary}
+                    textColor={theme.colors.onPrimary}
                     icon='wrench'
-                    contentStyle={styles.buttonContent}>
+                    contentStyle={styles.buttonContent}
+                    labelStyle={styles.buttonLabel}
+                    elevation={2}>
                     {ARABIC_TEXT.BROWSE_PARTS}
                 </Button>
-                {/* Add more quick actions here in the future */}
+                <View style={styles.secondaryActions}>
+                    <Button
+                        mode='outlined'
+                        onPress={() => {}}
+                        style={[styles.secondaryButton, {borderColor: theme.colors.outline}]}
+                        icon='history'
+                        contentStyle={styles.secondaryButtonContent}
+                        labelStyle={[styles.secondaryButtonLabel, {color: theme.colors.onSurface}]}
+                        rippleColor={theme.colors.primaryContainer}>
+                        {ARABIC_TEXT.SERVICE_HISTORY}
+                    </Button>
+                </View>
             </View>
         </View>
     )
@@ -36,21 +53,47 @@ export const QuickActions = ({onBrowseParts}: QuickActionsProps) => {
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 24,
+        marginBottom: 28,
     },
     title: {
-        marginBottom: 12,
-        fontWeight: 'bold',
+        marginBottom: 16,
+        fontWeight: '700',
+        textAlign: 'right',
+        letterSpacing: 0.15,
     },
     actionsRow: {
-        flexDirection: 'row-reverse',
+        flexDirection: 'column',
+        gap: 12,
     },
     actionButton: {
-        borderRadius: 12,
-        flex: 1,
+        borderRadius: 20,
+        elevation: 2,
     },
     buttonContent: {
-        paddingVertical: 8,
+        paddingVertical: 12,
         flexDirection: 'row-reverse',
+    },
+    buttonLabel: {
+        fontSize: 15,
+        fontWeight: '600',
+        letterSpacing: 0.1,
+    },
+    secondaryActions: {
+        flexDirection: 'row-reverse',
+        gap: 12,
+    },
+    secondaryButton: {
+        flex: 1,
+        borderRadius: 16,
+        borderWidth: 1,
+    },
+    secondaryButtonContent: {
+        paddingVertical: 10,
+        flexDirection: 'row-reverse',
+    },
+    secondaryButtonLabel: {
+        fontSize: 14,
+        fontWeight: '500',
+        letterSpacing: 0.1,
     },
 })

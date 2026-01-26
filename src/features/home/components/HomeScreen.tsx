@@ -1,6 +1,6 @@
 import React from 'react'
 import {ScrollView, StyleSheet, View} from 'react-native'
-import {useTheme} from 'react-native-paper'
+import {Text, useTheme} from 'react-native-paper'
 import type {NavigationProp} from '@react-navigation/native'
 
 import type {RootStackParamList} from '@/shared/navigation/types'
@@ -9,7 +9,6 @@ import {useParts} from '@/features/parts/hooks'
 import type {PartCategory} from '@/shared/types'
 import {EmptyState} from './EmptyState'
 import {VehicleSummary} from './VehicleSummary'
-import {QuickActions} from './QuickActions'
 import {CategoryGrid} from './CategoryGrid'
 
 interface HomeScreenProps {
@@ -29,10 +28,6 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
         navigation?.navigate('AddVehicle')
     }
 
-    const handleBrowseParts = () => {
-        navigation?.navigate('PartsCategories')
-    }
-
     const handleSelectCategory = (category: PartCategory) => {
         selectCategory(category)
         navigation?.navigate('PartsList', {category})
@@ -45,13 +40,25 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
-            <ScrollView style={styles.scrollView} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.content}
+                showsVerticalScrollIndicator={false}
+                bounces>
+                <View style={styles.header}>
+                    <Text variant='headlineSmall' style={[styles.welcomeText, {color: theme.colors.onSurface}]}>
+                        مرحباً بك
+                    </Text>
+                    <Text variant='bodyLarge' style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>
+                        ابحث عن قطع الغيار المناسبة لسيارتك
+                    </Text>
+                </View>
+
                 {!vehicle ? (
                     <EmptyState onAddVehicle={handleAddVehicle} />
                 ) : (
                     <>
                         <VehicleSummary vehicle={vehicle} onChangeVehicle={handleChangeVehicle} />
-                        <QuickActions onBrowseParts={handleBrowseParts} />
                         <CategoryGrid onSelectCategory={handleSelectCategory} onViewAll={handleViewAllParts} />
                     </>
                 )}
@@ -68,7 +75,24 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     content: {
-        padding: 16,
+        paddingHorizontal: 16,
+        paddingTop: 16,
         paddingBottom: 32,
+    },
+    header: {
+        marginBottom: 24,
+        paddingHorizontal: 4,
+    },
+    welcomeText: {
+        fontWeight: '400',
+        letterSpacing: 0,
+        marginBottom: 8,
+        lineHeight: 32,
+    },
+    subtitle: {
+        marginTop: 0,
+        letterSpacing: 0.5,
+        lineHeight: 20,
+        opacity: 0.87,
     },
 })
