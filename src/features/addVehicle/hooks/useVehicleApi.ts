@@ -3,9 +3,9 @@ import {useState, useCallback} from 'react'
 import {ApiError} from '@/global/services'
 
 import {vehicleService} from '../services'
-import {useVehicleStore} from '../store'
+import {useVehicleStore} from '@/global/store'
 
-import type {CreateVehicleRequest} from '../types'
+import type {CreateVehicleRequest, UpdateVehicleRequest} from '../types'
 
 /**
  * Hook for vehicle API operations
@@ -46,10 +46,30 @@ export const useVehicleApi = () => {
         try {
             const vehicle = await vehicleService.createVehicle(data)
             useVehicleStore.getState().setVehicle(vehicle)
+            await vehicleService.setSelectedVehicle(vehicle.id)
 
             return vehicle
         } catch (err) {
             const message = err instanceof ApiError ? err.message : 'Failed to create vehicle'
+            setError(message)
+            throw err
+        } finally {
+            setLoading(false)
+        }
+    }, [])
+
+    const updateVehicle = useCallback(async (id: string, data: UpdateVehicleRequest) => {
+        setLoading(true)
+        setError(null)
+
+        try {
+            const vehicle = await vehicleService.updateVehicle(id, data)
+            useVehicleStore.getState().setVehicle(vehicle)
+            await vehicleService.setSelectedVehicle(vehicle.id)
+
+            return vehicle
+        } catch (err) {
+            const message = err instanceof ApiError ? err.message : 'Failed to update vehicle'
             setError(message)
             throw err
         } finally {
@@ -78,6 +98,7 @@ export const useVehicleApi = () => {
         error,
         fetchVehicle,
         createVehicle,
+        updateVehicle,
         deleteVehicle,
     }
 }

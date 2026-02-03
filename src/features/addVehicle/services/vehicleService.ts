@@ -1,45 +1,63 @@
 import {apiClient} from '@/global/services'
 
-import type {Vehicle, CreateVehicleRequest, UpdateVehicleRequest, VehicleResponse, VehiclesListResponse} from '../types'
+import type {Vehicle} from '@/global/types'
+import type {
+    CreateVehicleRequest,
+    UpdateVehicleRequest,
+    VehicleResponseDto,
+    VehiclesListResponseDto,
+} from '../types'
+
+const API_BASE = '/api/vehicles'
+
+function mapResponseToVehicle(dto: VehicleResponseDto): Vehicle {
+    return {
+        id: dto.id,
+        make: dto.makeName ?? '',
+        model: dto.modelName ?? '',
+        year: dto.year,
+        makeId: dto.makeId,
+        modelId: dto.modelId,
+        makeLogoUrl: dto.makeLogoUrl ?? undefined,
+        fuelType: dto.fuelType ?? undefined,
+        engine: dto.engine ?? undefined,
+        trim: dto.trim ?? undefined,
+        vin: dto.vin ?? undefined,
+        displayName: dto.displayName ?? undefined,
+        createdAt: dto.createdAt ?? Date.now(),
+    }
+}
 
 class VehicleService {
-    private readonly basePath = '/vehicles'
-
     /**
      * Get all vehicles for the current user
      */
     async getVehicles(): Promise<Vehicle[]> {
-        const response = await apiClient.get<VehiclesListResponse>(this.basePath)
-
-        return response.vehicles
-    }
-
-    /**
-     * Get a single vehicle by ID
-     */
-    async getVehicleById(id: string): Promise<Vehicle> {
-        return apiClient.get<VehicleResponse>(`${this.basePath}/${id}`)
+        const response = await apiClient.get<VehiclesListResponseDto>(API_BASE)
+        return (response.vehicles ?? []).map(mapResponseToVehicle)
     }
 
     /**
      * Create a new vehicle
      */
     async createVehicle(data: CreateVehicleRequest): Promise<Vehicle> {
-        return apiClient.post<VehicleResponse>(this.basePath, data)
+        const dto = await apiClient.post<VehicleResponseDto>(API_BASE, data)
+        return mapResponseToVehicle(dto)
     }
 
     /**
      * Update an existing vehicle
      */
     async updateVehicle(id: string, data: UpdateVehicleRequest): Promise<Vehicle> {
-        return apiClient.patch<VehicleResponse>(`${this.basePath}/${id}`, data)
+        const dto = await apiClient.patch<VehicleResponseDto>(`${API_BASE}/${id}`, data)
+        return mapResponseToVehicle(dto)
     }
 
     /**
      * Delete a vehicle
      */
     async deleteVehicle(id: string): Promise<void> {
-        return apiClient.delete<void>(`${this.basePath}/${id}`)
+        await apiClient.delete<void>(`${API_BASE}/${id}`)
     }
 
     /**
@@ -47,10 +65,10 @@ class VehicleService {
      */
     async setSelectedVehicle(id: string | null): Promise<void> {
         if (id) {
-            return apiClient.post<void>(`${this.basePath}/${id}/select`)
+            await apiClient.post<void>(`${API_BASE}/${id}/select`)
+        } else {
+            await apiClient.post<void>(`${API_BASE}/deselect`)
         }
-
-        return apiClient.post<void>(`${this.basePath}/deselect`)
     }
 }
 

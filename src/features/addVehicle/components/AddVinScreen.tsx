@@ -1,5 +1,5 @@
 import {StyleSheet, ScrollView, View} from 'react-native'
-import {TextInput, Button, Text, Card, List, useTheme} from 'react-native-paper'
+import {TextInput, Button, Text, Card, List, useTheme, HelperText} from 'react-native-paper'
 
 const ARABIC_TEXT = {
     VIN_DETAILS: 'رقم الهيكل والتفاصيل',
@@ -18,10 +18,20 @@ interface VinScreenProps {
     displayName: string
     onVinChange: (vin: string) => void
     onDisplayNameChange: (displayName: string) => void
-    onSubmit: () => void
+    onSubmit: () => void | Promise<void>
+    loading?: boolean
+    error?: string | null
 }
 
-export const AddVinScreen = ({vin, displayName, onVinChange, onDisplayNameChange, onSubmit}: VinScreenProps) => {
+export const AddVinScreen = ({
+    vin,
+    displayName,
+    onVinChange,
+    onDisplayNameChange,
+    onSubmit,
+    loading = false,
+    error = null,
+}: VinScreenProps) => {
     const theme = useTheme()
 
     return (
@@ -89,7 +99,18 @@ export const AddVinScreen = ({vin, displayName, onVinChange, onDisplayNameChange
                 </Card.Content>
             </Card>
 
-            <Button mode='contained' onPress={onSubmit} style={styles.submitButton} contentStyle={styles.submitButtonContent}>
+            {error ? (
+                <HelperText type='error' visible style={styles.errorText}>
+                    {error}
+                </HelperText>
+            ) : null}
+            <Button
+                mode='contained'
+                onPress={onSubmit}
+                loading={loading}
+                disabled={loading}
+                style={styles.submitButton}
+                contentStyle={styles.submitButtonContent}>
                 {ARABIC_TEXT.SUBMIT_BUTTON}
             </Button>
         </ScrollView>
@@ -138,6 +159,9 @@ const styles = StyleSheet.create({
     input: {
         marginBottom: 0,
         textAlign: 'right',
+    },
+    errorText: {
+        marginTop: 8,
     },
     submitButton: {
         marginTop: 24,

@@ -1,7 +1,6 @@
 import {StyleSheet, View} from 'react-native'
 import {Text, List, useTheme, ActivityIndicator} from 'react-native-paper'
 
-import {useVehicleInfo} from '../hooks'
 import type {OriginApi} from '../services'
 
 const ARABIC_TEXT = {
@@ -9,13 +8,14 @@ const ARABIC_TEXT = {
 }
 
 interface OriginScreenProps {
+    origins: OriginApi[]
+    loading: boolean
     value: number | null
     onSelect: (originId: number, originName: string) => void
     onNext: () => void
 }
 
-export const OriginScreen = ({value, onSelect, onNext}: OriginScreenProps) => {
-    const {origins, loading} = useVehicleInfo()
+export const OriginScreen = ({origins, loading, value, onSelect, onNext}: OriginScreenProps) => {
     const theme = useTheme()
 
     const handleSelect = (origin: OriginApi) => {

@@ -1,27 +1,55 @@
 import type {Vehicle} from '@/global/types'
 
-// Request types
+/** Backend API: create vehicle payload */
 export interface CreateVehicleRequest {
-    make: string
-    model: string
+    makeId: number
+    modelId: number
     year: number
-    engine?: string
-    trim?: string
-    displayName?: string
+    fuelType?: string | null
+    engine?: string | null
+    trim?: string | null
+    vin?: string | null
+    displayName?: string | null
 }
 
+/** Backend API: update vehicle payload */
 export interface UpdateVehicleRequest {
-    make?: string
-    model?: string
-    year?: number
-    engine?: string
-    trim?: string
-    displayName?: string
+    makeId: number
+    modelId: number
+    year: number
+    fuelType?: string | null
+    engine?: string | null
+    trim?: string | null
+    vin?: string | null
+    displayName?: string | null
 }
 
-// Response types
+/** Backend API: single vehicle response */
+export interface VehicleResponseDto {
+    id: string
+    makeId: number
+    modelId: number
+    makeName?: string | null
+    modelName?: string | null
+    makeLogoUrl?: string | null
+    year: number
+    fuelType?: string | null
+    engine?: string | null
+    trim?: string | null
+    vin?: string | null
+    displayName?: string | null
+    createdAt?: number | null
+}
+
+/** @deprecated use VehicleResponseDto for API; Vehicle for app state */
 export type VehicleResponse = Vehicle
 
+export interface VehiclesListResponseDto {
+    vehicles: VehicleResponseDto[]
+    total: number
+}
+
+/** @deprecated use VehiclesListResponseDto */
 export interface VehiclesListResponse {
     vehicles: Vehicle[]
     total: number

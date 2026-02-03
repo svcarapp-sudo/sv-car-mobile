@@ -9,7 +9,8 @@ interface VehicleState {
 }
 
 interface VehicleActions {
-    setVehicle: (vehicle: Omit<Vehicle, 'id' | 'createdAt'>) => Vehicle
+    /** Set from API (full Vehicle) or from add form (omit id/createdAt, will be generated) */
+    setVehicle: (vehicle: Vehicle | Omit<Vehicle, 'id' | 'createdAt'>) => Vehicle
     removeVehicle: () => void
     getVehicle: () => Vehicle | null
 }
@@ -25,12 +26,17 @@ export const useVehicleStore = create<VehicleStore>()(
         (set, get) => ({
             ...initialState,
             setVehicle: vehicleData => {
-                const newVehicle: Vehicle = {
-                    ...vehicleData,
-                    id: `vehicle_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                    displayName: vehicleData.displayName || `${vehicleData.make} ${vehicleData.model} ${vehicleData.year}`,
-                    createdAt: Date.now(),
-                }
+                const hasId = 'id' in vehicleData && vehicleData.id
+                const newVehicle: Vehicle = hasId
+                    ? (vehicleData as Vehicle)
+                    : {
+                          ...vehicleData,
+                          id: `vehicle_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                          displayName:
+                              vehicleData.displayName ||
+                              `${vehicleData.make} ${vehicleData.model} ${vehicleData.year}`,
+                          createdAt: Date.now(),
+                      }
                 set({vehicle: newVehicle})
 
                 return newVehicle

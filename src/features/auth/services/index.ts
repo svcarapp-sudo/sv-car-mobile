@@ -1,2 +1,1 @@
-// Auth feature services
-// export { default as AuthService } from './AuthService'
+export {authService} from './authService'

@@ -1,21 +1,19 @@
 import {StyleSheet, View, FlatList, TouchableOpacity} from 'react-native'
 import {Text, useTheme} from 'react-native-paper'
 
-import {useVehicleInfo} from '../hooks'
-
 const ARABIC_TEXT = {
     PRODUCTION_YEAR: 'سنة الصنع',
     SELECT_YEAR: 'اختر سنة صنع المركبة',
 }
 
 interface YearScreenProps {
+    years: number[]
     value: string
     onSelect: (year: string) => void
     onNext: () => void
 }
 
-export const YearScreen = ({value, onSelect, onNext}: YearScreenProps) => {
-    const {years} = useVehicleInfo()
+export const YearScreen = ({years, value, onSelect, onNext}: YearScreenProps) => {
     const theme = useTheme()
 
     const handleSelect = (year: string) => {

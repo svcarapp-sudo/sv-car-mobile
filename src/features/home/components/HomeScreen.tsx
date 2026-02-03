@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {ScrollView, StyleSheet, View} from 'react-native'
 import {Text, useTheme} from 'react-native-paper'
 import type {NavigationProp} from '@react-navigation/native'
@@ -6,6 +6,7 @@ import type {NavigationProp} from '@react-navigation/native'
 import type {RootStackParamList} from '@/global/navigation/types'
 import {useVehicles, useParts} from '@/global/hooks'
 import type {PartCategory} from '@/global/types'
+import {useVehicleApi} from '@/features/addVehicle/hooks'
 import {EmptyState} from './EmptyState'
 import {VehicleSummary} from './VehicleSummary'
 import {CategoryGrid} from './CategoryGrid'
@@ -17,14 +18,21 @@ interface HomeScreenProps {
 export const HomeScreen = ({navigation}: HomeScreenProps) => {
     const {vehicle} = useVehicles()
     const {selectCategory} = useParts()
+    const {fetchVehicle} = useVehicleApi()
     const theme = useTheme()
+
+    useEffect(() => {
+        if (!vehicle) {
+            fetchVehicle().catch(() => {})
+        }
+    }, [vehicle, fetchVehicle])
 
     const handleAddVehicle = () => {
         navigation?.navigate('AddVehicle')
     }
 
     const handleChangeVehicle = () => {
-        navigation?.navigate('AddVehicle')
+        navigation?.navigate('AddVehicle', vehicle ? {vehicleId: vehicle.id} : undefined)
     }
 
     const handleSelectCategory = (category: PartCategory) => {

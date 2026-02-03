@@ -12,9 +12,10 @@ const OPEN_X = 0
 
 interface MainLayoutProps {
     children: React.ReactNode
+    onLogout?: () => void
 }
 
-export const MainLayout = ({children}: MainLayoutProps) => {
+export const MainLayout = ({children, onLogout}: MainLayoutProps) => {
     const {isDrawerOpen, toggleDrawer} = useLayoutStore()
 
     const [drawerAnim] = useState(() => new Animated.Value(isDrawerOpen ? OPEN_X : CLOSED_X))
@@ -89,7 +90,7 @@ export const MainLayout = ({children}: MainLayoutProps) => {
                 {...panResponder.panHandlers}
                 pointerEvents={isDrawerOpen ? 'auto' : 'none'}
                 style={[styles.drawerContainer, {transform: [{translateX: drawerAnim}]}]}>
-                <AppDrawer onClose={() => toggleDrawer(false)} />
+                <AppDrawer onClose={() => toggleDrawer(false)} onLogout={onLogout} />
             </Animated.View>
         </View>
     )

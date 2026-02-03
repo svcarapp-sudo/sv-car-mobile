@@ -1,12 +1,14 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import {StyleSheet, View, Image, ScrollView} from 'react-native'
 import {useTheme, Card, Text, IconButton} from 'react-native-paper'
 
 import type {RootStackParamList} from '@/global/navigation/types'
 
-import {useVehicles} from '../hooks'
+import {useVehicleInfo, useVehicleApi} from '../hooks'
+import {useVehicleStore} from '@/global/store'
 
 import type {NavigationProp} from '@react-navigation/native'
+import type {RouteProp} from '@react-navigation/native'
 
 import {AddVehicleStepper, Step} from './AddVehicleStepper'
 import {OriginScreen} from './OriginScreen'
@@ -18,11 +20,15 @@ import {AddVinScreen} from './AddVinScreen'
 
 interface AddVehicleScreenProps {
     navigation?: NavigationProp<RootStackParamList>
+    route?: RouteProp<RootStackParamList, 'AddVehicle'>
 }
 
-export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
-    const {setVehicle} = useVehicles()
+export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => {
+    const vehicleInfo = useVehicleInfo()
+    const {createVehicle, updateVehicle, loading: submitLoading, error: submitError} = useVehicleApi()
+    const getVehicle = useVehicleStore(s => s.getVehicle)
     const theme = useTheme()
+    const editVehicleId = route?.params?.vehicleId
     const [currentStep, setCurrentStep] = useState<Step>(Step.Origin)
     const [originId, setOriginId] = useState<number | null>(null)
     const [originName, setOriginName] = useState('')
@@ -35,6 +41,22 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
     const [fuelType, setFuelType] = useState('')
     const [vin, setVin] = useState('')
     const [displayName, setDisplayName] = useState('')
+
+    useEffect(() => {
+        if (!editVehicleId) return
+        const v = getVehicle()
+        if (v?.id === editVehicleId && v.makeId != null && v.modelId != null) {
+            setMake(v.make)
+            setMakeId(String(v.makeId))
+            setMakeLogoUrl(v.makeLogoUrl ?? null)
+            setModel(v.model)
+            setModelId(String(v.modelId))
+            setYear(String(v.year))
+            setFuelType(v.fuelType ?? '')
+            setVin(v.vin ?? '')
+            setDisplayName(v.displayName ?? '')
+        }
+    }, [editVehicleId, getVehicle])
 
     const handleNext = () => {
         if (currentStep < Step.Details) {
@@ -82,17 +104,30 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
         }
     }
 
-    const handleSubmit = () => {
-        setVehicle({
-            make,
-            model,
+    const handleSubmit = async () => {
+        const makeIdNum = makeId ? Number(makeId) : null
+        const modelIdNum = modelId ? Number(modelId) : null
+        if (makeIdNum == null || modelIdNum == null || !year.trim()) {
+            return
+        }
+        const payload = {
+            makeId: makeIdNum,
+            modelId: modelIdNum,
             year: parseInt(year, 10),
-            makeLogoUrl: makeLogoUrl ?? undefined,
-            fuelType,
+            fuelType: fuelType || undefined,
             vin: vin.trim() || undefined,
             displayName: displayName.trim() || undefined,
-        })
-        navigation?.goBack()
+        }
+        try {
+            if (editVehicleId) {
+                await updateVehicle(editVehicleId, payload)
+            } else {
+                await createVehicle(payload)
+            }
+            navigation?.goBack()
+        } catch {
+            // Error state is set in useVehicleApi
+        }
     }
 
     const renderSummaryCard = () => {
@@ -187,6 +222,8 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
             case Step.Origin:
                 return (
                     <OriginScreen
+                        origins={vehicleInfo.origins}
+                        loading={vehicleInfo.loading}
                         value={originId}
                         onSelect={(id, name) => {
                             setOriginId(id)
@@ -199,6 +236,7 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
                 return (
                     <ManufacturerScreen
                         originId={originId}
+                        getMakes={vehicleInfo.getMakes}
                         value={make}
                         valueId={makeId}
                         onSelect={(name, id, logoUrl) => {
@@ -214,6 +252,7 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
                     <ModelScreen
                         makeId={makeId ? Number(makeId) : null}
                         makeName={make}
+                        getModels={vehicleInfo.getModels}
                         value={model}
                         valueId={modelId}
                         onSelect={(name, id) => {
@@ -224,9 +263,23 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
                     />
                 )
             case Step.Year:
-                return <YearScreen value={year} onSelect={setYear} onNext={handleNext} />
+                return (
+                    <YearScreen
+                        years={vehicleInfo.years}
+                        value={year}
+                        onSelect={setYear}
+                        onNext={handleNext}
+                    />
+                )
             case Step.Fuel:
-                return <FuelScreen value={fuelType} onSelect={setFuelType} onNext={handleNext} />
+                return (
+                    <FuelScreen
+                        fuelTypes={vehicleInfo.fuelTypes}
+                        value={fuelType}
+                        onSelect={setFuelType}
+                        onNext={handleNext}
+                    />
+                )
             case Step.Details:
                 return (
                     <AddVinScreen
@@ -235,6 +288,8 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
                         onVinChange={setVin}
                         onDisplayNameChange={setDisplayName}
                         onSubmit={handleSubmit}
+                        loading={submitLoading}
+                        error={submitError}
                     />
                 )
             default:

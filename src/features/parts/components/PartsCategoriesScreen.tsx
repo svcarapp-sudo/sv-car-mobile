@@ -3,7 +3,7 @@ import type {NavigationProp} from '@react-navigation/native'
 import {Card, Text, Button, Chip, useTheme, ActivityIndicator} from 'react-native-paper'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {PartCategory} from '@/global/types'
-import {useParts, usePartCategories} from '../hooks'
+import {useParts, usePartCategories} from '@/global/hooks'
 
 const ARABIC_TEXT = {
     TITLE: 'تصفح قطع الغيار',

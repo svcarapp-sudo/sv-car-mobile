@@ -1,3 +1,1 @@
-// Auth feature hooks
-export {useAuth} from './useAuth'
-// export { useLogin } from './useLogin'
+// Auth feature hooks (none currently; use useAuthStore from @/global/store)

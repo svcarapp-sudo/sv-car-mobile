@@ -1,21 +1,25 @@
 import {StyleSheet, View, TouchableOpacity} from 'react-native'
 import {Text, Card, IconButton, useTheme} from 'react-native-paper'
 
-import {useVehicleInfo} from '../hooks'
-
 const ARABIC_TEXT = {
     FUEL_TYPE: 'نوع الوقود',
     SELECT_FUEL: 'اختر نوع الوقود',
 }
 
+export interface FuelTypeOption {
+    id: string
+    name: string
+    icon: string
+}
+
 interface FuelScreenProps {
+    fuelTypes: FuelTypeOption[]
     value: string
     onSelect: (fuelType: string) => void
     onNext: () => void
 }
 
-export const FuelScreen = ({value, onSelect, onNext}: FuelScreenProps) => {
-    const {fuelTypes} = useVehicleInfo()
+export const FuelScreen = ({fuelTypes, value, onSelect, onNext}: FuelScreenProps) => {
     const theme = useTheme()
 
     const handleSelect = (fuelType: string) => {

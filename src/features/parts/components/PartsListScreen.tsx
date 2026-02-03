@@ -1,6 +1,6 @@
 import {FlatList, StyleSheet, View} from 'react-native'
 import {Card, Text, Chip, IconButton, useTheme} from 'react-native-paper'
-import {useParts, usePartCategories} from '../hooks'
+import {useParts, usePartCategories} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 

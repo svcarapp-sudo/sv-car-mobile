@@ -2,6 +2,7 @@ import {StyleSheet, View, ScrollView} from 'react-native'
 
 import {Drawer, Text, Avatar, useTheme, Divider} from 'react-native-paper'
 
+import {useAuthStore} from '@/global/store'
 import {useLayoutStore} from './layoutStore'
 
 const ARABIC_TEXT = {
@@ -14,17 +15,21 @@ const ARABIC_TEXT = {
     HELP_SUPPORT: 'المساعدة والدعم',
     MAIN_MENU: 'القائمة الرئيسية',
     ACCOUNT: 'الحساب',
+    LOGOUT: 'تسجيل الخروج',
     USER_NAME: 'مستخدم SV',
     USER_STATUS: 'عضو مميز',
 }
 
 interface AppDrawerProps {
     onClose?: () => void
+    onLogout?: () => void
 }
 
-export const AppDrawer = ({onClose}: AppDrawerProps) => {
+export const AppDrawer = ({onClose, onLogout}: AppDrawerProps) => {
     const theme = useTheme()
     const {toggleDrawer} = useLayoutStore()
+    const user = useAuthStore(s => s.user)
+    const logout = useAuthStore(s => s.logout)
 
     const menuItems = [
         {id: 'home', label: ARABIC_TEXT.HOME, icon: 'home-outline'},
@@ -41,16 +46,27 @@ export const AppDrawer = ({onClose}: AppDrawerProps) => {
         toggleDrawer(false)
     }
 
+    const handleLogout = () => {
+        logout()
+        onClose?.()
+        toggleDrawer(false)
+        onLogout?.()
+    }
+
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.surface}]}>
             <View style={[styles.header, {backgroundColor: theme.colors.primaryContainer}]}>
-                <Avatar.Text size={64} label='SV' style={{backgroundColor: theme.colors.primary}} />
+                <Avatar.Text
+                    size={64}
+                    label={user?.name?.slice(0, 2).toUpperCase() ?? 'SV'}
+                    style={{backgroundColor: theme.colors.primary}}
+                />
                 <View style={styles.headerInfo}>
-                    <Text variant='titleLarge' style={{color: theme.colors.primary}}>
-                        {ARABIC_TEXT.USER_NAME}
+                    <Text variant='titleLarge' style={{color: theme.colors.primary}} numberOfLines={1}>
+                        {user?.name ?? ARABIC_TEXT.USER_NAME}
                     </Text>
-                    <Text variant='bodySmall' style={{color: theme.colors.onSurfaceVariant}}>
-                        {ARABIC_TEXT.USER_STATUS}
+                    <Text variant='bodySmall' style={{color: theme.colors.onSurfaceVariant}} numberOfLines={1}>
+                        {user?.email ?? ARABIC_TEXT.USER_STATUS}
                     </Text>
                 </View>
             </View>
@@ -68,6 +84,7 @@ export const AppDrawer = ({onClose}: AppDrawerProps) => {
                     {menuItems.slice(4).map(item => (
                         <Drawer.Item key={item.id} label={item.label} icon={item.icon} onPress={() => handlePress(item.id)} />
                     ))}
+                    <Drawer.Item label={ARABIC_TEXT.LOGOUT} icon='logout' onPress={handleLogout} />
                 </Drawer.Section>
             </ScrollView>
 

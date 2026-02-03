@@ -4,6 +4,8 @@ import {StyleSheet, View, Animated, Easing} from 'react-native'
 
 import {Text, useTheme} from 'react-native-paper'
 
+import {useAuthStore} from '@/global/store'
+
 import type {RootStackParamList} from '../navigation/types'
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack'
 
@@ -13,6 +15,7 @@ interface LaunchScreenProps {
 
 export const LaunchScreen = ({navigation}: LaunchScreenProps) => {
     const theme = useTheme()
+    const isAuthenticated = useAuthStore(s => s.isAuthenticated)
 
     // Animation values
     const fadeAnim = useMemo(() => new Animated.Value(0), [])
@@ -53,11 +56,15 @@ export const LaunchScreen = ({navigation}: LaunchScreenProps) => {
         ).start()
 
         const timer = setTimeout(() => {
-            navigation.replace('Main')
+            if (isAuthenticated) {
+                navigation.replace('Main')
+            } else {
+                navigation.replace('Login')
+            }
         }, 3000)
 
         return () => clearTimeout(timer)
-    }, [fadeAnim, scaleAnim, translateYAnim, rotateAnim, navigation])
+    }, [fadeAnim, scaleAnim, translateYAnim, rotateAnim, navigation, isAuthenticated])
 
     const spin = rotateAnim.interpolate({
         inputRange: [0, 1],

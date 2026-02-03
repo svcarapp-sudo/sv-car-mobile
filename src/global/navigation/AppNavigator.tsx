@@ -1,6 +1,9 @@
+import {useNavigation} from '@react-navigation/native'
 import {NavigationContainer} from '@react-navigation/native'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack'
 
+import {LoginScreen, RegisterScreen} from '@/features/auth'
 import {PartsCategoriesScreen, PartsListScreen, PartDetailScreen} from '@/features/parts'
 import {HomeScreen} from '@/features/home'
 import {AddVehicleScreen} from '@/features/addVehicle'
@@ -21,8 +24,13 @@ const ARABIC_TEXT = {
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
 const MainFlow = () => {
+    const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Main'>>()
+
     return (
-        <MainLayout>
+        <MainLayout
+            onLogout={() => {
+                rootNavigation.reset({index: 0, routes: [{name: 'Login'}]})
+            }}>
             <Stack.Navigator
                 initialRouteName='Home'
                 screenOptions={{
@@ -73,6 +81,8 @@ export const AppNavigator = () => {
         <NavigationContainer>
             <Stack.Navigator screenOptions={{headerShown: false}}>
                 <Stack.Screen name='Launch' component={LaunchScreen} />
+                <Stack.Screen name='Login' component={LoginScreen} />
+                <Stack.Screen name='Register' component={RegisterScreen} />
                 <Stack.Screen name='Main' component={MainFlow} />
             </Stack.Navigator>
         </NavigationContainer>

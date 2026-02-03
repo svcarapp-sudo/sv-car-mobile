@@ -2,8 +2,6 @@ import {useEffect, useState} from 'react'
 import {StyleSheet, View, TouchableOpacity, FlatList, Image} from 'react-native'
 import {Text, Card, useTheme, ActivityIndicator} from 'react-native-paper'
 
-import {useVehicleInfo} from '../hooks'
-
 import type {MakeApi} from '../services'
 
 const ARABIC_TEXT = {
@@ -12,14 +10,21 @@ const ARABIC_TEXT = {
 
 interface ManufacturerScreenProps {
     originId: number | null
+    getMakes: (originId?: number | null) => Promise<MakeApi[]>
     value: string
     valueId: string | null
     onSelect: (name: string, id: string, logoUrl?: string | null) => void
     onNext: () => void
 }
 
-export const ManufacturerScreen = ({originId, value: _value, valueId, onSelect, onNext}: ManufacturerScreenProps) => {
-    const {getMakes} = useVehicleInfo()
+export const ManufacturerScreen = ({
+    originId,
+    getMakes,
+    value: _value,
+    valueId,
+    onSelect,
+    onNext,
+}: ManufacturerScreenProps) => {
     const theme = useTheme()
     const [makes, setMakes] = useState<MakeApi[]>([])
     const [loading, setLoading] = useState(false)
@@ -30,7 +35,7 @@ export const ManufacturerScreen = ({originId, value: _value, valueId, onSelect, 
         // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: show loading while fetching
         setLoading(true)
         getMakes(originId ?? undefined)
-            .then(list => {
+            .then((list: MakeApi[]) => {
                 if (!cancelled) {
                     setMakes(list)
                 }

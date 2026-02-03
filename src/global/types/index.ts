@@ -3,6 +3,24 @@ export interface User {
     id: string
     name: string
     email: string
+    selectedVehicleId?: number | null
+}
+
+/** Auth API request/response (register, login) */
+export interface LoginRequest {
+    email: string
+    password: string
+}
+
+export interface RegisterRequest {
+    name: string
+    email: string
+    password: string
+}
+
+export interface AuthResponse {
+    user: User
+    token?: string | null
 }
 
 // Vehicle types
@@ -11,6 +29,8 @@ export interface Vehicle {
     make: string
     model: string
     year: number
+    makeId?: number
+    modelId?: number
     makeLogoUrl?: string
     fuelType?: string
     engine?: string

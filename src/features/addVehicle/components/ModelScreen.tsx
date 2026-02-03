@@ -2,8 +2,6 @@ import {useEffect, useState} from 'react'
 import {StyleSheet, View, ScrollView} from 'react-native'
 import {Text, List, useTheme, ActivityIndicator} from 'react-native-paper'
 
-import {useVehicleInfo} from '../hooks'
-
 import type {ModelApi} from '../services'
 
 const ARABIC_TEXT = {
@@ -14,14 +12,22 @@ const ARABIC_TEXT = {
 interface ModelScreenProps {
     makeId: number | null
     makeName: string
+    getModels: (makeId: number) => Promise<ModelApi[]>
     value: string
     valueId: string | null
     onSelect: (name: string, id: string) => void
     onNext: () => void
 }
 
-export const ModelScreen = ({makeId, makeName, value: _value, valueId, onSelect, onNext}: ModelScreenProps) => {
-    const {getModels} = useVehicleInfo()
+export const ModelScreen = ({
+    makeId,
+    makeName,
+    getModels,
+    value: _value,
+    valueId,
+    onSelect,
+    onNext,
+}: ModelScreenProps) => {
     const theme = useTheme()
     const [models, setModels] = useState<ModelApi[]>([])
     const [loading, setLoading] = useState(false)

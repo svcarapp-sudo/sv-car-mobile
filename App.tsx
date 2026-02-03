@@ -3,7 +3,7 @@ import {StatusBar} from 'expo-status-bar'
 
 import {AppNavigator} from '@/global/navigation'
 import {ThemeProvider} from '@/global/providers'
-import {usePartsStore} from '@/features/parts/store'
+import {usePartsStore} from '@/global/store'
 import {SAMPLE_PARTS} from '@/global/utils'
 
 export default function App() {
