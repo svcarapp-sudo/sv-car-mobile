@@ -1,9 +1,7 @@
-import type {Part, PartCategory} from '@/shared/types'
+import type {Part, PartCategory} from '@/global/types'
 
-// Request types
 export interface GetPartsRequest {
     category?: PartCategory
-    // Note: vehicleId is not needed - backend automatically uses user's selected vehicle
     search?: string
     page?: number
     limit?: number
@@ -19,14 +17,7 @@ export interface CreatePartRequest {
     imageUrl?: string
     sku?: string
     brand?: string
-    compatibleVehicles: {
-        make: string
-        model: string
-        yearFrom?: number
-        yearTo?: number
-        engine?: string
-        trim?: string
-    }[]
+    compatibleVehicles: {make: string; model: string; yearFrom?: number; yearTo?: number; engine?: string; trim?: string}[]
     inStock?: boolean
     rating?: number
 }
@@ -39,19 +30,11 @@ export interface UpdatePartRequest {
     imageUrl?: string
     sku?: string
     brand?: string
-    compatibleVehicles?: {
-        make: string
-        model: string
-        yearFrom?: number
-        yearTo?: number
-        engine?: string
-        trim?: string
-    }[]
+    compatibleVehicles?: {make: string; model: string; yearFrom?: number; yearTo?: number; engine?: string; trim?: string}[]
     inStock?: boolean
     rating?: number
 }
 
-// Response types
 export type PartResponse = Part
 
 export interface PartsListResponse {
@@ -62,7 +45,6 @@ export interface PartsListResponse {
     totalPages: number
 }
 
-// Note: vehicleId is not needed - backend automatically uses user's selected vehicle
 export interface CheckCompatibilityRequest {
     partId: string
 }
@@ -73,7 +55,6 @@ export interface CompatibilityResponse {
     reason?: string
 }
 
-// API Error types
 export interface PartApiError {
     message: string
     field?: string

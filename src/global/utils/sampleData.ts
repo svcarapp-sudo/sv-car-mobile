@@ -1,4 +1,4 @@
-import type {Part} from '@/shared/types'
+import type {Part} from '@/global/types'
 
 /**
  * Sample parts data for testing/demo purposes

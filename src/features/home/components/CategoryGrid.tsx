@@ -1,9 +1,10 @@
 import React from 'react'
 import {StyleSheet, TouchableOpacity, View} from 'react-native'
-import {Button, Card, IconButton, Text, useTheme} from 'react-native-paper'
+import {Button, Card, IconButton, Text, useTheme, ActivityIndicator} from 'react-native-paper'
 
-import {PART_CATEGORIES_LIST} from '@/shared/constants'
-import type {PartCategory} from '@/shared/types'
+import {usePartCategories} from '@/global/hooks'
+
+import type {PartCategory} from '@/global/types'
 
 interface CategoryGridProps {
     onSelectCategory: (category: PartCategory) => void
@@ -13,10 +14,58 @@ interface CategoryGridProps {
 const ARABIC_TEXT = {
     PARTS_CATEGORIES: 'فئات قطع الغيار',
     VIEW_ALL_PARTS: 'عرض الكل',
+    LOADING: 'جاري تحميل الفئات...',
+    EMPTY_OR_ERROR: 'لم يتم تحميل الفئات',
+    RETRY: 'إعادة المحاولة',
 }
 
 export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) => {
     const theme = useTheme()
+    const {categories: apiCategories, loading, error, refresh} = usePartCategories()
+    const categories = apiCategories ?? []
+
+    const displayList = categories
+        .slice()
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map(c => ({slug: c.slug, name: c.name, icon: c.icon}))
+
+    if (loading && categories.length === 0) {
+        return (
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <Text variant='titleLarge' style={[styles.title, {color: theme.colors.onSurface}]}>
+                        {ARABIC_TEXT.PARTS_CATEGORIES}
+                    </Text>
+                </View>
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size='small' />
+                    <Text variant='bodySmall' style={{color: theme.colors.onSurfaceVariant, marginTop: 8}}>
+                        {ARABIC_TEXT.LOADING}
+                    </Text>
+                </View>
+            </View>
+        )
+    }
+
+    if (categories.length === 0) {
+        return (
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <Text variant='titleLarge' style={[styles.title, {color: theme.colors.onSurface}]}>
+                        {ARABIC_TEXT.PARTS_CATEGORIES}
+                    </Text>
+                </View>
+                <View style={styles.emptyContainer}>
+                    <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant, textAlign: 'center'}}>
+                        {error ?? ARABIC_TEXT.EMPTY_OR_ERROR}
+                    </Text>
+                    <Button mode='outlined' onPress={refresh} style={styles.retryButton}>
+                        {ARABIC_TEXT.RETRY}
+                    </Button>
+                </View>
+            </View>
+        )
+    }
 
     return (
         <View style={styles.container}>
@@ -37,24 +86,18 @@ export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) =
             </View>
 
             <View style={styles.grid}>
-                {PART_CATEGORIES_LIST.map(category => (
+                {displayList.map(cat => (
                     <TouchableOpacity
-                        key={category.id}
-                        onPress={() => onSelectCategory(category.id)}
+                        key={cat.slug}
+                        onPress={() => onSelectCategory(cat.slug as PartCategory)}
                         activeOpacity={0.7}
                         style={styles.cardWrapper}>
                         <Card style={[styles.card, {backgroundColor: theme.colors.surface}]}>
                             <View style={styles.cardInner}>
                                 <Card.Content style={styles.cardContent}>
-                                    <View
-                                        style={[
-                                            styles.iconContainer,
-                                            {
-                                                backgroundColor: theme.colors.primaryContainer,
-                                            },
-                                        ]}>
+                                    <View style={[styles.iconContainer, {backgroundColor: theme.colors.primaryContainer}]}>
                                         <IconButton
-                                            icon={category.icon}
+                                            icon={cat.icon}
                                             size={28}
                                             iconColor={theme.colors.onPrimaryContainer}
                                             style={styles.icon}
@@ -64,7 +107,7 @@ export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) =
                                         variant='labelLarge'
                                         style={[styles.categoryName, {color: theme.colors.onSurface}]}
                                         numberOfLines={2}>
-                                        {category.name}
+                                        {cat.name}
                                     </Text>
                                 </Card.Content>
                             </View>
@@ -102,6 +145,18 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         minWidth: 0,
     },
+    loadingContainer: {
+        paddingVertical: 24,
+        alignItems: 'center',
+    },
+    emptyContainer: {
+        paddingVertical: 24,
+        paddingHorizontal: 16,
+        alignItems: 'center',
+    },
+    retryButton: {
+        marginTop: 12,
+    },
     grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -113,15 +168,10 @@ const styles = StyleSheet.create({
     },
     card: {
         borderRadius: 16,
-        // iOS shadow
         shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
+        shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.05,
         shadowRadius: 2,
-        // Android shadow
         elevation: 0.5,
     },
     cardInner: {

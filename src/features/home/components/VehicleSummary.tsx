@@ -2,9 +2,7 @@ import React from 'react'
 import {Image, StyleSheet, View} from 'react-native'
 import {Card, IconButton, Text, useTheme} from 'react-native-paper'
 
-import {getLogoUrl} from '@/features/addVehicle/components/ManufacturerScreen'
-
-import {Vehicle} from '@/shared/types'
+import {Vehicle} from '@/global/types'
 
 interface VehicleSummaryProps {
     vehicle: Partial<Vehicle>
@@ -36,10 +34,7 @@ export const VehicleSummary = ({vehicle, onChangeVehicle}: VehicleSummaryProps) 
     )
 
     return (
-        <Card
-            style={[styles.card, {backgroundColor: theme.colors.surface}]}
-            mode='flat'
-            contentStyle={styles.cardContent}>
+        <Card style={[styles.card, {backgroundColor: theme.colors.surface}]} mode='outlined' contentStyle={styles.cardContent}>
             <View style={styles.cardInner}>
                 <Card.Content style={styles.content}>
                     <View style={styles.header}>
@@ -52,8 +47,8 @@ export const VehicleSummary = ({vehicle, onChangeVehicle}: VehicleSummaryProps) 
                                         borderColor: theme.colors.outlineVariant,
                                     },
                                 ]}>
-                                {vehicle.make && (
-                                    <Image source={{uri: getLogoUrl(vehicle.make)}} style={styles.logo} resizeMode='contain' />
+                                {vehicle.makeLogoUrl && (
+                                    <Image source={{uri: vehicle.makeLogoUrl}} style={styles.logo} resizeMode='contain' />
                                 )}
                             </View>
                             <View style={styles.titleGroup}>

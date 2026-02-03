@@ -1,39 +1,71 @@
 import {useEffect, useState} from 'react'
 import {StyleSheet, View, ScrollView} from 'react-native'
-import {Text, List, useTheme} from 'react-native-paper'
+import {Text, List, useTheme, ActivityIndicator} from 'react-native-paper'
 
 import {useVehicleInfo} from '../hooks'
 
+import type {ModelApi} from '../services'
+
 const ARABIC_TEXT = {
     SELECT_MODEL: 'اختر الموديل',
-    FOR_MAKE: (make: string) => `لسيارة ${make}`,
+    FOR_MAKE: (makeName: string) => `لسيارة ${makeName}`,
 }
 
 interface ModelScreenProps {
-    make: string
+    makeId: number | null
+    makeName: string
     value: string
-    onSelect: (model: string) => void
+    valueId: string | null
+    onSelect: (name: string, id: string) => void
     onNext: () => void
 }
 
-export const ModelScreen = ({make, value, onSelect, onNext}: ModelScreenProps) => {
+export const ModelScreen = ({makeId, makeName, value: _value, valueId, onSelect, onNext}: ModelScreenProps) => {
     const {getModels} = useVehicleInfo()
     const theme = useTheme()
-    const [models, setModels] = useState<string[]>([])
+    const [models, setModels] = useState<ModelApi[]>([])
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        const fetchModels = async () => {
-            if (make) {
-                const fetchedModels = await getModels(make)
-                setModels(fetchedModels)
-            }
-        }
-        fetchModels()
-    }, [make, getModels])
+        if (makeId == null) {
+            setModels([])
 
-    const handleSelect = (model: string) => {
-        onSelect(model)
+            return
+        }
+
+        let cancelled = false
+        setLoading(true)
+        getModels(makeId)
+            .then(list => {
+                if (!cancelled) {
+                    setModels(list)
+                }
+            })
+            .finally(() => {
+                if (!cancelled) {
+                    setLoading(false)
+                }
+            })
+
+        return () => {
+            cancelled = true
+        }
+    }, [makeId, getModels])
+
+    const handleSelect = (model: ModelApi) => {
+        onSelect(model.name, model.id)
         onNext()
+    }
+
+    if (loading && models.length === 0) {
+        return (
+            <View style={styles.centered}>
+                <ActivityIndicator size='large' />
+                <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant, marginTop: 16}}>
+                    جاري تحميل الموديلات...
+                </Text>
+            </View>
+        )
     }
 
     return (
@@ -42,33 +74,37 @@ export const ModelScreen = ({make, value, onSelect, onNext}: ModelScreenProps) =
                 {ARABIC_TEXT.SELECT_MODEL}
             </Text>
             <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
-                {ARABIC_TEXT.FOR_MAKE(make)}
+                {ARABIC_TEXT.FOR_MAKE(makeName)}
             </Text>
             <ScrollView style={styles.listContainer}>
-                {models.map(m => (
-                    <List.Item
-                        key={m}
-                        title={m}
-                        titleStyle={{fontWeight: value === m ? 'bold' : 'normal'}}
-                        left={props => (
-                            <List.Icon
-                                {...props}
-                                icon={value === m ? 'check-circle' : 'car-side'}
-                                color={value === m ? theme.colors.primary : theme.colors.outline}
-                            />
-                        )}
-                        onPress={() => handleSelect(m)}
-                        style={[
-                            styles.listItem,
-                            {backgroundColor: theme.colors.surface},
-                            value === m && {
-                                backgroundColor: theme.colors.primaryContainer,
-                                borderColor: theme.colors.primary,
-                                borderWidth: 1,
-                            },
-                        ]}
-                    />
-                ))}
+                {models.map(m => {
+                    const isSelected = valueId === m.id
+
+                    return (
+                        <List.Item
+                            key={m.id}
+                            title={m.name}
+                            titleStyle={{fontWeight: isSelected ? 'bold' : 'normal'}}
+                            left={props => (
+                                <List.Icon
+                                    {...props}
+                                    icon={isSelected ? 'check-circle' : 'car-side'}
+                                    color={isSelected ? theme.colors.primary : theme.colors.outline}
+                                />
+                            )}
+                            onPress={() => handleSelect(m)}
+                            style={[
+                                styles.listItem,
+                                {backgroundColor: theme.colors.surface},
+                                isSelected && {
+                                    backgroundColor: theme.colors.primaryContainer,
+                                    borderColor: theme.colors.primary,
+                                    borderWidth: 1,
+                                },
+                            ]}
+                        />
+                    )
+                })}
             </ScrollView>
         </View>
     )
@@ -94,5 +130,10 @@ const styles = StyleSheet.create({
         marginVertical: 4,
         borderWidth: 1,
         borderColor: 'transparent',
+    },
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 })

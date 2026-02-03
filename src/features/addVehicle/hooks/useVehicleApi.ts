@@ -1,6 +1,6 @@
 import {useState, useCallback} from 'react'
 
-import {ApiError} from '@/shared/services'
+import {ApiError} from '@/global/services'
 
 import {vehicleService} from '../services'
 import {useVehicleStore} from '../store'

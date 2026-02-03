@@ -1,12 +1,9 @@
 import {useState, useCallback} from 'react'
 
-import {ApiError} from '@/shared/services'
-import type {PartCategory} from '@/shared/types'
+import {ApiError, partService} from '@/global/services'
+import type {PartCategory, GetPartsRequest, CreatePartRequest, UpdatePartRequest} from '@/global/types'
 
-import {partService} from '../services'
-import {usePartsStore} from '../store'
-
-import type {GetPartsRequest, CreatePartRequest, UpdatePartRequest} from '../types'
+import {usePartsStore} from '@/global/store'
 
 /**
  * Hook for parts API operations

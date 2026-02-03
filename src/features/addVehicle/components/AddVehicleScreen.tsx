@@ -1,15 +1,16 @@
 import {useState} from 'react'
-import {StyleSheet, View, Image} from 'react-native'
+import {StyleSheet, View, Image, ScrollView} from 'react-native'
 import {useTheme, Card, Text, IconButton} from 'react-native-paper'
 
-import type {RootStackParamList} from '@/shared/navigation/types'
+import type {RootStackParamList} from '@/global/navigation/types'
 
 import {useVehicles} from '../hooks'
 
 import type {NavigationProp} from '@react-navigation/native'
 
 import {AddVehicleStepper, Step} from './AddVehicleStepper'
-import {ManufacturerScreen, getLogoUrl} from './ManufacturerScreen'
+import {OriginScreen} from './OriginScreen'
+import {ManufacturerScreen} from './ManufacturerScreen'
 import {ModelScreen} from './ModelScreen'
 import {YearScreen} from './YearScreen'
 import {FuelScreen} from './FuelScreen'
@@ -22,9 +23,14 @@ interface AddVehicleScreenProps {
 export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
     const {setVehicle} = useVehicles()
     const theme = useTheme()
-    const [currentStep, setCurrentStep] = useState<Step>(Step.Manufacturer)
+    const [currentStep, setCurrentStep] = useState<Step>(Step.Origin)
+    const [originId, setOriginId] = useState<number | null>(null)
+    const [originName, setOriginName] = useState('')
     const [make, setMake] = useState('')
+    const [makeId, setMakeId] = useState<string | null>(null)
+    const [makeLogoUrl, setMakeLogoUrl] = useState<string | null>(null)
     const [model, setModel] = useState('')
+    const [modelId, setModelId] = useState<string | null>(null)
     const [year, setYear] = useState('')
     const [fuelType, setFuelType] = useState('')
     const [vin, setVin] = useState('')
@@ -37,11 +43,10 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
     }
 
     const handleStepChange = (step: Step) => {
-        // Only allow going back to previous steps, not forward
         if (step < currentStep) {
-            // Clear states of subsequent steps
             if (step < Step.Details) {
                 setVin('')
+
                 setDisplayName('')
             }
 
@@ -55,10 +60,22 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
 
             if (step < Step.Model) {
                 setModel('')
+
+                setModelId(null)
             }
 
             if (step < Step.Manufacturer) {
                 setMake('')
+
+                setMakeId(null)
+
+                setMakeLogoUrl(null)
+            }
+
+            if (step < Step.Origin) {
+                setOriginId(null)
+
+                setOriginName('')
             }
 
             setCurrentStep(step)
@@ -70,6 +87,7 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
             make,
             model,
             year: parseInt(year, 10),
+            makeLogoUrl: makeLogoUrl ?? undefined,
             fuelType,
             vin: vin.trim() || undefined,
             displayName: displayName.trim() || undefined,
@@ -85,23 +103,28 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
         return (
             <Card style={styles.summaryCard} mode='outlined'>
                 <Card.Content style={styles.summaryContent}>
-                    <View style={styles.summaryInfo}>
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.summaryScrollContent}
+                        style={styles.summaryScroll}>
                         {make && (
                             <View style={styles.summaryItem}>
-                                <View style={styles.logoCircle}>
-                                    <Image source={{uri: getLogoUrl(make)}} style={styles.summaryLogo} resizeMode='contain' />
-                                </View>
+                                {makeLogoUrl ? (
+                                    <View style={styles.logoCircle}>
+                                        <Image source={{uri: makeLogoUrl}} style={styles.summaryLogo} resizeMode='contain' />
+                                    </View>
+                                ) : null}
                                 <View style={styles.textGroup}>
                                     <Text variant='labelSmall' style={styles.label}>
                                         الماركة
                                     </Text>
-                                    <Text variant='titleSmall' style={styles.value}>
+                                    <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
                                         {make}
                                     </Text>
                                 </View>
                             </View>
                         )}
-
                         {model && (
                             <>
                                 <View style={styles.divider} />
@@ -110,14 +133,13 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
                                         <Text variant='labelSmall' style={styles.label}>
                                             الموديل
                                         </Text>
-                                        <Text variant='titleSmall' style={styles.value}>
+                                        <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
                                             {model}
                                         </Text>
                                     </View>
                                 </View>
                             </>
                         )}
-
                         {year && (
                             <>
                                 <View style={styles.divider} />
@@ -126,14 +148,13 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
                                         <Text variant='labelSmall' style={styles.label}>
                                             السنة
                                         </Text>
-                                        <Text variant='titleSmall' style={styles.value}>
+                                        <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
                                             {year}
                                         </Text>
                                     </View>
                                 </View>
                             </>
                         )}
-
                         {fuelType && (
                             <>
                                 <View style={styles.divider} />
@@ -142,14 +163,14 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
                                         <Text variant='labelSmall' style={styles.label}>
                                             الوقود
                                         </Text>
-                                        <Text variant='titleSmall' style={styles.value}>
+                                        <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
                                             {fuelType}
                                         </Text>
                                     </View>
                                 </View>
                             </>
                         )}
-                    </View>
+                    </ScrollView>
                     <IconButton
                         icon='pencil-outline'
                         size={20}
@@ -163,10 +184,45 @@ export const AddVehicleScreen = ({navigation}: AddVehicleScreenProps) => {
 
     const renderContent = () => {
         switch (currentStep) {
+            case Step.Origin:
+                return (
+                    <OriginScreen
+                        value={originId}
+                        onSelect={(id, name) => {
+                            setOriginId(id)
+                            setOriginName(name)
+                        }}
+                        onNext={handleNext}
+                    />
+                )
             case Step.Manufacturer:
-                return <ManufacturerScreen value={make} onSelect={setMake} onNext={handleNext} />
+                return (
+                    <ManufacturerScreen
+                        originId={originId}
+                        value={make}
+                        valueId={makeId}
+                        onSelect={(name, id, logoUrl) => {
+                            setMake(name)
+                            setMakeId(id)
+                            setMakeLogoUrl(logoUrl ?? null)
+                        }}
+                        onNext={handleNext}
+                    />
+                )
             case Step.Model:
-                return <ModelScreen make={make} value={model} onSelect={setModel} onNext={handleNext} />
+                return (
+                    <ModelScreen
+                        makeId={makeId ? Number(makeId) : null}
+                        makeName={make}
+                        value={model}
+                        valueId={modelId}
+                        onSelect={(name, id) => {
+                            setModel(name)
+                            setModelId(id)
+                        }}
+                        onNext={handleNext}
+                    />
+                )
             case Step.Year:
                 return <YearScreen value={year} onSelect={setYear} onNext={handleNext} />
             case Step.Fuel:
@@ -217,14 +273,19 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         paddingHorizontal: 12,
     },
-    summaryInfo: {
+    summaryScroll: {
         flex: 1,
+        minWidth: 0,
+    },
+    summaryScrollContent: {
         flexDirection: 'row-reverse',
         alignItems: 'center',
+        paddingHorizontal: 4,
     },
     summaryItem: {
         flexDirection: 'row-reverse',
         alignItems: 'center',
+        maxWidth: 160,
     },
     logoCircle: {
         width: 32,
@@ -243,6 +304,8 @@ const styles = StyleSheet.create({
     },
     textGroup: {
         alignItems: 'flex-end',
+        minWidth: 0,
+        maxWidth: 140,
     },
     label: {
         color: '#64748B',

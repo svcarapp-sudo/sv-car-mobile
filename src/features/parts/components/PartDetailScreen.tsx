@@ -1,11 +1,9 @@
 import {useState, useEffect} from 'react'
 import {ScrollView, StyleSheet, View} from 'react-native'
 import {Card, Text, Chip, Button, useTheme} from 'react-native-paper'
-import {PART_CATEGORIES} from '@/shared/constants'
-import type {Part} from '@/shared/types'
-import {usePartApi} from '../hooks'
-import type {CompatibilityResponse} from '../types'
-import type {RootStackParamList} from '@/shared/navigation/types'
+import type {Part, CompatibilityResponse} from '@/global/types'
+import {usePartApi, usePartCategories} from '../hooks'
+import type {RootStackParamList} from '@/global/navigation/types'
 import type {RouteProp} from '@react-navigation/native'
 
 const ARABIC_TEXT = {
@@ -30,6 +28,7 @@ interface PartDetailScreenProps {
 export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
     const partId = route?.params?.partId
     const {getPartById, checkCompatibility} = usePartApi()
+    const {getBySlug} = usePartCategories()
     const theme = useTheme()
     const [part, setPart] = useState<Part | null>(null)
     const [compatibility, setCompatibility] = useState<CompatibilityResponse | null>(null)
@@ -128,7 +127,7 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                     </View>
 
                     <Chip icon='tag' style={[styles.categoryChip, {backgroundColor: theme.colors.secondaryContainer}]}>
-                        {PART_CATEGORIES[part.category].name}
+                        {getBySlug(part.category)?.name ?? part.category}
                     </Chip>
 
                     {part.description && (

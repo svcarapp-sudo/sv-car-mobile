@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import {PartsCategoriesScreen, PartsListScreen, PartDetailScreen} from '@/features/parts'
 import {HomeScreen} from '@/features/home'
 import {AddVehicleScreen} from '@/features/addVehicle'
-import {AppHeader, MainLayout} from '@/shared/layouts'
+import {AppHeader, MainLayout} from '@/global/layouts'
 
 import {LaunchScreen} from '../components'
 

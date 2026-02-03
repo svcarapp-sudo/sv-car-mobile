@@ -1,4 +1,4 @@
-export type {Vehicle} from '@/shared/types'
+export type {Vehicle} from '@/global/types'
 export type {
     CreateVehicleRequest,
     UpdateVehicleRequest,

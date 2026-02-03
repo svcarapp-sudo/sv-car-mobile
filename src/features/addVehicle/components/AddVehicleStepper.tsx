@@ -3,6 +3,7 @@ import {ProgressBar, Text, IconButton, useTheme} from 'react-native-paper'
 
 const ARABIC_TEXT = {
     STEPS: {
+        ORIGIN: 'المنشأ',
         BRAND: 'الماركة',
         MODEL: 'الموديل',
         YEAR: 'السنة',
@@ -12,6 +13,7 @@ const ARABIC_TEXT = {
 }
 
 const STEPS_INFO = [
+    {label: ARABIC_TEXT.STEPS.ORIGIN, icon: 'earth'},
     {label: ARABIC_TEXT.STEPS.BRAND, icon: 'car-outline'},
     {label: ARABIC_TEXT.STEPS.MODEL, icon: 'car-info'},
     {label: ARABIC_TEXT.STEPS.YEAR, icon: 'calendar'},
@@ -20,11 +22,12 @@ const STEPS_INFO = [
 ]
 
 export enum Step {
-    Manufacturer = 0,
-    Model = 1,
-    Year = 2,
-    Fuel = 3,
-    Details = 4,
+    Origin = 0,
+    Manufacturer = 1,
+    Model = 2,
+    Year = 3,
+    Fuel = 4,
+    Details = 5,
 }
 
 interface AddVehicleStepperProps {

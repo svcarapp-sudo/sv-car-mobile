@@ -11,31 +11,31 @@
         "./src/features/*"
       ],
       "@/shared/*": [
-        "./src/shared/*"
+        "src/global/*"
       ],
       "@/components/*": [
-        "./src/shared/components/*"
+        "src/global/components/*"
       ],
       "@/utils/*": [
-        "./src/shared/utils/*"
+        "src/global/utils/*"
       ],
       "@/types/*": [
-        "./src/shared/types/*"
+        "src/global/types/*"
       ],
       "@/constants/*": [
-        "./src/shared/constants/*"
+        "src/global/constants/*"
       ],
       "@/hooks/*": [
-        "./src/shared/hooks/*"
+        "src/global/hooks/*"
       ],
       "@/services/*": [
-        "./src/shared/services/*"
+        "src/global/services/*"
       ],
       "@/navigation/*": [
-        "./src/shared/navigation/*"
+        "src/global/navigation/*"
       ],
       "@/store/*": [
-        "./src/shared/store/*"
+        "src/global/store/*"
       ]
     }
   },

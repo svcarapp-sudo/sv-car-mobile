@@ -1,4 +1,4 @@
-import type {PartCategory} from '@/shared/types'
+import type {PartCategory} from '@/global/types'
 
 export type RootStackParamList = {
     Launch: undefined

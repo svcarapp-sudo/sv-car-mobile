@@ -1,55 +1,72 @@
-import {useState, useEffect, useCallback} from 'react'
+import {useState, useEffect, useCallback, useMemo} from 'react'
 
-import {vehicleInfoService} from '../services'
+import {catalogService} from '../services'
+import {FUEL_TYPES, MAX_YEAR, MIN_YEAR} from '../constants'
 
-import type {Manufacturer, FuelType} from '../types'
+import type {OriginApi, MakeApi, ModelApi} from '../services'
 
 /**
- * Hook to fetch and manage vehicle options (brands, models, fuel types, etc.)
+ * Hook to fetch and manage catalog options: origins, makes, models (from backend).
+ * Also exposes fuel types and years from local constants for the add-vehicle flow.
  */
 export const useVehicleInfo = () => {
-    const [loading, setLoading] = useState(false)
-    const [manufacturers, setManufacturers] = useState<Manufacturer[]>([])
-    const [fuelTypes, setFuelTypes] = useState<FuelType[]>([])
-    const [years, setYears] = useState<number[]>([])
+    const [loading, setLoading] = useState(true)
+    const [origins, setOrigins] = useState<OriginApi[]>([])
 
-    const fetchOptions = useCallback(async () => {
+    const years = useMemo(() => {
+        const list: number[] = []
+
+        for (let i = MAX_YEAR; i >= MIN_YEAR; i--) {
+            list.push(i)
+        }
+
+        return list
+    }, [])
+
+    const fetchOrigins = useCallback(async () => {
         setLoading(true)
         try {
-            const options = await vehicleInfoService.getVehicleOptions()
-            setManufacturers(options.manufacturers)
-            setFuelTypes(options.fuelTypes)
-            setYears(options.years)
+            const list = await catalogService.getOrigins()
+            setOrigins(list)
         } catch (error) {
-            console.error('Failed to fetch vehicle options:', error)
+            console.error('Failed to fetch origins:', error)
+            setOrigins([])
         } finally {
             setLoading(false)
         }
     }, [])
 
-    const getModels = useCallback(async (manufacturer: string) => {
-        setLoading(true)
+    const getMakes = useCallback(async (originId?: number | null): Promise<MakeApi[]> => {
         try {
-            return await vehicleInfoService.getModels(manufacturer)
+            return await catalogService.getMakes(originId)
+        } catch (error) {
+            console.error('Failed to fetch makes:', error)
+
+            return []
+        }
+    }, [])
+
+    const getModels = useCallback(async (makeId: number): Promise<ModelApi[]> => {
+        try {
+            return await catalogService.getModels(makeId)
         } catch (error) {
             console.error('Failed to fetch models:', error)
 
             return []
-        } finally {
-            setLoading(false)
         }
     }, [])
 
     useEffect(() => {
-        fetchOptions()
-    }, [fetchOptions])
+        fetchOrigins()
+    }, [fetchOrigins])
 
     return {
         loading,
-        manufacturers,
-        fuelTypes,
+        origins,
         years,
+        fuelTypes: FUEL_TYPES,
+        getMakes,
         getModels,
-        refresh: fetchOptions,
+        refreshOrigins: fetchOrigins,
     }
 }

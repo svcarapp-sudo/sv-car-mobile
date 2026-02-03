@@ -1,2 +1,3 @@
 export {vehicleService} from './vehicleService'
-export {vehicleInfoService} from './vehicleInfoService'
+export {catalogService} from './catalogService'
+export type {OriginApi, MakeApi, ModelApi, PageResponse} from './catalogService'

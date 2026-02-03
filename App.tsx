@@ -1,10 +1,10 @@
 import {useEffect} from 'react'
 import {StatusBar} from 'expo-status-bar'
 
-import {AppNavigator} from '@/shared/navigation'
-import {ThemeProvider} from '@/shared/providers'
+import {AppNavigator} from '@/global/navigation'
+import {ThemeProvider} from '@/global/providers'
 import {usePartsStore} from '@/features/parts/store'
-import {SAMPLE_PARTS} from '@/shared/utils'
+import {SAMPLE_PARTS} from '@/global/utils'
 
 export default function App() {
     const {setParts} = usePartsStore()

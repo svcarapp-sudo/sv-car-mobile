@@ -1,8 +1,8 @@
 import {create} from 'zustand'
 import {persist} from 'zustand/middleware'
 
-import {asyncStorageAdapter} from '@/shared/storage'
-import type {Vehicle} from '@/shared/types'
+import {asyncStorageAdapter} from '@/global/storage'
+import type {Vehicle} from '@/global/types'
 
 interface VehicleState {
     vehicle: Vehicle | null
@@ -36,9 +36,7 @@ export const useVehicleStore = create<VehicleStore>()(
                 return newVehicle
             },
             removeVehicle: () => set({vehicle: null}),
-            getVehicle: () => {
-                return get().vehicle
-            },
+            getVehicle: () => get().vehicle,
         }),
         {
             name: 'vehicle-storage',

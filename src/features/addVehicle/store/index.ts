@@ -1,1 +1,1 @@
-export {useVehicleStore} from './vehicleStore'
+export {useVehicleStore} from '@/global/store'

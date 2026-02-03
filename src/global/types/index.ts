@@ -11,6 +11,7 @@ export interface Vehicle {
     make: string
     model: string
     year: number
+    makeLogoUrl?: string
     fuelType?: string
     engine?: string
     trim?: string
@@ -39,6 +40,16 @@ export interface PartCategoryInfo {
     name: string
     icon: string
     description?: string
+}
+
+/** API response type for part-categories catalog endpoint */
+export interface PartCategoryApi {
+    id: number
+    slug: string
+    name: string
+    icon: string
+    description?: string | null
+    sortOrder: number
 }
 
 // Part types
@@ -73,3 +84,14 @@ export interface CompatibilityResult {
     exactMatch: boolean
     reason?: string
 }
+
+export type {
+    GetPartsRequest,
+    CreatePartRequest,
+    UpdatePartRequest,
+    PartResponse,
+    PartsListResponse,
+    CheckCompatibilityRequest,
+    CompatibilityResponse,
+    PartApiError,
+} from './partsApi'

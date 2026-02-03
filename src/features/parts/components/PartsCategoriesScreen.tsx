@@ -1,10 +1,9 @@
 import {ScrollView, StyleSheet, View} from 'react-native'
 import type {NavigationProp} from '@react-navigation/native'
-import {Card, Text, Button, Chip, useTheme} from 'react-native-paper'
-import {PART_CATEGORIES_LIST} from '@/shared/constants'
-import type {RootStackParamList} from '@/shared/navigation/types'
-import type {PartCategory} from '@/shared/types'
-import {useParts} from '../hooks'
+import {Card, Text, Button, Chip, useTheme, ActivityIndicator} from 'react-native-paper'
+import type {RootStackParamList} from '@/global/navigation/types'
+import type {PartCategory} from '@/global/types'
+import {useParts, usePartCategories} from '../hooks'
 
 const ARABIC_TEXT = {
     TITLE: 'تصفح قطع الغيار',
@@ -21,11 +20,13 @@ interface PartsCategoriesScreenProps {
 
 export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({navigation}) => {
     const {selectCategory} = useParts()
+    const {categories, loading} = usePartCategories()
+    const categoriesList = categories ?? []
     const theme = useTheme()
 
-    const handleSelectCategory = (category: PartCategory) => {
-        selectCategory(category)
-        navigation?.navigate('PartsList', {category})
+    const handleSelectCategory = (slug: PartCategory) => {
+        selectCategory(slug)
+        navigation?.navigate('PartsList', {category: slug})
     }
 
     const handleViewAllParts = () => {
@@ -57,34 +58,41 @@ export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({nav
                 {ARABIC_TEXT.CATEGORIES}
             </Text>
 
-            <View style={styles.categoriesGrid}>
-                {PART_CATEGORIES_LIST.map(category => {
-                    return (
-                        <Card
-                            key={category.id}
-                            style={[styles.categoryCard, {backgroundColor: theme.colors.surface}]}
-                            onPress={() => handleSelectCategory(category.id)}>
-                            <Card.Content style={styles.categoryContent}>
-                                <Text variant='titleMedium' style={[styles.categoryName, {color: theme.colors.primary}]}>
-                                    {category.name}
-                                </Text>
-                                {category.description && (
-                                    <Text
-                                        variant='bodySmall'
-                                        style={[styles.categoryDescription, {color: theme.colors.onSurfaceVariant}]}>
-                                        {category.description}
+            {loading && categoriesList.length === 0 ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size='small' />
+                </View>
+            ) : (
+                <View style={styles.categoriesGrid}>
+                    {categoriesList
+                        .slice()
+                        .sort((a, b) => a.sortOrder - b.sortOrder)
+                        .map(category => (
+                            <Card
+                                key={category.id}
+                                style={[styles.categoryCard, {backgroundColor: theme.colors.surface}]}
+                                onPress={() => handleSelectCategory(category.slug as PartCategory)}>
+                                <Card.Content style={styles.categoryContent}>
+                                    <Text variant='titleMedium' style={[styles.categoryName, {color: theme.colors.primary}]}>
+                                        {category.name}
                                     </Text>
-                                )}
-                                <Chip
-                                    icon='package-variant'
-                                    style={[styles.countChip, {backgroundColor: theme.colors.secondaryContainer}]}>
-                                    {ARABIC_TEXT.VIEW_PARTS}
-                                </Chip>
-                            </Card.Content>
-                        </Card>
-                    )
-                })}
-            </View>
+                                    {category.description && (
+                                        <Text
+                                            variant='bodySmall'
+                                            style={[styles.categoryDescription, {color: theme.colors.onSurfaceVariant}]}>
+                                            {category.description}
+                                        </Text>
+                                    )}
+                                    <Chip
+                                        icon='package-variant'
+                                        style={[styles.countChip, {backgroundColor: theme.colors.secondaryContainer}]}>
+                                        {ARABIC_TEXT.VIEW_PARTS}
+                                    </Chip>
+                                </Card.Content>
+                            </Card>
+                        ))}
+                </View>
+            )}
         </ScrollView>
     )
 }
@@ -137,5 +145,9 @@ const styles = StyleSheet.create({
     },
     countChip: {
         alignSelf: 'flex-start',
+    },
+    loadingContainer: {
+        paddingVertical: 24,
+        alignItems: 'center',
     },
 })

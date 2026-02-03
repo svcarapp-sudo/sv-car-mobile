@@ -1,4 +1,4 @@
-import {apiClient} from '@/shared/services'
+import {apiClient} from '@/global/services'
 
 import type {Vehicle, CreateVehicleRequest, UpdateVehicleRequest, VehicleResponse, VehiclesListResponse} from '../types'
 

@@ -1,4 +1,4 @@
-export type {Part, PartCategory, PartCategoryInfo} from '@/shared/types'
+export type {Part, PartCategory, PartCategoryInfo} from '@/global/types'
 export type {
     GetPartsRequest,
     CreatePartRequest,
@@ -8,4 +8,4 @@ export type {
     CheckCompatibilityRequest,
     CompatibilityResponse,
     PartApiError,
-} from './api'
+} from '@/global/types'

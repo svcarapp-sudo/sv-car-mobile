@@ -1,8 +1,8 @@
 import {create} from 'zustand'
 import {persist} from 'zustand/middleware'
 
-import {asyncStorageAdapter} from '@/shared/storage'
-import type {Part, PartCategory} from '@/shared/types'
+import {asyncStorageAdapter} from '@/global/storage'
+import type {Part, PartCategory} from '@/global/types'
 
 interface PartsState {
     parts: Part[]
@@ -29,27 +29,19 @@ export const usePartsStore = create<PartsStore>()(
         set => ({
             ...initialState,
             setParts: parts => set({parts}),
-            addPart: part =>
-                set(state => ({
-                    parts: [...state.parts, part],
-                })),
+            addPart: part => set(state => ({parts: [...state.parts, part]})),
             updatePart: (id, updates) =>
                 set(state => ({
                     parts: state.parts.map(p => (p.id === id ? {...p, ...updates} : p)),
                 })),
-            deletePart: id =>
-                set(state => ({
-                    parts: state.parts.filter(p => p.id !== id),
-                })),
+            deletePart: id => set(state => ({parts: state.parts.filter(p => p.id !== id)})),
             selectCategory: category => set({selectedCategory: category}),
         }),
         {
             name: 'parts-storage',
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             storage: asyncStorageAdapter as any,
-            partialize: state => ({
-                parts: state.parts,
-            }),
+            partialize: state => ({parts: state.parts}),
         }
     )
 )

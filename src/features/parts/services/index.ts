@@ -1,1 +1,1 @@
-export {partService} from './partService'
+export {partService} from '@/global/services'

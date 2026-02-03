@@ -1,59 +1,73 @@
+import {useEffect, useState} from 'react'
 import {StyleSheet, View, TouchableOpacity, FlatList, Image} from 'react-native'
-import {Text, Card, useTheme} from 'react-native-paper'
+import {Text, Card, useTheme, ActivityIndicator} from 'react-native-paper'
 
 import {useVehicleInfo} from '../hooks'
 
-import type {Manufacturer} from '../types'
+import type {MakeApi} from '../services'
 
 const ARABIC_TEXT = {
     SELECT_MANUFACTURER: 'اختر الشركة المصنعة',
 }
 
-export const getLogoUrl = (name: string) => {
-    const fileName = name.toLowerCase().replace(/\s+/g, '-')
-
-    return `https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/optimized/${fileName}.png`
-}
-
 interface ManufacturerScreenProps {
+    originId: number | null
     value: string
-    onSelect: (manufacturer: string) => void
+    valueId: string | null
+    onSelect: (name: string, id: string, logoUrl?: string | null) => void
     onNext: () => void
 }
 
-export const ManufacturerScreen = ({value, onSelect, onNext}: ManufacturerScreenProps) => {
-    const {manufacturers} = useVehicleInfo()
+export const ManufacturerScreen = ({originId, value: _value, valueId, onSelect, onNext}: ManufacturerScreenProps) => {
+    const {getMakes} = useVehicleInfo()
     const theme = useTheme()
+    const [makes, setMakes] = useState<MakeApi[]>([])
+    const [loading, setLoading] = useState(false)
 
-    // Group manufacturers by country
-    const groupedManufacturers = manufacturers.reduce(
-        (acc, curr) => {
-            const country = curr.country || 'أخرى'
+    useEffect(() => {
+        let cancelled = false
+        // Loading must be true when starting fetch; rule discourages sync setState in effect
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: show loading while fetching
+        setLoading(true)
+        getMakes(originId ?? undefined)
+            .then(list => {
+                if (!cancelled) {
+                    setMakes(list)
+                }
+            })
+            .finally(() => {
+                if (!cancelled) {
+                    setLoading(false)
+                }
+            })
 
-            if (!acc[country]) {
-                acc[country] = []
-            }
+        return () => {
+            cancelled = true
+        }
+    }, [originId, getMakes])
 
-            acc[country].push(curr)
+    const groupedMakes = makes.reduce<Record<string, MakeApi[]>>((acc, curr) => {
+        const country = curr.originCountry ?? 'أخرى'
 
-            return acc
-        },
-        {} as Record<string, Manufacturer[]>
-    )
+        if (!acc[country]) {
+            acc[country] = []
+        }
 
-    const sections = Object.keys(groupedManufacturers).map(country => ({
-        title: country,
-        data: groupedManufacturers[country],
-    }))
+        acc[country].push(curr)
 
-    const handleSelect = async (manufacturer: Manufacturer) => {
-        onSelect(manufacturer.name)
+        return acc
+    }, {})
+
+    const sections = Object.keys(groupedMakes).map(title => ({title, data: groupedMakes[title]}))
+
+    const handleSelect = (make: MakeApi) => {
+        onSelect(make.name, make.id, make.logoUrl ?? undefined)
         onNext()
     }
 
-    const renderManufacturerItem = ({item}: {item: Manufacturer}) => {
-        const isSelected = value === item.name
-        const logoUrl = getLogoUrl(item.name)
+    const renderManufacturerItem = ({item}: {item: MakeApi}) => {
+        const isSelected = valueId === item.id
+        const logoUrl = item.logoUrl ?? null
 
         return (
             <TouchableOpacity
@@ -64,14 +78,7 @@ export const ManufacturerScreen = ({value, onSelect, onNext}: ManufacturerScreen
                     mode={isSelected ? 'contained' : 'outlined'}>
                     <Card.Content style={styles.cardContent}>
                         <View style={styles.logoContainer}>
-                            <Image
-                                key={logoUrl}
-                                source={{
-                                    uri: logoUrl,
-                                }}
-                                style={styles.logo}
-                                resizeMode='contain'
-                            />
+                            {logoUrl ? <Image source={{uri: logoUrl}} style={styles.logo} resizeMode='contain' /> : null}
                         </View>
                         <Text
                             variant='labelMedium'
@@ -88,6 +95,17 @@ export const ManufacturerScreen = ({value, onSelect, onNext}: ManufacturerScreen
                     </Card.Content>
                 </Card>
             </TouchableOpacity>
+        )
+    }
+
+    if (loading && makes.length === 0) {
+        return (
+            <View style={styles.centered}>
+                <ActivityIndicator size='large' />
+                <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant, marginTop: 16}}>
+                    جاري تحميل الماركات...
+                </Text>
+            </View>
         )
     }
 
@@ -113,7 +131,7 @@ export const ManufacturerScreen = ({value, onSelect, onNext}: ManufacturerScreen
                         </View>
                         <View style={styles.gridRow}>
                             {section.data.map(item => (
-                                <View key={item.name} style={styles.gridItemContainer}>
+                                <View key={item.id} style={styles.gridItemContainer}>
                                     {renderManufacturerItem({item})}
                                 </View>
                             ))}
@@ -201,5 +219,10 @@ const styles = StyleSheet.create({
     },
     brandName: {
         textAlign: 'center',
+    },
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 })

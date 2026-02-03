@@ -1,8 +1,7 @@
 import {FlatList, StyleSheet, View} from 'react-native'
 import {Card, Text, Chip, IconButton, useTheme} from 'react-native-paper'
-import {PART_CATEGORIES} from '@/shared/constants'
-import {useParts} from '../hooks'
-import type {RootStackParamList} from '@/shared/navigation/types'
+import {useParts, usePartCategories} from '../hooks'
+import type {RootStackParamList} from '@/global/navigation/types'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
 const ARABIC_TEXT = {
@@ -24,10 +23,16 @@ interface PartsListScreenProps {
 
 export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
     const {parts, selectedCategory, loading} = useParts()
+    const {getBySlug} = usePartCategories()
     const theme = useTheme()
 
     const category = route?.params?.category ?? selectedCategory
-    const categoryInfo = category ? PART_CATEGORIES[category] : null
+    const categoryFromApi = category ? getBySlug(category) : null
+    let categoryInfo: {name: string; id: string} | null = null
+
+    if (category) {
+        categoryInfo = categoryFromApi ? {name: categoryFromApi.name, id: categoryFromApi.slug} : {name: category, id: category}
+    }
 
     const renderPart = ({item: part}: {item: (typeof parts)[0]}) => {
         return (
@@ -84,7 +89,7 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
                     </View>
 
                     <Chip icon='tag' style={[styles.categoryChip, {backgroundColor: theme.colors.secondaryContainer}]}>
-                        {PART_CATEGORIES[part.category].name}
+                        {getBySlug(part.category)?.name ?? part.category}
                     </Chip>
                 </Card.Content>
             </Card>

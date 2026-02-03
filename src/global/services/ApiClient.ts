@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-import {useAuthStore} from '@/features/auth/store'
-import {API_BASE_URL} from '@/shared/constants'
+import {useAuthStore} from '@/global/store'
+import {API_BASE_URL} from '@/global/constants'
 
 interface RequestOptions {
     params?: Record<string, string | number | boolean | undefined>

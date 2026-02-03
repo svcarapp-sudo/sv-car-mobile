@@ -1,7 +1,7 @@
 import {create} from 'zustand'
 import {persist} from 'zustand/middleware'
 
-import {asyncStorageAdapter} from '@/shared/storage'
+import {asyncStorageAdapter} from '@/global/storage'
 
 interface AppState {
     isLoading: boolean

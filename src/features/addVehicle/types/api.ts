@@ -1,4 +1,4 @@
-import type {Vehicle} from '@/shared/types'
+import type {Vehicle} from '@/global/types'
 
 // Request types
 export interface CreateVehicleRequest {

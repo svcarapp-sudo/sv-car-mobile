@@ -2,8 +2,8 @@ import {useEffect} from 'react'
 import {I18nManager} from 'react-native'
 import {Provider as PaperProvider} from 'react-native-paper'
 
-import {useAppStore} from '@/shared/store'
-import {createAppTheme} from '@/shared/theme'
+import {useAppStore} from '@/global/store'
+import {createAppTheme} from '@/global/theme'
 
 interface ThemeProviderProps {
     children: React.ReactNode
