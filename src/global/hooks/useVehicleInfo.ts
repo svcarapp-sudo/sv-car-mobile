@@ -1,13 +1,13 @@
 import {useState, useEffect, useCallback, useMemo} from 'react'
 
-import {catalogService} from '../services'
+import {catalogService} from '../services/catalogService'
 import {FUEL_TYPES, MAX_YEAR, MIN_YEAR} from '../constants'
 
-import type {OriginApi, MakeApi, ModelApi} from '../services'
+import type {OriginApi, MakeApi, ModelApi} from '../services/catalogService'
 
 /**
  * Hook to fetch and manage catalog options: origins, makes, models (from backend).
- * Also exposes fuel types and years from local constants for the add-vehicle flow.
+ * Also exposes fuel types and years from local constants for vehicle/part selection flows.
  */
 export const useVehicleInfo = () => {
     const [loading, setLoading] = useState(true)

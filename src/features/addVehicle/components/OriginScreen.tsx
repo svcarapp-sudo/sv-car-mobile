@@ -1,7 +1,7 @@
 import {StyleSheet, View} from 'react-native'
 import {Text, List, useTheme, ActivityIndicator} from 'react-native-paper'
 
-import type {OriginApi} from '../services'
+import type {OriginApi} from '@/global/services'
 
 const ARABIC_TEXT = {
     SELECT_ORIGIN: 'اختر المنشأ',

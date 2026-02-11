@@ -82,11 +82,17 @@ export interface Part {
     imageUrl?: string
     sku?: string
     brand?: string
-    // Compatibility information
+    // Vehicle compatibility information
+    makeId?: number
+    modelId?: number
+    year?: number
+    makeName?: string
+    modelName?: string
     compatibleVehicles: VehicleCompatibility[]
     // Additional metadata
     inStock: boolean
     rating?: number
+    categoryId?: number
 }
 
 export interface VehicleCompatibility {

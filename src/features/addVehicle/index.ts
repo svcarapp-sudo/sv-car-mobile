@@ -1,5 +1,5 @@
 export {AddVehicleScreen} from './components'
-export {vehicleService, catalogService} from './services'
+export {vehicleService} from './services'
 export type {Vehicle} from './types'
 export type {
     CreateVehicleRequest,

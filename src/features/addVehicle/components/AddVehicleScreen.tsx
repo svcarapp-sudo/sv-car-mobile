@@ -1,22 +1,21 @@
 import {useState, useEffect} from 'react'
-import {StyleSheet, View, Image, ScrollView} from 'react-native'
-import {useTheme, Card, Text, IconButton} from 'react-native-paper'
+import {StyleSheet, View} from 'react-native'
+import {useTheme} from 'react-native-paper'
 
 import type {RootStackParamList} from '@/global/navigation/types'
 
-import {useVehicleInfo, useVehicleApi} from '../hooks'
+import {useVehicleInfo, useVehicleApi} from '@/global/hooks'
 import {useVehicleStore} from '@/global/store'
+import {ManufacturerScreen, ModelScreen, YearScreen} from '@/global/components'
 
 import type {NavigationProp} from '@react-navigation/native'
 import type {RouteProp} from '@react-navigation/native'
 
 import {AddVehicleStepper, Step} from './AddVehicleStepper'
 import {OriginScreen} from './OriginScreen'
-import {ManufacturerScreen} from './ManufacturerScreen'
-import {ModelScreen} from './ModelScreen'
-import {YearScreen} from './YearScreen'
 import {FuelScreen} from './FuelScreen'
 import {AddVinScreen} from './AddVinScreen'
+import {AddVehicleSummaryCard} from './AddVehicleSummaryCard'
 
 interface AddVehicleScreenProps {
     navigation?: NavigationProp<RootStackParamList>
@@ -68,7 +67,6 @@ export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => 
         if (step < currentStep) {
             if (step < Step.Details) {
                 setVin('')
-
                 setDisplayName('')
             }
 
@@ -82,21 +80,17 @@ export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => 
 
             if (step < Step.Model) {
                 setModel('')
-
                 setModelId(null)
             }
 
             if (step < Step.Manufacturer) {
                 setMake('')
-
                 setMakeId(null)
-
                 setMakeLogoUrl(null)
             }
 
             if (step < Step.Origin) {
                 setOriginId(null)
-
                 setOriginName('')
             }
 
@@ -105,116 +99,30 @@ export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => 
     }
 
     const handleSubmit = async () => {
-        const makeIdNum = makeId ? Number(makeId) : null
-        const modelIdNum = modelId ? Number(modelId) : null
-        if (makeIdNum == null || modelIdNum == null || !year.trim()) {
+        if (!makeId || !modelId || !year) {
             return
         }
-        const payload = {
-            makeId: makeIdNum,
-            modelId: modelIdNum,
-            year: parseInt(year, 10),
-            fuelType: fuelType || undefined,
-            vin: vin.trim() || undefined,
-            displayName: displayName.trim() || undefined,
-        }
+
         try {
-            if (editVehicleId) {
-                await updateVehicle(editVehicleId, payload)
-            } else {
-                await createVehicle(payload)
+            const data = {
+                makeId: Number(makeId),
+                modelId: Number(modelId),
+                year: Number(year),
+                fuelType: fuelType || null,
+                vin: vin || null,
+                displayName: displayName || null,
             }
-            navigation?.goBack()
-        } catch {
+
+            if (editVehicleId) {
+                await updateVehicle(editVehicleId, data)
+            } else {
+                await createVehicle(data)
+            }
+
+            navigation?.navigate('Home')
+        } catch (error) {
             // Error state is set in useVehicleApi
         }
-    }
-
-    const renderSummaryCard = () => {
-        if (!make && !model && !year && !fuelType) {
-            return null
-        }
-
-        return (
-            <Card style={styles.summaryCard} mode='outlined'>
-                <Card.Content style={styles.summaryContent}>
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.summaryScrollContent}
-                        style={styles.summaryScroll}>
-                        {make && (
-                            <View style={styles.summaryItem}>
-                                {makeLogoUrl ? (
-                                    <View style={styles.logoCircle}>
-                                        <Image source={{uri: makeLogoUrl}} style={styles.summaryLogo} resizeMode='contain' />
-                                    </View>
-                                ) : null}
-                                <View style={styles.textGroup}>
-                                    <Text variant='labelSmall' style={styles.label}>
-                                        الماركة
-                                    </Text>
-                                    <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
-                                        {make}
-                                    </Text>
-                                </View>
-                            </View>
-                        )}
-                        {model && (
-                            <>
-                                <View style={styles.divider} />
-                                <View style={styles.summaryItem}>
-                                    <View style={styles.textGroup}>
-                                        <Text variant='labelSmall' style={styles.label}>
-                                            الموديل
-                                        </Text>
-                                        <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
-                                            {model}
-                                        </Text>
-                                    </View>
-                                </View>
-                            </>
-                        )}
-                        {year && (
-                            <>
-                                <View style={styles.divider} />
-                                <View style={styles.summaryItem}>
-                                    <View style={styles.textGroup}>
-                                        <Text variant='labelSmall' style={styles.label}>
-                                            السنة
-                                        </Text>
-                                        <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
-                                            {year}
-                                        </Text>
-                                    </View>
-                                </View>
-                            </>
-                        )}
-                        {fuelType && (
-                            <>
-                                <View style={styles.divider} />
-                                <View style={styles.summaryItem}>
-                                    <View style={styles.textGroup}>
-                                        <Text variant='labelSmall' style={styles.label}>
-                                            الوقود
-                                        </Text>
-                                        <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
-                                            {fuelType}
-                                        </Text>
-                                    </View>
-                                </View>
-                            </>
-                        )}
-                    </ScrollView>
-                    <IconButton
-                        icon='pencil-outline'
-                        size={20}
-                        onPress={() => handleStepChange(Step.Manufacturer)}
-                        style={styles.editButton}
-                    />
-                </Card.Content>
-            </Card>
-        )
     }
 
     const renderContent = () => {
@@ -301,7 +209,15 @@ export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => 
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
             <AddVehicleStepper currentStep={currentStep} onStepPress={handleStepChange} />
             <View style={styles.mainContent}>
-                {renderSummaryCard()}
+                <AddVehicleSummaryCard
+                    originName={originName}
+                    make={make}
+                    makeLogoUrl={makeLogoUrl}
+                    model={model}
+                    year={year}
+                    fuelType={fuelType}
+                    onEdit={() => handleStepChange(Step.Manufacturer)}
+                />
                 <View style={{flex: 1}}>{renderContent()}</View>
             </View>
         </View>
@@ -315,70 +231,5 @@ const styles = StyleSheet.create({
     mainContent: {
         flex: 1,
         padding: 16,
-    },
-    summaryCard: {
-        marginBottom: 16,
-        borderRadius: 12,
-        backgroundColor: '#fff',
-        borderColor: '#E2E8F0',
-    },
-    summaryContent: {
-        flexDirection: 'row-reverse',
-        alignItems: 'center',
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-    },
-    summaryScroll: {
-        flex: 1,
-        minWidth: 0,
-    },
-    summaryScrollContent: {
-        flexDirection: 'row-reverse',
-        alignItems: 'center',
-        paddingHorizontal: 4,
-    },
-    summaryItem: {
-        flexDirection: 'row-reverse',
-        alignItems: 'center',
-        maxWidth: 160,
-    },
-    logoCircle: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: '#F8FAFC',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginLeft: 8,
-        borderWidth: 1,
-        borderColor: '#E2E8F0',
-    },
-    summaryLogo: {
-        width: 20,
-        height: 20,
-    },
-    textGroup: {
-        alignItems: 'flex-end',
-        minWidth: 0,
-        maxWidth: 140,
-    },
-    label: {
-        color: '#64748B',
-        fontSize: 10,
-    },
-    value: {
-        fontWeight: 'bold',
-        fontSize: 13,
-        lineHeight: 16,
-    },
-    divider: {
-        width: 1,
-        height: 24,
-        backgroundColor: '#E2E8F0',
-        marginHorizontal: 12,
-    },
-    editButton: {
-        margin: 0,
-        marginRight: 'auto',
     },
 })

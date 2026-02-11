@@ -17,6 +17,12 @@ const ARABIC_TEXT = {
     REGISTER: 'إنشاء حساب',
     ERROR: 'خطأ في البريد أو كلمة المرور',
     LOADING: 'جاري الدخول...',
+    FILL_TEST_CREDENTIALS: 'ملء بيانات الاختبار',
+}
+
+const TEST_CREDENTIALS = {
+    email: 'mohammad@gmail.com',
+    password: 'Mohammad@1234',
 }
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>
@@ -32,6 +38,12 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+
+    const handleFillTestCredentials = () => {
+        setEmail(TEST_CREDENTIALS.email)
+        setPassword(TEST_CREDENTIALS.password)
+        setError(null)
+    }
 
     const handleLogin = async () => {
         setError(null)
@@ -90,6 +102,15 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
                 ) : null}
 
                 <Button
+                    mode='outlined'
+                    onPress={handleFillTestCredentials}
+                    disabled={loading}
+                    style={styles.testButton}
+                    labelStyle={{fontSize: 12}}>
+                    {ARABIC_TEXT.FILL_TEST_CREDENTIALS}
+                </Button>
+
+                <Button
                     mode='contained'
                     onPress={handleLogin}
                     loading={loading}
@@ -126,6 +147,10 @@ const styles = StyleSheet.create({
     },
     input: {
         marginBottom: 12,
+    },
+    testButton: {
+        marginTop: 8,
+        marginBottom: 4,
     },
     button: {
         marginTop: 16,

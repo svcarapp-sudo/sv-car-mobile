@@ -1,4 +1,4 @@
-import {apiClient} from '@/global/services'
+import {apiClient} from './ApiClient'
 
 /** API response types for catalog endpoints (origins, makes, models) */
 export interface OriginApi {

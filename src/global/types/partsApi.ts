@@ -10,16 +10,15 @@ export interface GetPartsRequest {
 }
 
 export interface CreatePartRequest {
+    makeId: number
+    modelId: number
+    year: number
+    categoryId: number
     name: string
     description?: string
-    category: PartCategory
     price: number
     imageUrl?: string
     sku?: string
-    brand?: string
-    compatibleVehicles: {make: string; model: string; yearFrom?: number; yearTo?: number; engine?: string; trim?: string}[]
-    inStock?: boolean
-    rating?: number
 }
 
 export interface UpdatePartRequest {

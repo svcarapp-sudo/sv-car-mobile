@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import {StyleSheet, View, ScrollView} from 'react-native'
 import {Text, List, useTheme, ActivityIndicator} from 'react-native-paper'
 
-import type {ModelApi} from '../services'
+import type {ModelApi} from '../services/catalogService'
 
 const ARABIC_TEXT = {
     SELECT_MODEL: 'اختر الموديل',

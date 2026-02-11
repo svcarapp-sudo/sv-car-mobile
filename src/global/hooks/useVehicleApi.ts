@@ -1,11 +1,7 @@
 import {useState, useCallback} from 'react'
 
-import {ApiError} from '@/global/services'
-
-import {vehicleService} from '../services'
+import {ApiError, vehicleService, type CreateVehicleRequest, type UpdateVehicleRequest} from '@/global/services'
 import {useVehicleStore} from '@/global/store'
-
-import type {CreateVehicleRequest, UpdateVehicleRequest} from '../types'
 
 /**
  * Hook for vehicle API operations
@@ -58,7 +54,7 @@ export const useVehicleApi = () => {
         }
     }, [])
 
-    const updateVehicle = useCallback(async (id: string, data: UpdateVehicleRequest) => {
+    const updateVehicle = useCallback(async (id: string, data:UpdateVehicleRequest) => {
         setLoading(true)
         setError(null)
 

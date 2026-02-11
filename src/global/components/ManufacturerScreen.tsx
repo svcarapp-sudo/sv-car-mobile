@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import {StyleSheet, View, TouchableOpacity, FlatList, Image} from 'react-native'
 import {Text, Card, useTheme, ActivityIndicator} from 'react-native-paper'
 
-import type {MakeApi} from '../services'
+import type {MakeApi} from '../services/catalogService'
 
 const ARABIC_TEXT = {
     SELECT_MANUFACTURER: 'اختر الشركة المصنعة',

@@ -1,12 +1,12 @@
 import React, {useEffect} from 'react'
 import {ScrollView, StyleSheet, View} from 'react-native'
-import {Text, useTheme} from 'react-native-paper'
+import {Text, useTheme, Button} from 'react-native-paper'
 import type {NavigationProp} from '@react-navigation/native'
 
 import type {RootStackParamList} from '@/global/navigation/types'
-import {useVehicles, useParts} from '@/global/hooks'
+import {useParts, useVehicleApi} from '@/global/hooks'
+import {useVehicles} from '../hooks'
 import type {PartCategory} from '@/global/types'
-import {useVehicleApi} from '@/features/addVehicle/hooks'
 import {EmptyState} from './EmptyState'
 import {VehicleSummary} from './VehicleSummary'
 import {CategoryGrid} from './CategoryGrid'
@@ -45,6 +45,10 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
         navigation?.navigate('PartsList', {category: null})
     }
 
+    const handleMyParts = () => {
+        navigation?.navigate('MyParts')
+    }
+
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
             <ScrollView
@@ -67,6 +71,17 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
                     <>
                         <VehicleSummary vehicle={vehicle} onChangeVehicle={handleChangeVehicle} />
                         <CategoryGrid onSelectCategory={handleSelectCategory} onViewAll={handleViewAllParts} />
+                        <View style={styles.myPartsSection}>
+                            <Button
+                                mode='contained'
+                                onPress={handleMyParts}
+                                icon='package-variant'
+                                style={[styles.myPartsButton, {backgroundColor: theme.colors.secondary}]}
+                                contentStyle={styles.myPartsButtonContent}
+                                labelStyle={styles.myPartsButtonLabel}>
+                                قطع الغيار الخاصة بي
+                            </Button>
+                        </View>
                     </>
                 )}
             </ScrollView>
@@ -101,5 +116,22 @@ const styles = StyleSheet.create({
         letterSpacing: 0.5,
         lineHeight: 20,
         opacity: 0.87,
+    },
+    myPartsSection: {
+        marginTop: 24,
+        marginBottom: 8,
+    },
+    myPartsButton: {
+        borderRadius: 16,
+        elevation: 2,
+    },
+    myPartsButtonContent: {
+        paddingVertical: 12,
+        flexDirection: 'row-reverse',
+    },
+    myPartsButtonLabel: {
+        fontSize: 15,
+        fontWeight: '600',
+        letterSpacing: 0.1,
     },
 })

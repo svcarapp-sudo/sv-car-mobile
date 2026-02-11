@@ -1,3 +1,5 @@
 export {usePartCategories} from './usePartCategories'
-export {useVehicles} from './useVehicles'
 export {useParts} from './useParts'
+export {useVehicleInfo} from './useVehicleInfo'
+export {useVehicleApi} from './useVehicleApi'
+export {useMakeModelCache} from './useMakeModelCache'
