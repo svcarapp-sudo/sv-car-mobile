@@ -1,3 +1,4 @@
+import React from 'react'
 import {useNavigation} from '@react-navigation/native'
 import {NavigationContainer} from '@react-navigation/native'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
@@ -67,6 +68,7 @@ const MainFlow = () => {
                     options={({route}) => ({
                         title: route.params?.category || ARABIC_TEXT.PARTS,
                     })}
+                    getId={({params}) => `PartsList-${params?.category || 'all'}`}
                 />
                 <Stack.Screen
                     name='PartDetail'

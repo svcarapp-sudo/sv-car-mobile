@@ -6,13 +6,24 @@ import {Text, IconButton, useTheme} from 'react-native-paper'
 
 import {useLayoutStore} from './layoutStore'
 
-export const AppHeader = ({navigation, back}: NativeStackHeaderProps) => {
+// Screens accessible from bottom nav - these should always show menu icon, not back button
+const BOTTOM_NAV_SCREENS = ['Home', 'PartsList', 'MyParts']
+
+export const AppHeader = ({navigation, back, route}: NativeStackHeaderProps) => {
     const theme = useTheme()
     const {toggleDrawer} = useLayoutStore()
     const insets = useSafeAreaInsets()
     const openMenu = () => {
         toggleDrawer(true)
     }
+
+    // Check if current screen is accessible from bottom nav
+    const isBottomNavScreen = route.name ? BOTTOM_NAV_SCREENS.includes(route.name) : false
+    
+    // Show menu icon if: no back button OR it's a bottom nav screen
+    // Show back button if: back exists AND it's NOT a bottom nav screen
+    const showMenuIcon = !back || isBottomNavScreen
+    const showBackButton = back && !isBottomNavScreen
 
     // Use consistent header height across platforms (56px is Material Design standard)
     const headerHeight = 56 + insets.top
@@ -28,9 +39,9 @@ export const AppHeader = ({navigation, back}: NativeStackHeaderProps) => {
                     borderBottomColor: theme.colors.outline,
                 },
             ]}>
-            {/* Left side - Menu button (when back is false) */}
+            {/* Left side - Menu button (always visible for bottom nav screens or when no back) */}
             <View style={styles.leftContainer}>
-                {!back && (
+                {showMenuIcon && (
                     <IconButton
                         icon='menu'
                         size={28}
@@ -51,9 +62,9 @@ export const AppHeader = ({navigation, back}: NativeStackHeaderProps) => {
                 </View>
             </View>
 
-            {/* Right side - Back button (when back is true) */}
+            {/* Right side - Back button (only for non-bottom-nav screens) */}
             <View style={styles.rightContainer}>
-                {back && (
+                {showBackButton && (
                     <IconButton
                         icon={I18nManager.isRTL ? 'arrow-right' : 'arrow-left'}
                         size={28}

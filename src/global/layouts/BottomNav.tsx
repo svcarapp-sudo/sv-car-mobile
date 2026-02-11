@@ -1,9 +1,11 @@
+import React, {useCallback} from 'react'
 import {StyleSheet, View, TouchableOpacity} from 'react-native'
-import {useNavigation, useRoute} from '@react-navigation/native'
+import {useNavigation, useNavigationState, CommonActions} from '@react-navigation/native'
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack'
 import {Text, useTheme, IconButton} from 'react-native-paper'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 
+import type {PartCategory} from '@/global/types'
 import type {RootStackParamList} from '@/global/navigation/types'
 
 const ARABIC_TEXT = {
@@ -13,11 +15,16 @@ const ARABIC_TEXT = {
     SETTINGS: 'الإعدادات',
 }
 
+/** Screens that are tabs in the bottom nav (live inside Main stack). */
+const BOTTOM_NAV_SCREENS = ['Home', 'PartsList', 'MyParts'] as const
+
 interface NavItem {
     key: string
     icon: string
     label: string
-    route: keyof RootStackParamList | {screen: string; params?: any}
+    /** Screen name inside the Main stack */
+    screenName: 'Home' | 'PartsList' | 'MyParts'
+    params?: Record<string, unknown>
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -25,58 +32,82 @@ const NAV_ITEMS: NavItem[] = [
         key: 'Home',
         icon: 'home',
         label: ARABIC_TEXT.HOME,
-        route: {screen: 'Home'},
+        screenName: 'Home',
     },
     {
         key: 'PartsList',
         icon: 'magnify',
         label: ARABIC_TEXT.SEARCH,
-        route: {screen: 'PartsList', params: {category: null}},
+        screenName: 'PartsList',
+        params: {category: null},
     },
     {
         key: 'MyParts',
         icon: 'package-variant',
         label: ARABIC_TEXT.MY_PARTS,
-        route: {screen: 'MyParts'},
+        screenName: 'MyParts',
     },
     {
         key: 'Settings',
         icon: 'cog',
         label: ARABIC_TEXT.SETTINGS,
-        route: {screen: 'Home'}, // TODO: Navigate to settings when implemented
+        screenName: 'Home', // TODO: Navigate to settings when implemented
     },
 ]
 
-export const BottomNav = () => {
+export const BottomNav = React.memo(() => {
     const theme = useTheme()
     const insets = useSafeAreaInsets()
+    // BottomNav is rendered inside MainLayout, which is a sibling to the inner Stack;
+    // so we get the root navigator and must target nested screen via 'Main'.
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-    const route = useRoute()
 
-    // Get current active route name
-    const getActiveRouteName = (): string => {
-        if (route.name === 'Main') {
-            // For nested routes, we need to check the navigation state
-            const state = navigation.getState()
-            const mainRoute = state.routes.find(r => r.name === 'Main')
-            if (mainRoute && 'state' in mainRoute && mainRoute.state) {
-                const mainState = mainRoute.state as any
-                const currentRoute = mainState.routes?.[mainState.index]
-                return currentRoute?.name || 'Home'
+    // Active route: when we're on Main, read the inner stack's current route
+    const activeRoute = useNavigationState(state => {
+        if (!state?.routes?.length) return 'Home'
+        const mainRoute = state.routes[state.index]
+        if (mainRoute?.name !== 'Main' || !mainRoute.state?.routes?.length) return 'Home'
+        const inner = mainRoute.state
+        const innerRoute = inner.routes[inner.index ?? 0]
+        return (innerRoute?.name as string) || 'Home'
+    })
+
+    const handleNavigate = useCallback(
+        (item: NavItem) => {
+            if (activeRoute === item.key) return
+
+            const isCurrentlyOnBottomNavScreen = BOTTOM_NAV_SCREENS.includes(activeRoute as any)
+
+            if (isCurrentlyOnBottomNavScreen) {
+                // Reset inner stack to this tab so back doesn't go to previous tab
+                navigation.dispatch(
+                    CommonActions.reset({
+                        index: 0,
+                        routes: [
+                            {
+                                name: 'Main',
+                                state: {
+                                    index: 0,
+                                    routes: item.params
+                                        ? [{name: item.screenName, params: item.params}]
+                                        : [{name: item.screenName}],
+                                },
+                            },
+                        ],
+                    })
+                )
+            } else {
+                const mainParams: { screen: 'Home'; params?: undefined } | { screen: 'PartsList'; params: { category: PartCategory | null } } | { screen: 'MyParts'; params?: undefined } =
+                    item.screenName === 'PartsList'
+                        ? { screen: 'PartsList', params: (item.params ?? { category: null }) as { category: PartCategory | null } }
+                        : item.screenName === 'MyParts'
+                          ? { screen: 'MyParts' }
+                          : { screen: 'Home' }
+                navigation.navigate('Main', mainParams)
             }
-        }
-        return route.name
-    }
-
-    const activeRoute = getActiveRouteName()
-
-    const handleNavigate = (item: NavItem) => {
-        if (typeof item.route === 'string') {
-            navigation.navigate(item.route as any)
-        } else {
-            navigation.navigate('Main', item.route as any)
-        }
-    }
+        },
+        [navigation, activeRoute]
+    )
 
     const isActive = (item: NavItem): boolean => {
         return activeRoute === item.key
@@ -125,7 +156,7 @@ export const BottomNav = () => {
             })}
         </View>
     )
-}
+})
 
 const styles = StyleSheet.create({
     container: {

@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useCallback, useState} from 'react'
+import React, {useEffect, useMemo, useCallback, useState} from 'react'
 import {StyleSheet, View, Animated, TouchableWithoutFeedback, Dimensions, PanResponder} from 'react-native'
 
 import {AppDrawer} from './AppDrawer'
