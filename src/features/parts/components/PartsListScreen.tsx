@@ -1,7 +1,7 @@
 import React from 'react'
 import {FlatList, StyleSheet, View} from 'react-native'
 import {useTheme} from 'react-native-paper'
-import {useParts, useMakeModelCache} from '@/global/hooks'
+import {useParts, usePartCategories, useMakeModelCache} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 import {PartCardItem} from './PartCardItem'
@@ -14,7 +14,8 @@ interface PartsListScreenProps {
 }
 
 export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
-    const {parts, selectedCategory, loading, getBySlug} = useParts()
+    const {parts, selectedCategory, loading} = useParts()
+    const {getBySlug} = usePartCategories()
     const theme = useTheme()
     const makeModelCache = useMakeModelCache({parts})
 
@@ -29,7 +30,8 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
                 data={parts}
                 renderItem={({item}) => <PartCardItem part={item} navigation={navigation} makeModelCache={makeModelCache} />}
                 keyExtractor={item => item.id}
-                contentContainerStyle={styles.listContent}
+                contentContainerStyle={[styles.listContent, parts.length === 0 && styles.emptyContent]}
+                showsVerticalScrollIndicator={false}
                 refreshing={loading}
                 onRefresh={() => {
                     // Refresh handled by useParts hook
@@ -45,6 +47,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     listContent: {
-        padding: 16,
+        paddingHorizontal: 16,
+        paddingTop: 14,
+        paddingBottom: 24,
+    },
+    emptyContent: {
+        flexGrow: 1,
     },
 })

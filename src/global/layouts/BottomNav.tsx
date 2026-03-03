@@ -5,7 +5,6 @@ import type {NativeStackNavigationProp} from '@react-navigation/native-stack'
 import {Text, useTheme, IconButton} from 'react-native-paper'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 
-import type {PartCategory} from '@/global/types'
 import type {RootStackParamList} from '@/global/navigation/types'
 
 const ARABIC_TEXT = {
@@ -14,9 +13,6 @@ const ARABIC_TEXT = {
     MY_PARTS: 'قطع الغيار',
     SETTINGS: 'الإعدادات',
 }
-
-/** Screens that are tabs in the bottom nav (live inside Main stack). */
-const BOTTOM_NAV_SCREENS = ['Home', 'PartsList', 'MyParts'] as const
 
 interface NavItem {
     key: string
@@ -76,35 +72,29 @@ export const BottomNav = React.memo(() => {
         (item: NavItem) => {
             if (activeRoute === item.key) return
 
-            const isCurrentlyOnBottomNavScreen = BOTTOM_NAV_SCREENS.includes(activeRoute as any)
+            navigation.dispatch(state => {
+                // Find the Main route to get the inner stack navigator's key
+                const mainRoute = state.routes.find(r => r.name === 'Main')
+                const innerState = mainRoute?.state
 
-            if (isCurrentlyOnBottomNavScreen) {
-                // Reset inner stack to this tab so back doesn't go to previous tab
-                navigation.dispatch(
-                    CommonActions.reset({
-                        index: 0,
-                        routes: [
-                            {
-                                name: 'Main',
-                                state: {
-                                    index: 0,
-                                    routes: item.params
-                                        ? [{name: item.screenName, params: item.params}]
-                                        : [{name: item.screenName}],
-                                },
-                            },
-                        ],
+                // Fallback: if inner state isn't available yet, use navigate
+                if (!innerState?.key) {
+                    return CommonActions.navigate({
+                        name: 'Main',
+                        params: {screen: item.screenName, params: item.params},
                     })
-                )
-            } else {
-                const mainParams: { screen: 'Home'; params?: undefined } | { screen: 'PartsList'; params: { category: PartCategory | null } } | { screen: 'MyParts'; params?: undefined } =
-                    item.screenName === 'PartsList'
-                        ? { screen: 'PartsList', params: (item.params ?? { category: null }) as { category: PartCategory | null } }
-                        : item.screenName === 'MyParts'
-                          ? { screen: 'MyParts' }
-                          : { screen: 'Home' }
-                navigation.navigate('Main', mainParams)
-            }
+                }
+
+                // Reset ONLY the inner stack (targeted by its key).
+                // The root stack stays untouched so MainLayout + BottomNav never remount.
+                return {
+                    ...CommonActions.reset({
+                        index: 0,
+                        routes: item.params ? [{name: item.screenName, params: item.params}] : [{name: item.screenName}],
+                    }),
+                    target: innerState.key,
+                }
+            })
         },
         [navigation, activeRoute]
     )

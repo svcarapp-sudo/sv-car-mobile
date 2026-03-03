@@ -1,6 +1,6 @@
-import {ScrollView, StyleSheet, View} from 'react-native'
+import {ScrollView, StyleSheet, View, TouchableOpacity} from 'react-native'
 import type {NavigationProp} from '@react-navigation/native'
-import {Card, Text, Button, Chip, useTheme, ActivityIndicator} from 'react-native-paper'
+import {ActivityIndicator, Icon, Text, useTheme} from 'react-native-paper'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {PartCategory} from '@/global/types'
 import {useParts, usePartCategories} from '@/global/hooks'
@@ -10,6 +10,7 @@ const ARABIC_TEXT = {
     SUBTITLE: 'تصفح قطع الغيار حسب الفئة',
     CHANGE_VEHICLE: 'تغيير المركبة',
     VIEW_ALL: 'عرض جميع القطع',
+    VIEW_ALL_DESC: 'تصفح جميع القطع المتاحة لمركبتك',
     CATEGORIES: 'الفئات',
     VIEW_PARTS: 'عرض القطع',
 }
@@ -35,32 +36,51 @@ export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({nav
     }
 
     return (
-        <ScrollView style={[styles.container, {backgroundColor: theme.colors.background}]} contentContainerStyle={styles.content}>
+        <ScrollView
+            style={[styles.container, {backgroundColor: theme.colors.background}]}
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}>
+            {/* Header */}
             <View style={styles.header}>
-                <View>
-                    <Text variant='headlineMedium' style={[styles.title, {color: theme.colors.primary}]}>
-                        {ARABIC_TEXT.TITLE}
-                    </Text>
-                    <Text variant='bodyMedium' style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>
-                        {ARABIC_TEXT.SUBTITLE}
-                    </Text>
+                <View style={styles.headerLeft}>
+                    <Text style={[styles.title, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.TITLE}</Text>
+                    <Text style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>{ARABIC_TEXT.SUBTITLE}</Text>
                 </View>
-                <Button mode='outlined' onPress={() => navigation?.navigate('AddVehicle')} style={styles.changeButton}>
-                    {ARABIC_TEXT.CHANGE_VEHICLE}
-                </Button>
+                <TouchableOpacity
+                    onPress={() => navigation?.navigate('AddVehicle')}
+                    activeOpacity={0.7}
+                    style={[styles.changeVehicleBtn, {borderColor: theme.colors.outline}]}>
+                    <Icon source='car-outline' size={16} color={theme.colors.primary} />
+                    <Text style={[styles.changeVehicleText, {color: theme.colors.primary}]}>{ARABIC_TEXT.CHANGE_VEHICLE}</Text>
+                </TouchableOpacity>
             </View>
 
-            <Button mode='contained' onPress={handleViewAllParts} style={styles.allPartsButton}>
-                {ARABIC_TEXT.VIEW_ALL}
-            </Button>
+            {/* View All banner */}
+            <TouchableOpacity onPress={handleViewAllParts} activeOpacity={0.8}>
+                <View style={[styles.viewAllBanner, {backgroundColor: theme.colors.primary}]}>
+                    <View style={styles.viewAllContent}>
+                        <View style={[styles.viewAllIcon, {backgroundColor: 'rgba(255,255,255,0.12)'}]}>
+                            <Icon source='view-grid-outline' size={22} color='#FFFFFF' />
+                        </View>
+                        <View style={styles.viewAllText}>
+                            <Text style={styles.viewAllTitle}>{ARABIC_TEXT.VIEW_ALL}</Text>
+                            <Text style={styles.viewAllDesc}>{ARABIC_TEXT.VIEW_ALL_DESC}</Text>
+                        </View>
+                    </View>
+                    <Icon source='chevron-left' size={22} color='rgba(255,255,255,0.6)' />
+                </View>
+            </TouchableOpacity>
 
-            <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
-                {ARABIC_TEXT.CATEGORIES}
-            </Text>
+            {/* Section title */}
+            <View style={styles.sectionRow}>
+                <View style={[styles.sectionDot, {backgroundColor: theme.colors.tertiary}]} />
+                <Text style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.CATEGORIES}</Text>
+            </View>
 
+            {/* Categories grid */}
             {loading && categoriesList.length === 0 ? (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size='small' />
+                    <ActivityIndicator size='small' color={theme.colors.primary} />
                 </View>
             ) : (
                 <View style={styles.categoriesGrid}>
@@ -68,28 +88,33 @@ export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({nav
                         .slice()
                         .sort((a, b) => a.sortOrder - b.sortOrder)
                         .map(category => (
-                            <Card
+                            <TouchableOpacity
                                 key={category.id}
-                                style={[styles.categoryCard, {backgroundColor: theme.colors.surface}]}
-                                onPress={() => handleSelectCategory(category.slug as PartCategory)}>
-                                <Card.Content style={styles.categoryContent}>
-                                    <Text variant='titleMedium' style={[styles.categoryName, {color: theme.colors.primary}]}>
+                                onPress={() => handleSelectCategory(category.slug as PartCategory)}
+                                activeOpacity={0.7}>
+                                <View style={[styles.categoryCard, {backgroundColor: theme.colors.surface}]}>
+                                    <View style={styles.categoryTop}>
+                                        <View style={[styles.categoryIconBox, {backgroundColor: theme.colors.primaryContainer}]}>
+                                            <Icon
+                                                source={category.icon || 'package-variant'}
+                                                size={22}
+                                                color={theme.colors.primary}
+                                            />
+                                        </View>
+                                        <Icon source='chevron-left' size={18} color={theme.colors.outline} />
+                                    </View>
+                                    <Text style={[styles.categoryName, {color: theme.colors.onSurface}]} numberOfLines={2}>
                                         {category.name}
                                     </Text>
                                     {category.description && (
                                         <Text
-                                            variant='bodySmall'
-                                            style={[styles.categoryDescription, {color: theme.colors.onSurfaceVariant}]}>
+                                            style={[styles.categoryDescription, {color: theme.colors.onSurfaceVariant}]}
+                                            numberOfLines={2}>
                                             {category.description}
                                         </Text>
                                     )}
-                                    <Chip
-                                        icon='package-variant'
-                                        style={[styles.countChip, {backgroundColor: theme.colors.secondaryContainer}]}>
-                                        {ARABIC_TEXT.VIEW_PARTS}
-                                    </Chip>
-                                </Card.Content>
-                            </Card>
+                                </View>
+                            </TouchableOpacity>
                         ))}
                 </View>
             )}
@@ -103,51 +128,143 @@ const styles = StyleSheet.create({
     },
     content: {
         padding: 16,
+        paddingBottom: 32,
     },
+
+    // Header
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: 16,
+        marginBottom: 20,
+    },
+    headerLeft: {
+        flex: 1,
+        marginEnd: 12,
     },
     title: {
+        fontSize: 22,
+        fontWeight: '700',
+        letterSpacing: -0.3,
         marginBottom: 4,
     },
     subtitle: {
+        fontSize: 13,
+        letterSpacing: 0.1,
         opacity: 0.7,
     },
-    changeButton: {
-        marginStart: 8,
+    changeVehicleBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: 12,
+        borderWidth: 1.5,
     },
-    allPartsButton: {
+    changeVehicleText: {
+        fontSize: 12,
+        fontWeight: '600',
+        letterSpacing: 0.2,
+    },
+
+    // View All banner
+    viewAllBanner: {
+        borderRadius: 20,
+        padding: 18,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         marginBottom: 24,
     },
-    sectionTitle: {
-        marginBottom: 16,
-        fontWeight: 'bold',
+    viewAllContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
     },
+    viewAllIcon: {
+        width: 44,
+        height: 44,
+        borderRadius: 14,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginEnd: 14,
+    },
+    viewAllText: {
+        flex: 1,
+    },
+    viewAllTitle: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '700',
+        letterSpacing: -0.1,
+        marginBottom: 2,
+    },
+    viewAllDesc: {
+        color: 'rgba(255,255,255,0.65)',
+        fontSize: 12,
+        letterSpacing: 0.1,
+    },
+
+    // Section title
+    sectionRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginBottom: 16,
+    },
+    sectionDot: {
+        width: 4,
+        height: 18,
+        borderRadius: 2,
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        letterSpacing: -0.1,
+    },
+
+    // Categories
     categoriesGrid: {
-        gap: 12,
+        gap: 10,
     },
     categoryCard: {
-        marginBottom: 12,
+        borderRadius: 20,
+        padding: 18,
+        shadowColor: '#0F172A',
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
         elevation: 2,
     },
-    categoryContent: {
-        paddingVertical: 8,
+    categoryTop: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    categoryIconBox: {
+        width: 44,
+        height: 44,
+        borderRadius: 14,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     categoryName: {
+        fontSize: 15,
+        fontWeight: '700',
+        letterSpacing: -0.1,
         marginBottom: 4,
     },
     categoryDescription: {
+        fontSize: 12,
+        lineHeight: 18,
+        letterSpacing: 0.1,
         opacity: 0.6,
-        marginBottom: 8,
     },
-    countChip: {
-        alignSelf: 'flex-start',
-    },
+
     loadingContainer: {
-        paddingVertical: 24,
+        paddingVertical: 32,
         alignItems: 'center',
     },
 })

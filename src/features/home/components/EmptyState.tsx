@@ -1,6 +1,6 @@
-import React from 'react'
-import {StyleSheet, View} from 'react-native'
-import {Button, Card, IconButton, Text, useTheme} from 'react-native-paper'
+import React, {useEffect, useRef} from 'react'
+import {Animated, StyleSheet, View} from 'react-native'
+import {Button, Icon, Text, useTheme} from 'react-native-paper'
 
 interface EmptyStateProps {
     onAddVehicle: () => void
@@ -15,44 +15,71 @@ const ARABIC_TEXT = {
 export const EmptyState = ({onAddVehicle}: EmptyStateProps) => {
     const theme = useTheme()
 
+    const pulseAnim = useRef(new Animated.Value(1)).current
+    const fadeIn = useRef(new Animated.Value(0)).current
+
+    useEffect(() => {
+        Animated.timing(fadeIn, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+        }).start()
+
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(pulseAnim, {
+                    toValue: 1.08,
+                    duration: 1500,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(pulseAnim, {
+                    toValue: 1,
+                    duration: 1500,
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start()
+    }, [fadeIn, pulseAnim])
+
     return (
-        <View style={styles.emptyContainer}>
-            <Card style={[styles.card, {backgroundColor: theme.colors.surface}]} contentStyle={styles.cardContent}>
-                <View style={styles.content}>
-                    <View style={[styles.iconWrapper, {backgroundColor: theme.colors.primaryContainer}]}>
-                        <View style={[styles.iconContainer, {backgroundColor: theme.colors.primary}]}>
-                            <IconButton
-                                icon='car-outline'
-                                size={48}
-                                iconColor={theme.colors.onPrimary}
-                                style={styles.iconButton}
-                            />
+        <Animated.View style={[styles.emptyContainer, {opacity: fadeIn}]}>
+            <View style={[styles.card, {backgroundColor: theme.colors.surface}]}>
+                {/* Pulsing Icon */}
+                <Animated.View style={[styles.iconOuter, {transform: [{scale: pulseAnim}]}]}>
+                    <View style={[styles.iconRing, {borderColor: theme.colors.primaryContainer}]}>
+                        <View style={[styles.iconCore, {backgroundColor: theme.colors.primary}]}>
+                            <Icon source='car-outline' size={44} color={theme.colors.onPrimary} />
                         </View>
                     </View>
+                </Animated.View>
 
-                    <View style={styles.textContainer}>
-                        <Text variant='headlineSmall' style={[styles.emptyTitle, {color: theme.colors.onSurface}]}>
-                            {ARABIC_TEXT.NO_VEHICLE}
-                        </Text>
-                        <Text variant='bodyMedium' style={[styles.emptyText, {color: theme.colors.onSurfaceVariant}]}>
-                            {ARABIC_TEXT.ADD_VEHICLE_DESC}
-                        </Text>
-                    </View>
-
-                    <Button
-                        mode='contained'
-                        onPress={onAddVehicle}
-                        style={styles.addButton}
-                        contentStyle={styles.addButtonContent}
-                        labelStyle={styles.addButtonLabel}
-                        buttonColor={theme.colors.primary}
-                        textColor={theme.colors.onPrimary}
-                        icon='plus-circle-outline'>
-                        {ARABIC_TEXT.ADD_MY_VEHICLE}
-                    </Button>
+                {/* Text */}
+                <View style={styles.textContainer}>
+                    <Text variant='headlineSmall' style={[styles.emptyTitle, {color: theme.colors.onSurface}]}>
+                        {ARABIC_TEXT.NO_VEHICLE}
+                    </Text>
+                    <Text variant='bodyMedium' style={[styles.emptyText, {color: theme.colors.onSurfaceVariant}]}>
+                        {ARABIC_TEXT.ADD_VEHICLE_DESC}
+                    </Text>
                 </View>
-            </Card>
-        </View>
+
+                {/* CTA */}
+                <Button
+                    mode='contained'
+                    onPress={onAddVehicle}
+                    style={styles.addButton}
+                    contentStyle={styles.addButtonContent}
+                    labelStyle={styles.addButtonLabel}
+                    buttonColor={theme.colors.tertiary}
+                    textColor='#000'
+                    icon='plus-circle-outline'>
+                    {ARABIC_TEXT.ADD_MY_VEHICLE}
+                </Button>
+
+                {/* Decorative accent line */}
+                <View style={[styles.accentLine, {backgroundColor: theme.colors.tertiary}]} />
+            </View>
+        </Animated.View>
     )
 }
 
@@ -61,89 +88,78 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingVertical: 32,
-        paddingHorizontal: 16,
-        minHeight: 400,
+        paddingVertical: 24,
+        minHeight: 380,
     },
     card: {
         width: '100%',
         maxWidth: 400,
         borderRadius: 28,
-        // iOS shadow
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        // Android shadow
-        elevation: 2,
-    },
-    cardContent: {
-        padding: 0,
-    },
-    content: {
-        padding: 32,
+        padding: 36,
         alignItems: 'center',
+        overflow: 'hidden',
+        shadowColor: '#0F172A',
+        shadowOffset: {width: 0, height: 6},
+        shadowOpacity: 0.1,
+        shadowRadius: 16,
+        elevation: 4,
     },
-    iconWrapper: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 24,
-        padding: 8,
+    iconOuter: {
+        marginBottom: 28,
     },
-    iconContainer: {
-        width: 104,
-        height: 104,
-        borderRadius: 52,
+    iconRing: {
+        width: 110,
+        height: 110,
+        borderRadius: 55,
+        borderWidth: 3,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    iconButton: {
-        margin: 0,
+    iconCore: {
+        width: 88,
+        height: 88,
+        borderRadius: 44,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     textContainer: {
         alignItems: 'center',
-        marginBottom: 32,
+        marginBottom: 28,
         width: '100%',
     },
     emptyTitle: {
         textAlign: 'center',
-        fontWeight: '400',
-        letterSpacing: 0,
+        fontWeight: '700',
+        letterSpacing: -0.3,
         lineHeight: 32,
-        marginBottom: 12,
+        marginBottom: 10,
     },
     emptyText: {
         textAlign: 'center',
         lineHeight: 22,
-        letterSpacing: 0.25,
-        opacity: 0.87,
-        paddingHorizontal: 16,
+        letterSpacing: 0.15,
+        opacity: 0.75,
+        paddingHorizontal: 8,
     },
     addButton: {
-        borderRadius: 28,
+        borderRadius: 16,
         width: '100%',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        elevation: 0,
     },
     addButtonContent: {
-        paddingVertical: 12,
+        paddingVertical: 10,
         paddingHorizontal: 24,
     },
     addButtonLabel: {
         fontSize: 15,
-        fontWeight: '500',
-        letterSpacing: 0.15,
+        fontWeight: '700',
+        letterSpacing: 0.1,
+    },
+    accentLine: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 4,
     },
 })

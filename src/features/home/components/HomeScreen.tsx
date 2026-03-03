@@ -1,15 +1,28 @@
-import React, {useEffect} from 'react'
-import {ScrollView, StyleSheet, View} from 'react-native'
-import {Text, useTheme, Button} from 'react-native-paper'
+import React, {useEffect, useRef} from 'react'
+import {Animated, ScrollView, StyleSheet, View} from 'react-native'
+import {Text, useTheme, Icon} from 'react-native-paper'
 import type {NavigationProp} from '@react-navigation/native'
 
 import type {RootStackParamList} from '@/global/navigation/types'
 import {useParts, useVehicleApi} from '@/global/hooks'
+import {useAuthStore} from '@/global/store'
 import {useVehicles} from '../hooks'
 import type {PartCategory} from '@/global/types'
 import {EmptyState} from './EmptyState'
 import {VehicleSummary} from './VehicleSummary'
 import {CategoryGrid} from './CategoryGrid'
+
+const ARABIC_TEXT = {
+    GOOD_MORNING: 'صباح الخير',
+    GOOD_EVENING: 'مساء الخير',
+    FIND_PARTS: 'ابحث عن قطع الغيار المناسبة لسيارتك',
+}
+
+const getTimeGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 12) return ARABIC_TEXT.GOOD_MORNING
+    return ARABIC_TEXT.GOOD_EVENING
+}
 
 interface HomeScreenProps {
     navigation?: NavigationProp<RootStackParamList>
@@ -19,7 +32,11 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
     const {vehicle} = useVehicles()
     const {selectCategory} = useParts()
     const {fetchVehicle} = useVehicleApi()
+    const user = useAuthStore(s => s.user)
     const theme = useTheme()
+
+    const fadeAnim = useRef(new Animated.Value(0)).current
+    const slideAnim = useRef(new Animated.Value(20)).current
 
     useEffect(() => {
         if (!vehicle) {
@@ -27,27 +44,33 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
         }
     }, [vehicle, fetchVehicle])
 
-    const handleAddVehicle = () => {
-        navigation?.navigate('AddVehicle')
-    }
+    useEffect(() => {
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }),
+            Animated.timing(slideAnim, {
+                toValue: 0,
+                duration: 500,
+                useNativeDriver: true,
+            }),
+        ]).start()
+    }, [fadeAnim, slideAnim])
 
-    const handleChangeVehicle = () => {
-        navigation?.navigate('AddVehicle', vehicle ? {vehicleId: vehicle.id} : undefined)
-    }
-
+    const handleAddVehicle = () => navigation?.navigate('AddVehicle')
+    const handleChangeVehicle = () => navigation?.navigate('AddVehicle', vehicle ? {vehicleId: vehicle.id} : undefined)
     const handleSelectCategory = (category: PartCategory) => {
         selectCategory(category)
         navigation?.navigate('PartsList', {category})
     }
-
     const handleViewAllParts = () => {
         selectCategory(null)
         navigation?.navigate('PartsList', {category: null})
     }
-
-    const handleMyParts = () => {
-        navigation?.navigate('MyParts')
-    }
+    const greeting = getTimeGreeting()
+    const userName = user?.name
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
@@ -56,34 +79,32 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
                 contentContainerStyle={styles.content}
                 showsVerticalScrollIndicator={false}
                 bounces>
-                <View style={styles.header}>
-                    <Text variant='headlineSmall' style={[styles.welcomeText, {color: theme.colors.onSurface}]}>
-                        مرحباً بك
-                    </Text>
-                    <Text variant='bodyLarge' style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>
-                        ابحث عن قطع الغيار المناسبة لسيارتك
-                    </Text>
-                </View>
-
-                {!vehicle ? (
-                    <EmptyState onAddVehicle={handleAddVehicle} />
-                ) : (
-                    <>
-                        <VehicleSummary vehicle={vehicle} onChangeVehicle={handleChangeVehicle} />
-                        <CategoryGrid onSelectCategory={handleSelectCategory} onViewAll={handleViewAllParts} />
-                        <View style={styles.myPartsSection}>
-                            <Button
-                                mode='contained'
-                                onPress={handleMyParts}
-                                icon='package-variant'
-                                style={[styles.myPartsButton, {backgroundColor: theme.colors.secondary}]}
-                                contentStyle={styles.myPartsButtonContent}
-                                labelStyle={styles.myPartsButtonLabel}>
-                                قطع الغيار الخاصة بي
-                            </Button>
+                <Animated.View style={{opacity: fadeAnim, transform: [{translateY: slideAnim}]}}>
+                    {/* Greeting Section */}
+                    <View style={styles.greetingSection}>
+                        <View style={styles.greetingContent}>
+                            <Text variant='headlineMedium' style={[styles.greetingText, {color: theme.colors.onSurface}]}>
+                                {greeting}
+                                {userName ? ` ${userName}` : ''}
+                            </Text>
+                            <Text variant='bodyLarge' style={[styles.subtitleText, {color: theme.colors.onSurfaceVariant}]}>
+                                {ARABIC_TEXT.FIND_PARTS}
+                            </Text>
                         </View>
-                    </>
-                )}
+                        <View style={[styles.greetingBadge, {backgroundColor: theme.colors.tertiary}]}>
+                            <Icon source='steering' size={26} color='#000' />
+                        </View>
+                    </View>
+
+                    {!vehicle ? (
+                        <EmptyState onAddVehicle={handleAddVehicle} />
+                    ) : (
+                        <>
+                            <VehicleSummary vehicle={vehicle} onChangeVehicle={handleChangeVehicle} />
+                            <CategoryGrid onSelectCategory={handleSelectCategory} onViewAll={handleViewAllParts} />
+                        </>
+                    )}
+                </Animated.View>
             </ScrollView>
         </View>
     )
@@ -97,41 +118,37 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     content: {
-        paddingHorizontal: 16,
-        paddingTop: 16,
-        paddingBottom: 32,
+        paddingHorizontal: 20,
+        paddingTop: 12,
+        paddingBottom: 40,
     },
-    header: {
-        marginBottom: 24,
+    greetingSection: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 28,
         paddingHorizontal: 4,
     },
-    welcomeText: {
-        fontWeight: '400',
-        letterSpacing: 0,
-        marginBottom: 8,
-        lineHeight: 32,
+    greetingContent: {
+        flex: 1,
     },
-    subtitle: {
-        marginTop: 0,
-        letterSpacing: 0.5,
-        lineHeight: 20,
-        opacity: 0.87,
+    greetingText: {
+        fontWeight: '700',
+        letterSpacing: -0.5,
+        marginBottom: 6,
+        lineHeight: 36,
     },
-    myPartsSection: {
-        marginTop: 24,
-        marginBottom: 8,
+    subtitleText: {
+        letterSpacing: 0.15,
+        lineHeight: 22,
+        opacity: 0.75,
     },
-    myPartsButton: {
-        borderRadius: 16,
-        elevation: 2,
-    },
-    myPartsButtonContent: {
-        paddingVertical: 12,
-        flexDirection: 'row-reverse',
-    },
-    myPartsButtonLabel: {
-        fontSize: 15,
-        fontWeight: '600',
-        letterSpacing: 0.1,
+    greetingBadge: {
+        width: 52,
+        height: 52,
+        borderRadius: 26,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginStart: 16,
     },
 })

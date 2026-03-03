@@ -1,11 +1,9 @@
 import React from 'react'
-import {StyleSheet, View} from 'react-native'
-import {Button, Text, useTheme} from 'react-native-paper'
+import {StyleSheet, TouchableOpacity, View} from 'react-native'
+import {ActivityIndicator, Button, Icon, Text, useTheme} from 'react-native-paper'
 
 import {usePartCategories} from '@/global/hooks'
-import {CategoryGrid as GlobalCategoryGrid} from '@/global/components'
-
-import type {PartCategory} from '@/global/types'
+import type {PartCategory, PartCategoryApi} from '@/global/types'
 
 interface CategoryGridProps {
     onSelectCategory: (category: PartCategory) => void
@@ -17,14 +15,78 @@ const ARABIC_TEXT = {
     VIEW_ALL_PARTS: 'عرض الكل',
     EMPTY_OR_ERROR: 'لم يتم تحميل الفئات',
     RETRY: 'إعادة المحاولة',
+    LOADING: 'جاري تحميل الفئات...',
 }
+
+interface CategoryTileProps {
+    category: PartCategoryApi
+    onPress: () => void
+}
+
+const CategoryTile = ({category, onPress}: CategoryTileProps) => {
+    const theme = useTheme()
+
+    return (
+        <TouchableOpacity style={tileStyles.wrapper} onPress={onPress} activeOpacity={0.65}>
+            <View style={[tileStyles.tile, {backgroundColor: theme.colors.surface}]}>
+                <View style={[tileStyles.iconBox, {backgroundColor: theme.colors.primaryContainer}]}>
+                    <Icon source={category.icon || 'package-variant'} size={22} color={theme.colors.primary} />
+                </View>
+                <Text style={[tileStyles.name, {color: theme.colors.onSurface}]} numberOfLines={1} ellipsizeMode='tail'>
+                    {category.name}
+                </Text>
+                <View style={tileStyles.arrowWrap}>
+                    <Icon source='chevron-left' size={16} color={theme.colors.onSurfaceVariant} />
+                </View>
+            </View>
+        </TouchableOpacity>
+    )
+}
+
+const tileStyles = StyleSheet.create({
+    wrapper: {
+        width: '50%',
+        padding: 5,
+    },
+    tile: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 14,
+        paddingHorizontal: 14,
+        borderRadius: 16,
+        shadowColor: '#0F172A',
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.06,
+        shadowRadius: 6,
+        elevation: 1.5,
+    },
+    iconBox: {
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginEnd: 10,
+    },
+    name: {
+        flex: 1,
+        fontSize: 13,
+        fontWeight: '600',
+        letterSpacing: 0.1,
+        lineHeight: 18,
+    },
+    arrowWrap: {
+        opacity: 0.4,
+        marginStart: 4,
+    },
+})
 
 export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) => {
     const theme = useTheme()
     const {categories: apiCategories, loading, error, refresh} = usePartCategories()
-    const categories = apiCategories ?? []
+    const categories = (apiCategories ?? []).slice().sort((a, b) => a.sortOrder - b.sortOrder)
 
-    const handleSelect = (category: {id: number; slug: string; name: string; icon: string}) => {
+    const handleSelect = (category: PartCategoryApi) => {
         onSelectCategory(category.slug as PartCategory)
     }
 
@@ -32,9 +94,12 @@ export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) =
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <Text variant='titleLarge' style={[styles.title, {color: theme.colors.onSurface}]}>
-                        {ARABIC_TEXT.PARTS_CATEGORIES}
-                    </Text>
+                    <View style={styles.titleRow}>
+                        <Text variant='titleMedium' style={[styles.title, {color: theme.colors.onSurface}]}>
+                            {ARABIC_TEXT.PARTS_CATEGORIES}
+                        </Text>
+                        <View style={[styles.titleAccent, {backgroundColor: theme.colors.tertiary}]} />
+                    </View>
                 </View>
                 <View style={styles.emptyContainer}>
                     <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant, textAlign: 'center'}}>
@@ -48,12 +113,36 @@ export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) =
         )
     }
 
+    if (loading && categories.length === 0) {
+        return (
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <View style={styles.titleRow}>
+                        <Text variant='titleMedium' style={[styles.title, {color: theme.colors.onSurface}]}>
+                            {ARABIC_TEXT.PARTS_CATEGORIES}
+                        </Text>
+                        <View style={[styles.titleAccent, {backgroundColor: theme.colors.tertiary}]} />
+                    </View>
+                </View>
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size='small' />
+                    <Text variant='bodySmall' style={{color: theme.colors.onSurfaceVariant, marginTop: 8}}>
+                        {ARABIC_TEXT.LOADING}
+                    </Text>
+                </View>
+            </View>
+        )
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text variant='titleLarge' style={[styles.title, {color: theme.colors.onSurface}]}>
-                    {ARABIC_TEXT.PARTS_CATEGORIES}
-                </Text>
+                <View style={styles.titleRow}>
+                    <Text variant='titleMedium' style={[styles.title, {color: theme.colors.onSurface}]}>
+                        {ARABIC_TEXT.PARTS_CATEGORIES}
+                    </Text>
+                    <View style={[styles.titleAccent, {backgroundColor: theme.colors.tertiary}]} />
+                </View>
                 <Button
                     mode='text'
                     onPress={onViewAll}
@@ -66,34 +155,43 @@ export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) =
                 </Button>
             </View>
 
-            <GlobalCategoryGrid
-                categories={categories}
-                loading={loading}
-                onSelect={handleSelect}
-                showHeader={false}
-            />
+            <View style={styles.grid}>
+                {categories.map(category => (
+                    <CategoryTile key={category.id} category={category} onPress={() => handleSelect(category)} />
+                ))}
+            </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 8,
+        marginTop: 4,
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 12,
         paddingHorizontal: 4,
     },
+    titleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
     title: {
-        fontWeight: '400',
+        fontWeight: '700',
         letterSpacing: 0,
-        lineHeight: 28,
+        lineHeight: 24,
+    },
+    titleAccent: {
+        width: 20,
+        height: 3,
+        borderRadius: 2,
     },
     viewAllLabel: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '500',
         letterSpacing: 0.1,
     },
@@ -102,6 +200,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         minWidth: 0,
     },
+    grid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginHorizontal: -5,
+    },
     emptyContainer: {
         paddingVertical: 24,
         paddingHorizontal: 16,
@@ -109,5 +212,9 @@ const styles = StyleSheet.create({
     },
     retryButton: {
         marginTop: 12,
+    },
+    loadingContainer: {
+        paddingVertical: 24,
+        alignItems: 'center',
     },
 })

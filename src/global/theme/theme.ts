@@ -1,4 +1,29 @@
-import {MD3LightTheme, MD3Theme} from 'react-native-paper'
+import {configureFonts, MD3LightTheme, MD3Theme} from 'react-native-paper'
+
+/**
+ * Cairo font family constants.
+ * Cairo is a modern Arabic+Latin font optimised for screen readability.
+ */
+export const CAIRO_REGULAR = 'Cairo_400Regular'
+export const CAIRO_MEDIUM = 'Cairo_500Medium'
+export const CAIRO_SEMIBOLD = 'Cairo_600SemiBold'
+export const CAIRO_BOLD = 'Cairo_700Bold'
+
+const createCairoFonts = () => {
+    // Apply Cairo Regular as the base for every MD3 variant
+    const base = configureFonts({config: {fontFamily: CAIRO_REGULAR}})
+
+    // Override variants that need heavier weights
+    return {
+        ...base,
+        // Medium-weight variants (500)
+        titleMedium: {...base.titleMedium, fontFamily: CAIRO_MEDIUM},
+        titleSmall: {...base.titleSmall, fontFamily: CAIRO_MEDIUM},
+        labelLarge: {...base.labelLarge, fontFamily: CAIRO_MEDIUM},
+        labelMedium: {...base.labelMedium, fontFamily: CAIRO_MEDIUM},
+        labelSmall: {...base.labelSmall, fontFamily: CAIRO_MEDIUM},
+    }
+}
 
 /**
  * SV Car App Identity Theme
@@ -10,6 +35,7 @@ import {MD3LightTheme, MD3Theme} from 'react-native-paper'
 export const createAppTheme = (isRTL: boolean = false): MD3Theme => {
     const baseTheme = {
         ...MD3LightTheme,
+        fonts: createCairoFonts(),
         colors: {
             ...MD3LightTheme.colors,
             // Primary brand colors

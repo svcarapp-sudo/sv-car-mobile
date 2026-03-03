@@ -1,6 +1,6 @@
 import React from 'react'
 import {Image, StyleSheet, View} from 'react-native'
-import {Card, IconButton, Text, useTheme} from 'react-native-paper'
+import {Icon, IconButton, Text, useTheme} from 'react-native-paper'
 
 import {Vehicle} from '@/global/types'
 
@@ -16,167 +16,248 @@ const ARABIC_TEXT = {
     FUEL: 'الوقود',
 }
 
+interface DetailItemProps {
+    icon: string
+    label: string
+    value: string
+    color: string
+    labelColor: string
+    iconBg: string
+    iconColor: string
+}
+
+const DetailItem = ({icon, label, value, color, labelColor, iconBg, iconColor}: DetailItemProps) => (
+    <View style={detailStyles.item}>
+        <View style={[detailStyles.iconWrap, {backgroundColor: iconBg}]}>
+            <Icon source={icon} size={14} color={iconColor} />
+        </View>
+        <Text style={[detailStyles.label, {color: labelColor}]}>{label}</Text>
+        <Text style={[detailStyles.value, {color}]}>{value}</Text>
+    </View>
+)
+
+const detailStyles = StyleSheet.create({
+    item: {
+        alignItems: 'center',
+        flex: 1,
+    },
+    iconWrap: {
+        width: 28,
+        height: 28,
+        borderRadius: 9,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+    label: {
+        fontSize: 10,
+        letterSpacing: 0.5,
+        marginBottom: 2,
+        opacity: 0.65,
+    },
+    value: {
+        fontSize: 13,
+        fontWeight: '600',
+        letterSpacing: 0.15,
+    },
+})
+
 export const VehicleSummary = ({vehicle, onChangeVehicle}: VehicleSummaryProps) => {
     const theme = useTheme()
 
-    const renderInfoItem = (label: string, value: string, showDivider = true) => (
-        <>
-            <View style={styles.summaryItem}>
-                <Text variant='labelSmall' style={[styles.label, {color: theme.colors.onSurfaceVariant}]}>
-                    {label}
-                </Text>
-                <Text variant='titleSmall' style={[styles.value, {color: theme.colors.onSurface}]}>
-                    {value}
-                </Text>
-            </View>
-            {showDivider && <View style={[styles.divider, {backgroundColor: theme.colors.outlineVariant}]} />}
-        </>
-    )
-
     return (
-        <Card style={[styles.card, {backgroundColor: theme.colors.surface}]} mode='outlined' contentStyle={styles.cardContent}>
-            <View style={styles.cardInner}>
-                <Card.Content style={styles.content}>
-                    <View style={styles.header}>
-                        <View style={styles.vehicleInfo}>
-                            <View
-                                style={[
-                                    styles.logoContainer,
-                                    {
-                                        backgroundColor: theme.colors.surfaceVariant,
-                                        borderColor: theme.colors.outlineVariant,
-                                    },
-                                ]}>
-                                {vehicle.makeLogoUrl && (
-                                    <Image source={{uri: vehicle.makeLogoUrl}} style={styles.logo} resizeMode='contain' />
-                                )}
-                            </View>
-                            <View style={styles.titleGroup}>
-                                <Text variant='headlineSmall' style={[styles.mainTitle, {color: theme.colors.onSurface}]}>
-                                    {vehicle.make} {vehicle.model}
-                                </Text>
-                                <Text variant='bodyLarge' style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>
-                                    {vehicle.year} • {vehicle.fuelType}
-                                </Text>
-                            </View>
+        <View style={styles.card}>
+            {/* Dark Header */}
+            <View style={[styles.darkHeader, {backgroundColor: theme.colors.primary}]}>
+                <View style={styles.headerRow}>
+                    <View style={styles.logoRing}>
+                        <View style={styles.logoContainer}>
+                            {vehicle.makeLogoUrl ? (
+                                <Image source={{uri: vehicle.makeLogoUrl}} style={styles.logo} resizeMode='contain' />
+                            ) : (
+                                <Icon source='car-side' size={28} color='rgba(255,255,255,0.7)' />
+                            )}
                         </View>
-                        <IconButton
-                            icon='pencil-outline'
-                            size={20}
-                            mode='contained-tonal'
-                            onPress={onChangeVehicle}
-                            style={styles.editButton}
-                            iconColor={theme.colors.onSurfaceVariant}
-                        />
                     </View>
-
-                    <View style={[styles.detailsGrid, {backgroundColor: theme.colors.surfaceVariant}]}>
-                        {vehicle.make && renderInfoItem(ARABIC_TEXT.MAKE, vehicle.make)}
-                        {vehicle.model && renderInfoItem(ARABIC_TEXT.MODEL, vehicle.model)}
-                        {vehicle.year && renderInfoItem(ARABIC_TEXT.YEAR, vehicle.year.toString())}
-                        {vehicle.fuelType && renderInfoItem(ARABIC_TEXT.FUEL, vehicle.fuelType, false)}
+                    <View style={styles.headerText}>
+                        <Text variant='titleLarge' style={styles.vehicleName}>
+                            {vehicle.make} {vehicle.model}
+                        </Text>
+                        <View style={styles.chipRow}>
+                            {vehicle.year && (
+                                <View style={styles.chip}>
+                                    <Text style={styles.chipText}>{vehicle.year}</Text>
+                                </View>
+                            )}
+                            {vehicle.fuelType && (
+                                <View style={styles.chip}>
+                                    <Text style={styles.chipText}>{vehicle.fuelType}</Text>
+                                </View>
+                            )}
+                        </View>
                     </View>
-                </Card.Content>
+                    <IconButton
+                        icon='pencil-outline'
+                        size={18}
+                        iconColor='rgba(255,255,255,0.7)'
+                        onPress={onChangeVehicle}
+                        style={styles.editButton}
+                    />
+                </View>
             </View>
-        </Card>
+
+            {/* Light Details */}
+            <View style={[styles.detailsSection, {backgroundColor: theme.colors.surface}]}>
+                <View style={styles.detailsGrid}>
+                    {vehicle.make && (
+                        <DetailItem
+                            icon='car'
+                            label={ARABIC_TEXT.MAKE}
+                            value={vehicle.make}
+                            color={theme.colors.onSurface}
+                            labelColor={theme.colors.onSurfaceVariant}
+                            iconBg={theme.colors.primaryContainer}
+                            iconColor={theme.colors.primary}
+                        />
+                    )}
+                    {vehicle.make && vehicle.model && (
+                        <View style={[styles.gridDivider, {backgroundColor: theme.colors.outline}]} />
+                    )}
+                    {vehicle.model && (
+                        <DetailItem
+                            icon='tag-outline'
+                            label={ARABIC_TEXT.MODEL}
+                            value={vehicle.model}
+                            color={theme.colors.onSurface}
+                            labelColor={theme.colors.onSurfaceVariant}
+                            iconBg={theme.colors.primaryContainer}
+                            iconColor={theme.colors.primary}
+                        />
+                    )}
+                    {vehicle.model && vehicle.year && (
+                        <View style={[styles.gridDivider, {backgroundColor: theme.colors.outline}]} />
+                    )}
+                    {vehicle.year && (
+                        <DetailItem
+                            icon='calendar-range'
+                            label={ARABIC_TEXT.YEAR}
+                            value={vehicle.year.toString()}
+                            color={theme.colors.onSurface}
+                            labelColor={theme.colors.onSurfaceVariant}
+                            iconBg={theme.colors.primaryContainer}
+                            iconColor={theme.colors.primary}
+                        />
+                    )}
+                    {vehicle.year && vehicle.fuelType && (
+                        <View style={[styles.gridDivider, {backgroundColor: theme.colors.outline}]} />
+                    )}
+                    {vehicle.fuelType && (
+                        <DetailItem
+                            icon='gas-station'
+                            label={ARABIC_TEXT.FUEL}
+                            value={vehicle.fuelType}
+                            color={theme.colors.onSurface}
+                            labelColor={theme.colors.onSurfaceVariant}
+                            iconBg={theme.colors.primaryContainer}
+                            iconColor={theme.colors.primary}
+                        />
+                    )}
+                </View>
+            </View>
+
+            {/* Racing Accent Stripe */}
+            <View style={[styles.accentBar, {backgroundColor: theme.colors.tertiary}]} />
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
     card: {
-        marginBottom: 16,
-        borderRadius: 28,
-        // iOS shadow
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 0.06,
-        shadowRadius: 3,
-        // Android shadow
-        elevation: 0.5,
-    },
-    cardContent: {
+        borderRadius: 24,
         overflow: 'hidden',
+        marginBottom: 24,
+        shadowColor: '#0F172A',
+        shadowOffset: {width: 0, height: 6},
+        shadowOpacity: 0.14,
+        shadowRadius: 16,
+        elevation: 6,
     },
-    cardInner: {
-        borderRadius: 28,
-        overflow: 'hidden',
+    darkHeader: {
+        paddingHorizontal: 20,
+        paddingVertical: 20,
     },
-    content: {
-        padding: 16,
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: 16,
-    },
-    vehicleInfo: {
+    headerRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        flex: 1,
     },
-    logoContainer: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
+    logoRing: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        borderWidth: 2,
+        borderColor: 'rgba(255,255,255,0.18)',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 12,
-        borderWidth: 1,
+    },
+    logoContainer: {
+        width: 52,
+        height: 52,
+        borderRadius: 26,
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     logo: {
-        width: 36,
-        height: 36,
+        width: 34,
+        height: 34,
     },
-    titleGroup: {
-        alignItems: 'flex-start',
+    headerText: {
         flex: 1,
+        marginHorizontal: 14,
     },
-    mainTitle: {
-        fontWeight: '400',
-        marginBottom: 4,
-        fontSize: 24,
-        letterSpacing: 0,
-        lineHeight: 32,
+    vehicleName: {
+        color: '#FFFFFF',
+        fontWeight: '700',
+        letterSpacing: -0.3,
+        lineHeight: 28,
+        marginBottom: 8,
     },
-    subtitle: {
-        letterSpacing: 0.5,
-        lineHeight: 20,
-        fontSize: 14,
-        opacity: 0.87,
+    chipRow: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    chip: {
+        backgroundColor: 'rgba(255,255,255,0.14)',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 8,
+    },
+    chipText: {
+        color: 'rgba(255,255,255,0.85)',
+        fontSize: 12,
+        fontWeight: '500',
+        letterSpacing: 0.3,
     },
     editButton: {
         margin: 0,
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        borderRadius: 12,
+    },
+    detailsSection: {
+        paddingHorizontal: 16,
+        paddingVertical: 16,
     },
     detailsGrid: {
         flexDirection: 'row',
-        borderRadius: 16,
-        padding: 12,
         justifyContent: 'space-around',
-        gap: 8,
-    },
-    summaryItem: {
         alignItems: 'center',
-        flex: 1,
     },
-    label: {
-        fontSize: 11,
-        marginBottom: 4,
-        letterSpacing: 0.5,
-        opacity: 0.6,
-    },
-    value: {
-        fontWeight: '400',
-        fontSize: 14,
-        letterSpacing: 0.25,
-    },
-    divider: {
+    gridDivider: {
         width: 1,
-        height: 24,
-        alignSelf: 'center',
-        opacity: 0.12,
+        height: 32,
+        opacity: 0.15,
+    },
+    accentBar: {
+        height: 4,
     },
 })
