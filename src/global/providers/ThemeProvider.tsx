@@ -14,13 +14,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({children}) => {
     // Arabic and other RTL languages
     const isRTL = language === 'ar' || language?.startsWith('ar-')
 
-    // Configure I18nManager for RTL support
+    // Ensure RTL is always enforced for Arabic
     useEffect(() => {
+        I18nManager.allowRTL(true)
         if (I18nManager.isRTL !== isRTL) {
-            I18nManager.allowRTL(true)
             I18nManager.forceRTL(isRTL)
-            // Note: In development, you may need to restart the app for RTL changes to take effect
-            // In production, the app should handle this automatically
         }
     }, [isRTL])
 

@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useCallback, useState} from 'react'
-import {StyleSheet, View, Animated, TouchableWithoutFeedback, Dimensions, PanResponder} from 'react-native'
+import {StyleSheet, View, Animated, TouchableWithoutFeedback, Dimensions, PanResponder, I18nManager} from 'react-native'
 
 import {AppDrawer} from './AppDrawer'
 import {BottomNav} from './BottomNav'
@@ -7,8 +7,6 @@ import {useLayoutStore} from './layoutStore'
 
 const {width} = Dimensions.get('window')
 const DRAWER_WIDTH = width * 0.7
-const CLOSED_X = DRAWER_WIDTH
-const OPEN_X = 0
 
 interface MainLayoutProps {
     children: React.ReactNode
@@ -18,14 +16,20 @@ interface MainLayoutProps {
 export const MainLayout = ({children, onLogout}: MainLayoutProps) => {
     const {isDrawerOpen, toggleDrawer} = useLayoutStore()
 
-    const [drawerAnim] = useState(() => new Animated.Value(isDrawerOpen ? OPEN_X : CLOSED_X))
+    const isRTL = I18nManager.isRTL
+    // In RTL: drawer at right edge, slides right to hide (positive translateX)
+    // In LTR: drawer at left edge, slides left to hide (negative translateX)
+    const closedX = isRTL ? DRAWER_WIDTH : -DRAWER_WIDTH
+    const openX = 0
+
+    const [drawerAnim] = useState(() => new Animated.Value(isDrawerOpen ? openX : closedX))
     const [backdropAnim] = useState(() => new Animated.Value(isDrawerOpen ? 1 : 0))
 
     const animateToValue = useCallback(
         (open: boolean) => {
             Animated.parallel([
                 Animated.timing(drawerAnim, {
-                    toValue: open ? OPEN_X : CLOSED_X,
+                    toValue: open ? openX : closedX,
                     duration: 250,
                     useNativeDriver: true,
                 }),
@@ -36,32 +40,43 @@ export const MainLayout = ({children, onLogout}: MainLayoutProps) => {
                 }),
             ]).start()
         },
-        [drawerAnim, backdropAnim]
+        [drawerAnim, backdropAnim, closedX, openX]
     )
 
     useEffect(() => {
         animateToValue(isDrawerOpen)
     }, [isDrawerOpen, animateToValue])
 
-    // Drag to close (drag right)
     const panResponder = useMemo(
         () =>
             PanResponder.create({
                 onStartShouldSetPanResponder: () => isDrawerOpen,
-                onMoveShouldSetPanResponder: (_, g) => isDrawerOpen && g.dx > 5,
+                // RTL: drag right (dx > 0) to close; LTR: drag left (dx < 0) to close
+                onMoveShouldSetPanResponder: (_, g) =>
+                    isDrawerOpen && (isRTL ? g.dx > 5 : g.dx < -5),
 
                 onPanResponderMove: (_, g) => {
-                    if (g.dx >= 0) {
-                        const newX = Math.min(DRAWER_WIDTH, g.dx)
-                        drawerAnim.setValue(newX)
-
-                        const progress = 1 - newX / DRAWER_WIDTH
-                        backdropAnim.setValue(progress)
+                    if (isRTL) {
+                        // RTL: drag from 0 (open) toward DRAWER_WIDTH (closed)
+                        if (g.dx >= 0) {
+                            const newX = Math.min(DRAWER_WIDTH, g.dx)
+                            drawerAnim.setValue(newX)
+                            backdropAnim.setValue(1 - newX / DRAWER_WIDTH)
+                        }
+                    } else {
+                        // LTR: drag from 0 (open) toward -DRAWER_WIDTH (closed)
+                        if (g.dx <= 0) {
+                            const newX = Math.max(-DRAWER_WIDTH, g.dx)
+                            drawerAnim.setValue(newX)
+                            backdropAnim.setValue(1 - Math.abs(newX) / DRAWER_WIDTH)
+                        }
                     }
                 },
 
                 onPanResponderRelease: (_, g) => {
-                    const shouldClose = g.dx > DRAWER_WIDTH / 3 || g.vx > 0.5
+                    const distance = isRTL ? g.dx : -g.dx
+                    const velocity = isRTL ? g.vx : -g.vx
+                    const shouldClose = distance > DRAWER_WIDTH / 3 || velocity > 0.5
 
                     animateToValue(!shouldClose)
 
@@ -70,7 +85,7 @@ export const MainLayout = ({children, onLogout}: MainLayoutProps) => {
                     }
                 },
             }),
-        [isDrawerOpen, drawerAnim, backdropAnim, animateToValue, toggleDrawer]
+        [isDrawerOpen, isRTL, drawerAnim, backdropAnim, animateToValue, toggleDrawer]
     )
 
     return (

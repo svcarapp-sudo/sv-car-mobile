@@ -1,60 +1,106 @@
-import {useEffect, useState, useCallback} from 'react'
+import {useEffect, useState, useCallback, useRef} from 'react'
 
 import type {PartCategory, Part} from '@/global/types'
 
 import {partService} from '@/global/services'
 import {usePartsStore} from '@/global/store'
 
+const PAGE_SIZE = 20
+
 export const useParts = () => {
     const {parts, selectedCategory, selectCategory, setParts} = usePartsStore()
     const [loading, setLoading] = useState(false)
+    const [loadingMore, setLoadingMore] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [search, setSearch] = useState('')
+    const [page, setPage] = useState(0)
+    const [hasMore, setHasMore] = useState(false)
 
-    useEffect(() => {
-        const fetchParts = async () => {
+    // Track current fetch to avoid race conditions
+    const fetchIdRef = useRef(0)
+
+    const fetchParts = useCallback(
+        async (category: PartCategory | null | undefined, searchQuery: string) => {
+            const fetchId = ++fetchIdRef.current
             setLoading(true)
             setError(null)
+            setPage(0)
+            setHasMore(false)
             try {
                 const response = await partService.getParts({
-                    category: selectedCategory || undefined,
+                    category: category || undefined,
+                    search: searchQuery || undefined,
+                    page: 0,
+                    limit: PAGE_SIZE,
                 })
+                if (fetchId !== fetchIdRef.current) return
                 setParts(response.parts)
+                setHasMore(response.page + 1 < response.totalPages)
             } catch (err) {
+                if (fetchId !== fetchIdRef.current) return
                 setError((err as Error).message || 'Failed to fetch parts')
                 setParts([])
             } finally {
-                setLoading(false)
+                if (fetchId === fetchIdRef.current) {
+                    setLoading(false)
+                }
             }
-        }
-        fetchParts()
+        },
+        [setParts]
+    )
+
+    useEffect(() => {
+        fetchParts(selectedCategory, search)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedCategory])
+
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchParts(selectedCategory, search)
+        }, 400)
+        return () => clearTimeout(timer)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [search])
+
+    const loadMore = useCallback(async () => {
+        if (loadingMore || loading || !hasMore) return
+        const nextPage = page + 1
+        setLoadingMore(true)
+        try {
+            const response = await partService.getParts({
+                category: selectedCategory || undefined,
+                search: search || undefined,
+                page: nextPage,
+                limit: PAGE_SIZE,
+            })
+            setParts([...parts, ...response.parts])
+            setPage(nextPage)
+            setHasMore(nextPage + 1 < response.totalPages)
+        } catch (err) {
+            setError((err as Error).message || 'Failed to load more parts')
+        } finally {
+            setLoadingMore(false)
+        }
+    }, [loadingMore, loading, hasMore, page, selectedCategory, search, parts, setParts])
 
     const handleSelectCategory = useCallback(
         async (category: PartCategory | null) => {
             selectCategory(category)
-            setLoading(true)
-            setError(null)
-            try {
-                const response = await partService.getParts({
-                    category: category || undefined,
-                })
-                setParts(response.parts)
-            } catch (err) {
-                setError((err as Error).message || 'Failed to fetch parts')
-            } finally {
-                setLoading(false)
-            }
+            setSearch('')
         },
-        [selectCategory, setParts]
+        [selectCategory]
     )
+
+    const refresh = useCallback(() => {
+        fetchParts(selectedCategory, search)
+    }, [fetchParts, selectedCategory, search])
 
     const getCategoryParts = useCallback(async (category: PartCategory): Promise<Part[]> => {
         try {
             return await partService.getPartsByCategory(category)
         } catch (err) {
             setError((err as Error).message || 'Failed to fetch parts by category')
-
             return []
         }
     }, [])
@@ -63,8 +109,14 @@ export const useParts = () => {
         parts,
         selectedCategory,
         loading,
+        loadingMore,
         error,
+        search,
+        setSearch,
+        hasMore,
         selectCategory: handleSelectCategory,
+        loadMore,
+        refresh,
         getCategoryParts,
     }
 }

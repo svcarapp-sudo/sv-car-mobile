@@ -97,11 +97,11 @@ class PartService {
             queryParams.search = params.search
         }
 
-        if (params?.page) {
+        if (params?.page != null) {
             queryParams.page = params.page
         }
 
-        if (params?.limit) {
+        if (params?.limit != null) {
             queryParams.limit = params.limit
         }
 
