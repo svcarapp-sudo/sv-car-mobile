@@ -1,16 +1,19 @@
 import {StyleSheet, ScrollView, View} from 'react-native'
-import {TextInput, Button, Text, Card, List, useTheme, HelperText} from 'react-native-paper'
+import {TextInput, Button, Text, Icon, useTheme, HelperText} from 'react-native-paper'
+
+const AMBER = '#F59E0B'
 
 const ARABIC_TEXT = {
-    VIN_DETAILS: 'رقم الهيكل والتفاصيل',
+    VIN_DETAILS: 'التفاصيل الإضافية',
     FINAL_STEP_DESC: 'أضف رقم الهيكل واسم مستعار للمركبة (اختياري)',
-    VIN_LABEL: 'رقم الهيكل',
-    VIN_SUBLABEL: 'رقم تعريف المركبة (VIN) - اختياري',
-    VIN_PLACEHOLDER: 'أدخل رقم الهيكل المكون من 17 حرف',
+    VIN_LABEL: 'رقم الهيكل (VIN)',
+    VIN_SUBLABEL: 'رقم تعريف المركبة - 17 حرف',
+    VIN_PLACEHOLDER: 'مثال: 1HGBH41JXMN109186',
     NICKNAME_LABEL: 'اسم مستعار',
-    NICKNAME_SUBLABEL: 'اسم مميز للمركبة - اختياري',
+    NICKNAME_SUBLABEL: 'اسم مميز للمركبة',
     NICKNAME_PLACEHOLDER: 'مثلاً: سيارتي اليومية',
     SUBMIT_BUTTON: 'تأكيد وإضافة المركبة',
+    OPTIONAL: 'اختياري',
 }
 
 interface VinScreenProps {
@@ -45,72 +48,90 @@ export const AddVinScreen = ({
                 </Text>
             </View>
 
-            <Card
-                style={[styles.inputCard, {backgroundColor: theme.colors.surface, borderColor: theme.colors.outline}]}
-                mode='outlined'>
-                <Card.Content style={styles.cardContent}>
-                    <View style={styles.inputHeader}>
-                        <List.Icon icon='barcode' color={theme.colors.primary} />
-                        <View style={styles.inputHeaderText}>
-                            <Text variant='titleMedium' style={[styles.inputLabel, {color: theme.colors.onSurface}]}>
+            {/* VIN Field */}
+            <View style={[styles.fieldCard, {backgroundColor: theme.colors.surface}]}>
+                <View style={styles.fieldHeader}>
+                    <View style={styles.fieldIconWrap}>
+                        <Icon source='barcode' size={18} color={AMBER} />
+                    </View>
+                    <View style={styles.fieldHeaderText}>
+                        <View style={styles.fieldLabelRow}>
+                            <Text variant='titleSmall' style={[styles.fieldLabel, {color: theme.colors.onSurface}]}>
                                 {ARABIC_TEXT.VIN_LABEL}
                             </Text>
-                            <Text variant='bodySmall' style={[styles.inputSublabel, {color: theme.colors.onSurfaceVariant}]}>
-                                {ARABIC_TEXT.VIN_SUBLABEL}
-                            </Text>
+                            <View style={styles.optionalBadge}>
+                                <Text style={styles.optionalText}>{ARABIC_TEXT.OPTIONAL}</Text>
+                            </View>
                         </View>
+                        <Text variant='bodySmall' style={[styles.fieldSublabel, {color: theme.colors.onSurfaceVariant}]}>
+                            {ARABIC_TEXT.VIN_SUBLABEL}
+                        </Text>
                     </View>
-                    <TextInput
-                        value={vin}
-                        onChangeText={onVinChange}
-                        mode='outlined'
-                        placeholder={ARABIC_TEXT.VIN_PLACEHOLDER}
-                        style={styles.input}
-                        autoCapitalize='characters'
-                        maxLength={17}
-                        left={<TextInput.Icon icon='numeric' />}
-                    />
-                </Card.Content>
-            </Card>
+                </View>
+                <TextInput
+                    value={vin}
+                    onChangeText={onVinChange}
+                    mode='outlined'
+                    placeholder={ARABIC_TEXT.VIN_PLACEHOLDER}
+                    style={styles.input}
+                    autoCapitalize='characters'
+                    maxLength={17}
+                    outlineStyle={styles.inputOutline}
+                    outlineColor={theme.colors.outline}
+                    activeOutlineColor={AMBER}
+                    dense
+                />
+            </View>
 
-            <Card
-                style={[styles.inputCard, {backgroundColor: theme.colors.surface, borderColor: theme.colors.outline}]}
-                mode='outlined'>
-                <Card.Content style={styles.cardContent}>
-                    <View style={styles.inputHeader}>
-                        <List.Icon icon='label-outline' color={theme.colors.primary} />
-                        <View style={styles.inputHeaderText}>
-                            <Text variant='titleMedium' style={[styles.inputLabel, {color: theme.colors.onSurface}]}>
+            {/* Nickname Field */}
+            <View style={[styles.fieldCard, {backgroundColor: theme.colors.surface}]}>
+                <View style={styles.fieldHeader}>
+                    <View style={styles.fieldIconWrap}>
+                        <Icon source='label-outline' size={18} color={AMBER} />
+                    </View>
+                    <View style={styles.fieldHeaderText}>
+                        <View style={styles.fieldLabelRow}>
+                            <Text variant='titleSmall' style={[styles.fieldLabel, {color: theme.colors.onSurface}]}>
                                 {ARABIC_TEXT.NICKNAME_LABEL}
                             </Text>
-                            <Text variant='bodySmall' style={[styles.inputSublabel, {color: theme.colors.onSurfaceVariant}]}>
-                                {ARABIC_TEXT.NICKNAME_SUBLABEL}
-                            </Text>
+                            <View style={styles.optionalBadge}>
+                                <Text style={styles.optionalText}>{ARABIC_TEXT.OPTIONAL}</Text>
+                            </View>
                         </View>
+                        <Text variant='bodySmall' style={[styles.fieldSublabel, {color: theme.colors.onSurfaceVariant}]}>
+                            {ARABIC_TEXT.NICKNAME_SUBLABEL}
+                        </Text>
                     </View>
-                    <TextInput
-                        value={displayName}
-                        onChangeText={onDisplayNameChange}
-                        mode='outlined'
-                        placeholder={ARABIC_TEXT.NICKNAME_PLACEHOLDER}
-                        style={styles.input}
-                        left={<TextInput.Icon icon='pencil-outline' />}
-                    />
-                </Card.Content>
-            </Card>
+                </View>
+                <TextInput
+                    value={displayName}
+                    onChangeText={onDisplayNameChange}
+                    mode='outlined'
+                    placeholder={ARABIC_TEXT.NICKNAME_PLACEHOLDER}
+                    style={styles.input}
+                    outlineStyle={styles.inputOutline}
+                    outlineColor={theme.colors.outline}
+                    activeOutlineColor={AMBER}
+                    dense
+                />
+            </View>
 
             {error ? (
                 <HelperText type='error' visible style={styles.errorText}>
                     {error}
                 </HelperText>
             ) : null}
+
             <Button
                 mode='contained'
                 onPress={onSubmit}
                 loading={loading}
                 disabled={loading}
                 style={styles.submitButton}
-                contentStyle={styles.submitButtonContent}>
+                contentStyle={styles.submitButtonContent}
+                buttonColor='#0F172A'
+                textColor='#FFFFFF'
+                icon='check-bold'>
                 {ARABIC_TEXT.SUBMIT_BUTTON}
             </Button>
         </ScrollView>
@@ -125,48 +146,84 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     stepTitle: {
+        fontWeight: '700',
         marginBottom: 4,
-        fontWeight: 'bold',
     },
     stepSubtitle: {
-        opacity: 0.7,
+        opacity: 0.6,
+        fontSize: 14,
     },
-    inputCard: {
-        marginBottom: 16,
+    fieldCard: {
         borderRadius: 16,
-        borderWidth: 1,
+        padding: 18,
+        marginBottom: 14,
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 1},
+        shadowOpacity: 0.06,
+        shadowRadius: 4,
+        elevation: 2,
     },
-    cardContent: {
-        paddingTop: 8,
+    fieldHeader: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        marginBottom: 16,
     },
-    inputHeader: {
-        flexDirection: 'row-reverse',
+    fieldIconWrap: {
+        width: 38,
+        height: 38,
+        borderRadius: 12,
+        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 12,
+        marginEnd: 14,
     },
-    inputHeaderText: {
+    fieldHeaderText: {
         flex: 1,
-        marginRight: 8,
         alignItems: 'flex-start',
     },
-    inputLabel: {
-        fontWeight: '600',
+    fieldLabelRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
         marginBottom: 2,
     },
-    inputSublabel: {
-        opacity: 0.7,
+    fieldLabel: {
+        fontWeight: '600',
+    },
+    fieldSublabel: {
+        opacity: 0.6,
+        fontSize: 12,
+    },
+    optionalBadge: {
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        borderRadius: 6,
+        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    },
+    optionalText: {
+        fontSize: 9,
+        fontWeight: '600',
+        color: AMBER,
     },
     input: {
-        marginBottom: 0,
-        textAlign: 'right',
+        backgroundColor: 'transparent',
+    },
+    inputOutline: {
+        borderRadius: 12,
     },
     errorText: {
-        marginTop: 8,
+        marginTop: 4,
+        marginBottom: 4,
     },
     submitButton: {
         marginTop: 24,
-        marginBottom: 24,
-        borderRadius: 12,
+        marginBottom: 32,
+        borderRadius: 14,
+        elevation: 0,
+        shadowColor: '#0F172A',
+        shadowOffset: {width: 0, height: 4},
+        shadowOpacity: 0.2,
+        shadowRadius: 12,
     },
     submitButtonContent: {
         paddingVertical: 8,

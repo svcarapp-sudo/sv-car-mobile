@@ -1,9 +1,11 @@
 import {StyleSheet, View, TouchableOpacity} from 'react-native'
-import {Text, Card, IconButton, useTheme} from 'react-native-paper'
+import {Text, Icon, useTheme} from 'react-native-paper'
+
+const AMBER = '#F59E0B'
 
 const ARABIC_TEXT = {
     FUEL_TYPE: 'نوع الوقود',
-    SELECT_FUEL: 'اختر نوع الوقود',
+    SELECT_FUEL: 'اختر نوع الوقود المناسب',
 }
 
 export interface FuelTypeOption {
@@ -37,7 +39,8 @@ export const FuelScreen = ({fuelTypes, value, onSelect, onNext}: FuelScreenProps
                     {ARABIC_TEXT.SELECT_FUEL}
                 </Text>
             </View>
-            <View style={styles.fuelContainer}>
+
+            <View style={styles.grid}>
                 {fuelTypes.map(f => {
                     const isSelected = value === f.name
 
@@ -45,54 +48,46 @@ export const FuelScreen = ({fuelTypes, value, onSelect, onNext}: FuelScreenProps
                         <TouchableOpacity
                             key={f.id}
                             onPress={() => handleSelect(f.name)}
-                            style={styles.fuelCardWrapper}
-                            activeOpacity={0.7}>
-                            <Card
+                            activeOpacity={0.7}
+                            style={styles.cardWrapper}>
+                            <View
                                 style={[
                                     styles.fuelCard,
-                                    {
-                                        backgroundColor: isSelected ? theme.colors.primaryContainer : theme.colors.surface,
-                                        borderColor: isSelected ? theme.colors.primary : theme.colors.outline,
-                                        elevation: isSelected ? 4 : 1,
-                                    },
-                                ]}
-                                mode={isSelected ? 'contained' : 'outlined'}>
-                                <Card.Content style={styles.fuelCardContent}>
-                                    <View
-                                        style={[
-                                            styles.iconContainer,
-                                            {
-                                                backgroundColor: isSelected ? theme.colors.surface : theme.colors.surfaceVariant,
-                                            },
-                                        ]}>
-                                        <IconButton
-                                            icon={f.icon}
-                                            size={28}
-                                            iconColor={isSelected ? theme.colors.primary : theme.colors.onSurfaceVariant}
-                                            style={styles.iconButton}
-                                        />
+                                    {backgroundColor: theme.colors.surface},
+                                    isSelected && styles.fuelCardSelected,
+                                ]}>
+                                {isSelected && (
+                                    <View style={styles.checkBadge}>
+                                        <View style={styles.checkCircle}>
+                                            <Icon source='check' size={10} color='#FFFFFF' />
+                                        </View>
                                     </View>
-                                    <Text
-                                        variant='titleMedium'
-                                        style={[
-                                            styles.fuelName,
-                                            {
-                                                color: isSelected ? theme.colors.primary : theme.colors.onSurface,
-                                                fontWeight: isSelected ? 'bold' : '600',
-                                            },
-                                        ]}>
-                                        {f.name}
-                                    </Text>
-                                    {isSelected && (
-                                        <IconButton
-                                            icon='check-circle'
-                                            size={20}
-                                            iconColor={theme.colors.primary}
-                                            style={styles.checkIcon}
-                                        />
-                                    )}
-                                </Card.Content>
-                            </Card>
+                                )}
+                                <View
+                                    style={[
+                                        styles.iconCircle,
+                                        {
+                                            backgroundColor: isSelected
+                                                ? 'rgba(245, 158, 11, 0.15)'
+                                                : theme.colors.surfaceVariant,
+                                        },
+                                    ]}>
+                                    <Icon
+                                        source={f.icon}
+                                        size={28}
+                                        color={isSelected ? AMBER : theme.colors.onSurfaceVariant}
+                                    />
+                                </View>
+                                <Text
+                                    variant='titleSmall'
+                                    style={[
+                                        styles.fuelName,
+                                        {color: theme.colors.onSurface},
+                                        isSelected && {fontWeight: '700'},
+                                    ]}>
+                                    {f.name}
+                                </Text>
+                            </View>
                         </TouchableOpacity>
                     )
                 })}
@@ -109,60 +104,69 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     stepTitle: {
+        fontWeight: '700',
         marginBottom: 4,
-        fontWeight: 'bold',
     },
     stepSubtitle: {
-        opacity: 0.7,
+        opacity: 0.6,
+        fontSize: 14,
     },
-    fuelContainer: {
+    grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginHorizontal: -6,
     },
-    fuelCardWrapper: {
-        width: '48%',
-        padding: 6,
+    cardWrapper: {
+        width: '50%',
+        paddingHorizontal: 6,
+        marginBottom: 12,
     },
     fuelCard: {
         borderRadius: 16,
-        borderWidth: 2,
-        shadowColor: '#000',
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-    },
-    fuelCardContent: {
         alignItems: 'center',
-        paddingVertical: 20,
+        paddingVertical: 28,
         paddingHorizontal: 12,
+        borderWidth: 1.5,
+        borderColor: 'transparent',
         position: 'relative',
-    },
-    iconContainer: {
-        width: 64,
-        height: 64,
-        borderRadius: 32,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 12,
-        elevation: 2,
         shadowColor: '#000',
         shadowOffset: {width: 0, height: 1},
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
+        shadowOpacity: 0.06,
+        shadowRadius: 4,
+        elevation: 2,
     },
-    iconButton: {
-        margin: 0,
+    fuelCardSelected: {
+        borderColor: AMBER,
+        backgroundColor: 'rgba(245, 158, 11, 0.04)',
+        shadowColor: AMBER,
+        shadowOpacity: 0.15,
+        shadowRadius: 10,
+        elevation: 4,
+    },
+    iconCircle: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 14,
     },
     fuelName: {
         textAlign: 'center',
+        fontSize: 14,
+        fontWeight: '500',
     },
-    checkIcon: {
+    checkBadge: {
         position: 'absolute',
-        top: 8,
-        right: 8,
-        margin: 0,
-        width: 24,
-        height: 24,
+        top: 10,
+        start: 10,
+    },
+    checkCircle: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        backgroundColor: AMBER,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 })

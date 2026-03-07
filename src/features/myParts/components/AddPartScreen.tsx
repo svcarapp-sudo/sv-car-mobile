@@ -1,6 +1,6 @@
 import {useState, useCallback} from 'react'
 import {StyleSheet, View, Alert} from 'react-native'
-import {Text, useTheme} from 'react-native-paper'
+import {useTheme} from 'react-native-paper'
 import type {NavigationProp} from '@react-navigation/native'
 
 import {useMyParts} from '../hooks/useMyParts'
@@ -13,10 +13,11 @@ import type {RootStackParamList} from '@/global/navigation/types'
 
 const ARABIC_TEXT = {
     ERROR: 'فشل إضافة القطعة',
-    SUCCESS: 'تم إضافة القطعة بنجاح',
-    REQUIRED_FIELD: 'هذا الحقل مطلوب',
+    SUCCESS: 'تمت الإضافة بنجاح',
+    SUCCESS_MSG: 'تم إضافة القطعة بنجاح',
+    REQUIRED_FIELD: 'يرجى تعبئة اسم القطعة والسعر',
     INVALID_PRICE: 'يرجى إدخال سعر صحيح',
-    SELECT_MAKE_FIRST: 'يرجى اختيار الشركة المصنعة أولاً',
+    OK: 'موافق',
 }
 
 interface AddPartScreenProps {
@@ -32,93 +33,97 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
     const [currentStep, setCurrentStep] = useState<Step>(Step.Make)
     const [originId, setOriginId] = useState<number | null>(null)
     const [makeId, setMakeId] = useState<number | null>(null)
-    const [makeName, setMakeName] = useState<string>('')
+    const [makeName, setMakeName] = useState('')
     const [makeLogoUrl, setMakeLogoUrl] = useState<string | null>(null)
     const [modelId, setModelId] = useState<number | null>(null)
-    const [modelName, setModelName] = useState<string>('')
+    const [modelName, setModelName] = useState('')
     const [year, setYear] = useState<number | null>(null)
     const [categoryId, setCategoryId] = useState<number | null>(null)
-    const [categoryName, setCategoryName] = useState<string>('')
+    const [categoryName, setCategoryName] = useState('')
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [price, setPrice] = useState('')
     const [imageUrl, setImageUrl] = useState('')
     const [sku, setSku] = useState('')
 
+    const resetFrom = (step: Step) => {
+        if (step <= Step.Details) {
+            setName('')
+            setDescription('')
+            setPrice('')
+            setImageUrl('')
+            setSku('')
+        }
+        if (step <= Step.Category) {
+            setCategoryId(null)
+            setCategoryName('')
+        }
+        if (step <= Step.Year) setYear(null)
+        if (step <= Step.Model) {
+            setModelId(null)
+            setModelName('')
+        }
+        if (step <= Step.Make) {
+            setMakeId(null)
+            setMakeName('')
+            setMakeLogoUrl(null)
+        }
+    }
+
     const handleStepChange = (step: Step) => {
         if (step < currentStep) {
-            if (step < Step.Details) {
-                setName('')
-                setDescription('')
-                setPrice('')
-                setImageUrl('')
-                setSku('')
-            }
-
-            if (step < Step.Category) {
-                setCategoryId(null)
-                setCategoryName('')
-            }
-
-            if (step < Step.Year) {
-                setYear(null)
-            }
-
-            if (step < Step.Model) {
-                setModelName('')
-                setModelId(null)
-            }
-
-            if (step < Step.Make) {
-                setMakeName('')
-                setMakeId(null)
-                setMakeLogoUrl(null)
-            }
-
+            resetFrom(step)
             setCurrentStep(step)
         }
     }
 
-    const handleMakeSelect = useCallback((name: string, id: string, logoUrl?: string | null) => {
-        setMakeId(Number(id))
-        setMakeName(name)
-        setMakeLogoUrl(logoUrl ?? null)
-        setModelId(null)
-        setModelName('')
-        if (currentStep < Step.Details) {
-            setCurrentStep(currentStep + 1)
-        }
-    }, [currentStep])
+    const advanceStep = () => {
+        if (currentStep < Step.Details) setCurrentStep(prev => prev + 1)
+    }
 
-    const handleModelSelect = useCallback((name: string, id: string) => {
-        setModelId(Number(id))
-        setModelName(name)
-        if (currentStep < Step.Details) {
-            setCurrentStep(currentStep + 1)
-        }
-    }, [currentStep])
+    const handleMakeSelect = useCallback(
+        (name: string, id: string, logoUrl?: string | null) => {
+            setMakeId(Number(id))
+            setMakeName(name)
+            setMakeLogoUrl(logoUrl ?? null)
+            setModelId(null)
+            setModelName('')
+            advanceStep()
+        },
+        [currentStep],
+    )
 
-    const handleYearSelect = useCallback((yearStr: string) => {
-        setYear(Number(yearStr))
-        if (currentStep < Step.Details) {
-            setCurrentStep(currentStep + 1)
-        }
-    }, [currentStep])
+    const handleModelSelect = useCallback(
+        (name: string, id: string) => {
+            setModelId(Number(id))
+            setModelName(name)
+            advanceStep()
+        },
+        [currentStep],
+    )
 
-    const handleCategorySelect = useCallback((id: number, name: string) => {
-        setCategoryId(id)
-        setCategoryName(name)
-        if (currentStep < Step.Details) {
-            setCurrentStep(currentStep + 1)
-        }
-    }, [currentStep])
+    const handleYearSelect = useCallback(
+        (yearStr: string) => {
+            setYear(Number(yearStr))
+            advanceStep()
+        },
+        [currentStep],
+    )
+
+    const handleCategorySelect = useCallback(
+        (id: number, name: string) => {
+            setCategoryId(id)
+            setCategoryName(name)
+            advanceStep()
+        },
+        [currentStep],
+    )
 
     const handleSubmit = useCallback(async () => {
         if (!makeId || !modelId || !year || !categoryId || !name.trim() || !price.trim()) {
             Alert.alert(ARABIC_TEXT.ERROR, ARABIC_TEXT.REQUIRED_FIELD)
             return
         }
-
         const priceNum = parseFloat(price)
         if (isNaN(priceNum) || priceNum < 0) {
             Alert.alert(ARABIC_TEXT.ERROR, ARABIC_TEXT.INVALID_PRICE)
@@ -137,15 +142,11 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
                 imageUrl: imageUrl.trim() || undefined,
                 sku: sku.trim() || undefined,
             })
-
-            Alert.alert(ARABIC_TEXT.SUCCESS, '', [
-                {
-                    text: 'موافق',
-                    onPress: () => navigation?.navigate('MyParts'),
-                },
+            Alert.alert(ARABIC_TEXT.SUCCESS, ARABIC_TEXT.SUCCESS_MSG, [
+                {text: ARABIC_TEXT.OK, onPress: () => navigation?.navigate('MyParts')},
             ])
-        } catch (error) {
-            Alert.alert(ARABIC_TEXT.ERROR, error instanceof Error ? error.message : ARABIC_TEXT.ERROR)
+        } catch (err) {
+            Alert.alert(ARABIC_TEXT.ERROR, err instanceof Error ? err.message : ARABIC_TEXT.ERROR)
         }
     }, [makeId, modelId, year, categoryId, name, description, price, imageUrl, sku, createPart, navigation])
 
@@ -163,14 +164,7 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
                     />
                 )
             case Step.Model:
-                if (!makeId) {
-                    return (
-                        <View style={styles.centered}>
-                            <Text>{ARABIC_TEXT.SELECT_MAKE_FIRST}</Text>
-                        </View>
-                    )
-                }
-                return (
+                return makeId ? (
                     <ModelScreen
                         makeId={makeId}
                         makeName={makeName}
@@ -180,7 +174,7 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
                         onSelect={handleModelSelect}
                         onNext={() => {}}
                     />
-                )
+                ) : null
             case Step.Year:
                 return (
                     <YearScreen
@@ -215,7 +209,7 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
                         onImageUrlChange={setImageUrl}
                         onSkuChange={setSku}
                         onSubmit={handleSubmit}
-                        navigation={navigation}
+                        onCancel={() => navigation?.goBack()}
                         canSubmit={!!(makeId && modelId && year && categoryId && name.trim() && price.trim())}
                     />
                 )
@@ -236,7 +230,7 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
                     categoryName={categoryName}
                     onEdit={() => handleStepChange(Step.Make)}
                 />
-                <View style={{flex: 1}}>{renderStep()}</View>
+                <View style={styles.stepContent}>{renderStep()}</View>
             </View>
         </View>
     )
@@ -250,10 +244,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
     },
-    centered: {
+    stepContent: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 32,
     },
 })

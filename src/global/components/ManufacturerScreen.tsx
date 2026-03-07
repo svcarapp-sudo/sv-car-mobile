@@ -1,11 +1,14 @@
 import {useEffect, useState} from 'react'
 import {StyleSheet, View, TouchableOpacity, FlatList, Image} from 'react-native'
-import {Text, Card, useTheme, ActivityIndicator} from 'react-native-paper'
+import {Text, useTheme, ActivityIndicator, Icon} from 'react-native-paper'
 
 import type {MakeApi} from '../services/catalogService'
 
+const AMBER = '#F59E0B'
+
 const ARABIC_TEXT = {
     SELECT_MANUFACTURER: 'اختر الشركة المصنعة',
+    LOADING: 'جاري تحميل الماركات...',
 }
 
 interface ManufacturerScreenProps {
@@ -31,7 +34,6 @@ export const ManufacturerScreen = ({
 
     useEffect(() => {
         let cancelled = false
-        // Loading must be true when starting fetch; rule discourages sync setState in effect
         // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: show loading while fetching
         setLoading(true)
         getMakes(originId ?? undefined)
@@ -75,30 +77,34 @@ export const ManufacturerScreen = ({
         const logoUrl = item.logoUrl ?? null
 
         return (
-            <TouchableOpacity
-                onPress={() => handleSelect(item)}
-                style={[styles.gridItem, isSelected && {borderColor: theme.colors.primary, borderWidth: 2}]}>
-                <Card
-                    style={[styles.card, {backgroundColor: isSelected ? theme.colors.primaryContainer : theme.colors.surface}]}
-                    mode={isSelected ? 'contained' : 'outlined'}>
-                    <Card.Content style={styles.cardContent}>
-                        <View style={styles.logoContainer}>
-                            {logoUrl ? <Image source={{uri: logoUrl}} style={styles.logo} resizeMode='contain' /> : null}
+            <TouchableOpacity onPress={() => handleSelect(item)} activeOpacity={0.7} style={styles.gridItem}>
+                <View
+                    style={[
+                        styles.card,
+                        {backgroundColor: theme.colors.surface},
+                        isSelected && styles.cardSelected,
+                    ]}>
+                    {isSelected && (
+                        <View style={styles.selectedBadge}>
+                            <View style={styles.selectedBadgeCircle}>
+                                <Icon source='check' size={9} color='#FFFFFF' />
+                            </View>
                         </View>
-                        <Text
-                            variant='labelMedium'
-                            numberOfLines={1}
-                            style={[
-                                styles.brandName,
-                                {
-                                    color: isSelected ? theme.colors.primary : theme.colors.onSurface,
-                                    fontWeight: isSelected ? 'bold' : 'normal',
-                                },
-                            ]}>
-                            {item.name}
-                        </Text>
-                    </Card.Content>
-                </Card>
+                    )}
+                    <View style={[styles.logoContainer, isSelected && styles.logoContainerSelected]}>
+                        {logoUrl ? <Image source={{uri: logoUrl}} style={styles.logo} resizeMode='contain' /> : null}
+                    </View>
+                    <Text
+                        variant='labelMedium'
+                        numberOfLines={1}
+                        style={[
+                            styles.brandName,
+                            {color: theme.colors.onSurface},
+                            isSelected && {fontWeight: '700'},
+                        ]}>
+                        {item.name}
+                    </Text>
+                </View>
             </TouchableOpacity>
         )
     }
@@ -106,9 +112,9 @@ export const ManufacturerScreen = ({
     if (loading && makes.length === 0) {
         return (
             <View style={styles.centered}>
-                <ActivityIndicator size='large' />
+                <ActivityIndicator size='large' color={AMBER} />
                 <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant, marginTop: 16}}>
-                    جاري تحميل الماركات...
+                    {ARABIC_TEXT.LOADING}
                 </Text>
             </View>
         )
@@ -129,8 +135,8 @@ export const ManufacturerScreen = ({
                 renderItem={({item: section}) => (
                     <View style={styles.sectionContainer}>
                         <View style={styles.sectionHeader}>
-                            <View style={[styles.sectionHeaderLine, {backgroundColor: theme.colors.primary}]} />
-                            <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.primary}]}>
+                            <View style={styles.sectionDot} />
+                            <Text variant='titleSmall' style={[styles.sectionTitle, {color: theme.colors.onSurfaceVariant}]}>
                                 {section.title}
                             </Text>
                         </View>
@@ -159,7 +165,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     stepTitle: {
-        fontWeight: 'bold',
+        fontWeight: '700',
         width: '100%',
     },
     gridContainer: {
@@ -171,17 +177,19 @@ const styles = StyleSheet.create({
     sectionHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 12,
+        marginBottom: 14,
         paddingHorizontal: 4,
     },
-    sectionHeaderLine: {
-        width: 4,
-        height: 20,
-        borderRadius: 2,
+    sectionDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: AMBER,
         marginEnd: 8,
     },
     sectionTitle: {
-        fontWeight: 'bold',
+        fontWeight: '600',
+        fontSize: 13,
     },
     gridRow: {
         flexDirection: 'row',
@@ -191,36 +199,61 @@ const styles = StyleSheet.create({
         width: '33.33%',
     },
     gridItem: {
-        margin: 6,
-        borderRadius: 12,
-        overflow: 'hidden',
+        margin: 5,
     },
     card: {
-        borderRadius: 12,
-    },
-    cardContent: {
+        borderRadius: 14,
         alignItems: 'center',
-        padding: 8,
+        paddingVertical: 12,
+        paddingHorizontal: 6,
+        borderWidth: 1.5,
+        borderColor: 'transparent',
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 1},
+        shadowOpacity: 0.05,
+        shadowRadius: 3,
+        elevation: 1,
+    },
+    cardSelected: {
+        borderColor: AMBER,
+        backgroundColor: 'rgba(245, 158, 11, 0.04)',
+        shadowColor: AMBER,
+        shadowOpacity: 0.12,
+        shadowRadius: 8,
+        elevation: 3,
+    },
+    selectedBadge: {
+        position: 'absolute',
+        top: 6,
+        start: 6,
+        zIndex: 1,
+    },
+    selectedBadgeCircle: {
+        width: 18,
+        height: 18,
+        borderRadius: 9,
+        backgroundColor: AMBER,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     logoContainer: {
-        width: 64,
-        height: 64,
+        width: 60,
+        height: 60,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 8,
         backgroundColor: '#F8FAFC',
-        borderRadius: 32,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: {width: 0, height: 1},
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        borderWidth: 1,
+        borderRadius: 30,
+        borderWidth: 2,
         borderColor: '#E2E8F0',
     },
+    logoContainerSelected: {
+        borderColor: AMBER,
+        backgroundColor: 'rgba(245, 158, 11, 0.06)',
+    },
     logo: {
-        width: 42,
-        height: 42,
+        width: 38,
+        height: 38,
     },
     brandName: {
         textAlign: 'center',

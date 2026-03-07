@@ -1,11 +1,10 @@
-import {useState, useEffect} from 'react'
+import {useState} from 'react'
 import {StyleSheet, View} from 'react-native'
 import {useTheme} from 'react-native-paper'
 
 import type {RootStackParamList} from '@/global/navigation/types'
 
 import {useVehicleInfo, useVehicleApi} from '@/global/hooks'
-import {useVehicleStore} from '@/global/store'
 import {ManufacturerScreen, ModelScreen, YearScreen} from '@/global/components'
 
 import type {NavigationProp} from '@react-navigation/native'
@@ -25,7 +24,6 @@ interface AddVehicleScreenProps {
 export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => {
     const vehicleInfo = useVehicleInfo()
     const {createVehicle, updateVehicle, loading: submitLoading, error: submitError} = useVehicleApi()
-    const getVehicle = useVehicleStore(s => s.getVehicle)
     const theme = useTheme()
     const editVehicleId = route?.params?.vehicleId
     const [currentStep, setCurrentStep] = useState<Step>(Step.Origin)
@@ -41,22 +39,6 @@ export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => 
     const [vin, setVin] = useState('')
     const [displayName, setDisplayName] = useState('')
 
-    useEffect(() => {
-        if (!editVehicleId) return
-        const v = getVehicle()
-        if (v?.id === editVehicleId && v.makeId != null && v.modelId != null) {
-            setMake(v.make)
-            setMakeId(String(v.makeId))
-            setMakeLogoUrl(v.makeLogoUrl ?? null)
-            setModel(v.model)
-            setModelId(String(v.modelId))
-            setYear(String(v.year))
-            setFuelType(v.fuelType ?? '')
-            setVin(v.vin ?? '')
-            setDisplayName(v.displayName ?? '')
-        }
-    }, [editVehicleId, getVehicle])
-
     const handleNext = () => {
         if (currentStep < Step.Details) {
             setCurrentStep(currentStep + 1)
@@ -69,39 +51,27 @@ export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => 
                 setVin('')
                 setDisplayName('')
             }
-
-            if (step < Step.Fuel) {
-                setFuelType('')
-            }
-
-            if (step < Step.Year) {
-                setYear('')
-            }
-
+            if (step < Step.Fuel) setFuelType('')
+            if (step < Step.Year) setYear('')
             if (step < Step.Model) {
                 setModel('')
                 setModelId(null)
             }
-
             if (step < Step.Manufacturer) {
                 setMake('')
                 setMakeId(null)
                 setMakeLogoUrl(null)
             }
-
             if (step < Step.Origin) {
                 setOriginId(null)
                 setOriginName('')
             }
-
             setCurrentStep(step)
         }
     }
 
     const handleSubmit = async () => {
-        if (!makeId || !modelId || !year) {
-            return
-        }
+        if (!makeId || !modelId || !year) return
 
         try {
             const data = {
@@ -120,7 +90,7 @@ export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => 
             }
 
             navigation?.navigate('Home')
-        } catch (error) {
+        } catch {
             // Error state is set in useVehicleApi
         }
     }
@@ -171,22 +141,10 @@ export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => 
                     />
                 )
             case Step.Year:
-                return (
-                    <YearScreen
-                        years={vehicleInfo.years}
-                        value={year}
-                        onSelect={setYear}
-                        onNext={handleNext}
-                    />
-                )
+                return <YearScreen years={vehicleInfo.years} value={year} onSelect={setYear} onNext={handleNext} />
             case Step.Fuel:
                 return (
-                    <FuelScreen
-                        fuelTypes={vehicleInfo.fuelTypes}
-                        value={fuelType}
-                        onSelect={setFuelType}
-                        onNext={handleNext}
-                    />
+                    <FuelScreen fuelTypes={vehicleInfo.fuelTypes} value={fuelType} onSelect={setFuelType} onNext={handleNext} />
                 )
             case Step.Details:
                 return (
@@ -210,15 +168,16 @@ export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => 
             <AddVehicleStepper currentStep={currentStep} onStepPress={handleStepChange} />
             <View style={styles.mainContent}>
                 <AddVehicleSummaryCard
+                    currentStep={currentStep}
                     originName={originName}
                     make={make}
                     makeLogoUrl={makeLogoUrl}
                     model={model}
                     year={year}
                     fuelType={fuelType}
-                    onEdit={() => handleStepChange(Step.Manufacturer)}
+                    onStepPress={handleStepChange}
                 />
-                <View style={{flex: 1}}>{renderContent()}</View>
+                <View style={styles.contentArea}>{renderContent()}</View>
             </View>
         </View>
     )
@@ -230,6 +189,10 @@ const styles = StyleSheet.create({
     },
     mainContent: {
         flex: 1,
-        padding: 16,
+        paddingHorizontal: 20,
+        paddingTop: 20,
+    },
+    contentArea: {
+        flex: 1,
     },
 })

@@ -1,20 +1,25 @@
-import React from 'react'
+import {useMemo} from 'react'
 import {StyleSheet, View, FlatList, Alert} from 'react-native'
-import {useTheme, FAB} from 'react-native-paper'
+import {useTheme, FAB, Text, Icon} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
 import {useMyParts} from '../hooks/useMyParts'
-import {useMakeModelCache} from '@/global/hooks'
+import {useMakeModelCache, usePartCategories} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
+import type {Part} from '@/global/types'
 import {MyPartCardItem} from './MyPartCardItem'
 import {MyPartsListEmpty} from './MyPartsListEmpty'
 
 const ARABIC_TEXT = {
-    DELETE: 'حذف',
-    DELETE_CONFIRM: 'هل أنت متأكد من حذف هذه القطعة؟',
+    DELETE: 'حذف القطعة',
+    DELETE_CONFIRM: 'هل أنت متأكد من حذف هذه القطعة؟\nلا يمكن التراجع عن هذا الإجراء.',
     DELETE_SUCCESS: 'تم حذف القطعة بنجاح',
     DELETE_ERROR: 'فشل حذف القطعة',
     ADD_PART: 'إضافة قطعة',
+    CANCEL: 'إلغاء',
+    MY_PARTS: 'قطع الغيار الخاصة بي',
+    TOTAL_PARTS: 'عدد القطع',
+    TOTAL_VALUE: 'القيمة الإجمالية',
 }
 
 interface MyPartsListScreenProps {
@@ -26,22 +31,24 @@ export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
     const theme = useTheme()
     const {parts, loading, deletePart, fetchMyParts} = useMyParts()
     const makeModelCache = useMakeModelCache({parts})
+    const {getBySlug, categories} = usePartCategories()
+
+    const stats = useMemo(() => {
+        const totalValue = parts.reduce((sum, p) => sum + p.price, 0)
+        return {count: parts.length, totalValue}
+    }, [parts])
 
     const handleDelete = (partId: string, partName: string) => {
         Alert.alert(ARABIC_TEXT.DELETE, ARABIC_TEXT.DELETE_CONFIRM, [
-            {
-                text: 'إلغاء',
-                style: 'cancel',
-            },
+            {text: ARABIC_TEXT.CANCEL, style: 'cancel'},
             {
                 text: ARABIC_TEXT.DELETE,
                 style: 'destructive',
                 onPress: async () => {
                     try {
                         await deletePart(partId)
-                        Alert.alert(ARABIC_TEXT.DELETE_SUCCESS)
-                    } catch (error) {
-                        Alert.alert(ARABIC_TEXT.DELETE_ERROR, error instanceof Error ? error.message : '')
+                    } catch {
+                        Alert.alert(ARABIC_TEXT.DELETE_ERROR)
                     }
                 },
             },
@@ -52,6 +59,32 @@ export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
         navigation?.navigate('EditPart', {partId})
     }
 
+    const getCategoryInfo = (part: Part) => {
+        return getBySlug(part.category) || categories.find(c => c.id === part.categoryId) || null
+    }
+
+    const renderHeader = () => {
+        if (parts.length === 0) return null
+
+        return (
+            <View style={styles.headerSection}>
+                {/* Stats row */}
+                <View style={styles.statsRow}>
+                    <View style={[styles.statCard, {backgroundColor: theme.colors.primaryContainer}]}>
+                        <Icon source="package-variant" size={20} color={theme.colors.primary} />
+                        <Text style={[styles.statValue, {color: theme.colors.primary}]}>{stats.count}</Text>
+                        <Text style={[styles.statLabel, {color: theme.colors.primary}]}>{ARABIC_TEXT.TOTAL_PARTS}</Text>
+                    </View>
+                    <View style={[styles.statCard, {backgroundColor: '#FFF7ED'}]}>
+                        <Icon source="cash" size={20} color={theme.colors.tertiary} />
+                        <Text style={[styles.statValue, {color: theme.colors.tertiary}]}>${stats.totalValue.toFixed(0)}</Text>
+                        <Text style={[styles.statLabel, {color: theme.colors.tertiary}]}>{ARABIC_TEXT.TOTAL_VALUE}</Text>
+                    </View>
+                </View>
+            </View>
+        )
+    }
+
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
             <FlatList
@@ -59,22 +92,24 @@ export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
                 renderItem={({item}) => (
                     <MyPartCardItem
                         part={item}
-                        navigation={navigation}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                         makeModelCache={makeModelCache}
+                        categoryInfo={getCategoryInfo(item)}
                     />
                 )}
                 keyExtractor={item => item.id}
                 contentContainerStyle={styles.listContent}
                 refreshing={loading}
                 onRefresh={fetchMyParts}
+                ListHeaderComponent={renderHeader}
                 ListEmptyComponent={<MyPartsListEmpty loading={loading && parts.length === 0} navigation={navigation} />}
             />
             <FAB
-                icon='plus'
+                icon="plus"
                 label={ARABIC_TEXT.ADD_PART}
                 style={[styles.fab, {backgroundColor: theme.colors.primary}]}
+                color={theme.colors.onPrimary}
                 onPress={() => navigation?.navigate('AddPart')}
             />
         </View>
@@ -87,11 +122,36 @@ const styles = StyleSheet.create({
     },
     listContent: {
         padding: 16,
+        paddingBottom: 80,
+    },
+    headerSection: {
+        marginBottom: 16,
+    },
+    statsRow: {
+        flexDirection: 'row',
+        gap: 12,
+    },
+    statCard: {
+        flex: 1,
+        alignItems: 'center',
+        paddingVertical: 14,
+        borderRadius: 14,
+        gap: 4,
+    },
+    statValue: {
+        fontSize: 20,
+        fontWeight: '700',
+    },
+    statLabel: {
+        fontSize: 11,
+        fontWeight: '500',
+        opacity: 0.8,
     },
     fab: {
         position: 'absolute',
         margin: 16,
-        right: 0,
+        end: 0,
         bottom: 0,
+        borderRadius: 16,
     },
 })

@@ -15,6 +15,7 @@ export const useParts = () => {
     const [search, setSearch] = useState('')
     const [page, setPage] = useState(0)
     const [hasMore, setHasMore] = useState(false)
+    const [total, setTotal] = useState(0)
 
     // Track current fetch to avoid race conditions
     const fetchIdRef = useRef(0)
@@ -35,6 +36,7 @@ export const useParts = () => {
                 })
                 if (fetchId !== fetchIdRef.current) return
                 setParts(response.parts)
+                setTotal(response.total)
                 setHasMore(response.page + 1 < response.totalPages)
             } catch (err) {
                 if (fetchId !== fetchIdRef.current) return
@@ -74,7 +76,9 @@ export const useParts = () => {
                 page: nextPage,
                 limit: PAGE_SIZE,
             })
-            setParts([...parts, ...response.parts])
+            const existingIds = new Set(parts.map(p => p.id))
+            const newParts = response.parts.filter(p => !existingIds.has(p.id))
+            setParts([...parts, ...newParts])
             setPage(nextPage)
             setHasMore(nextPage + 1 < response.totalPages)
         } catch (err) {
@@ -108,6 +112,7 @@ export const useParts = () => {
     return {
         parts,
         selectedCategory,
+        total,
         loading,
         loadingMore,
         error,

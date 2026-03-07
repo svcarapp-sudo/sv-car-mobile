@@ -18,7 +18,7 @@ interface PartsListScreenProps {
 }
 
 export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
-    const {parts, selectedCategory, loading, loadingMore, search, setSearch, hasMore, loadMore, refresh} = useParts()
+    const {parts, total, selectedCategory, loading, loadingMore, search, setSearch, hasMore, loadMore, refresh} = useParts()
     const {getBySlug} = usePartCategories()
     const theme = useTheme()
     const makeModelCache = useMakeModelCache({parts})
@@ -29,7 +29,7 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
-            {categoryName && <PartsListHeader categoryName={categoryName} partsCount={parts.length} />}
+            {categoryName && <PartsListHeader categoryName={categoryName} partsCount={total} />}
 
             {/* Search bar */}
             <View style={styles.searchContainer}>

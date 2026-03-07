@@ -1,22 +1,21 @@
 import {StyleSheet, View, ScrollView} from 'react-native'
-import {Text, TextInput, Button, useTheme} from 'react-native-paper'
-import type {NavigationProp} from '@react-navigation/native'
-import type {RootStackParamList} from '@/global/navigation/types'
+import {Text, TextInput, Button, useTheme, Icon} from 'react-native-paper'
 
 const ARABIC_TEXT = {
     PART_NAME: 'اسم القطعة',
     PART_NAME_PLACEHOLDER: 'مثال: فرامل أمامية',
     DESCRIPTION: 'الوصف',
     DESCRIPTION_PLACEHOLDER: 'وصف تفصيلي للقطعة...',
-    PRICE: 'السعر',
+    PRICE: 'السعر ($)',
     PRICE_PLACEHOLDER: '0.00',
     IMAGE_URL: 'رابط الصورة (اختياري)',
     IMAGE_URL_PLACEHOLDER: 'https://example.com/image.jpg',
     SKU: 'رمز القطعة (اختياري)',
-    SKU_PLACEHOLDER: 'BP-001',
+    SKU_PLACEHOLDER: 'مثال: BP-001',
     SUBMIT: 'إضافة القطعة',
     CANCEL: 'إلغاء',
     LOADING: 'جاري الإضافة...',
+    REQUIRED: 'مطلوب',
 }
 
 interface AddPartDetailsFormProps {
@@ -32,8 +31,10 @@ interface AddPartDetailsFormProps {
     onImageUrlChange: (value: string) => void
     onSkuChange: (value: string) => void
     onSubmit: () => void
-    navigation?: NavigationProp<RootStackParamList>
+    onCancel?: () => void
     canSubmit: boolean
+    submitLabel?: string
+    submitLoadingLabel?: string
 }
 
 export const AddPartDetailsForm = ({
@@ -49,20 +50,33 @@ export const AddPartDetailsForm = ({
     onImageUrlChange,
     onSkuChange,
     onSubmit,
-    navigation,
+    onCancel,
     canSubmit,
+    submitLabel = ARABIC_TEXT.SUBMIT,
+    submitLoadingLabel = ARABIC_TEXT.LOADING,
 }: AddPartDetailsFormProps) => {
     const theme = useTheme()
 
     return (
-        <ScrollView style={styles.formContainer} contentContainerStyle={styles.formContent}>
+        <ScrollView
+            style={styles.container}
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled">
+            {/* Section header */}
+            <View style={styles.sectionHeader}>
+                <Icon source="text-box-outline" size={20} color={theme.colors.primary} />
+                <Text style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>تفاصيل القطعة</Text>
+            </View>
+
             <TextInput
                 label={ARABIC_TEXT.PART_NAME}
                 value={name}
                 onChangeText={onNameChange}
                 placeholder={ARABIC_TEXT.PART_NAME_PLACEHOLDER}
-                mode='outlined'
+                mode="outlined"
                 style={styles.input}
+                left={<TextInput.Icon icon="tag-outline" />}
             />
 
             <TextInput
@@ -70,10 +84,11 @@ export const AddPartDetailsForm = ({
                 value={description}
                 onChangeText={onDescriptionChange}
                 placeholder={ARABIC_TEXT.DESCRIPTION_PLACEHOLDER}
-                mode='outlined'
+                mode="outlined"
                 multiline
-                numberOfLines={4}
+                numberOfLines={3}
                 style={styles.input}
+                left={<TextInput.Icon icon="text" />}
             />
 
             <TextInput
@@ -81,9 +96,10 @@ export const AddPartDetailsForm = ({
                 value={price}
                 onChangeText={onPriceChange}
                 placeholder={ARABIC_TEXT.PRICE_PLACEHOLDER}
-                mode='outlined'
-                keyboardType='decimal-pad'
+                mode="outlined"
+                keyboardType="decimal-pad"
                 style={styles.input}
+                left={<TextInput.Icon icon="cash" />}
             />
 
             <TextInput
@@ -91,9 +107,11 @@ export const AddPartDetailsForm = ({
                 value={imageUrl}
                 onChangeText={onImageUrlChange}
                 placeholder={ARABIC_TEXT.IMAGE_URL_PLACEHOLDER}
-                mode='outlined'
-                keyboardType='url'
+                mode="outlined"
+                keyboardType="url"
+                autoCapitalize="none"
                 style={styles.input}
+                left={<TextInput.Icon icon="image-outline" />}
             />
 
             <TextInput
@@ -101,21 +119,27 @@ export const AddPartDetailsForm = ({
                 value={sku}
                 onChangeText={onSkuChange}
                 placeholder={ARABIC_TEXT.SKU_PLACEHOLDER}
-                mode='outlined'
+                mode="outlined"
+                autoCapitalize="characters"
                 style={styles.input}
+                left={<TextInput.Icon icon="barcode" />}
             />
 
-            <View style={styles.buttonContainer}>
-                <Button mode='outlined' onPress={() => navigation?.goBack()} style={styles.button} disabled={loading}>
-                    {ARABIC_TEXT.CANCEL}
-                </Button>
+            {/* Buttons */}
+            <View style={styles.buttons}>
+                {onCancel ? (
+                    <Button mode="outlined" onPress={onCancel} style={styles.cancelBtn} disabled={loading}>
+                        {ARABIC_TEXT.CANCEL}
+                    </Button>
+                ) : null}
                 <Button
-                    mode='contained'
+                    mode="contained"
                     onPress={onSubmit}
-                    style={styles.button}
+                    style={[styles.submitBtn, !onCancel && styles.fullWidth]}
+                    contentStyle={styles.submitContent}
                     loading={loading}
                     disabled={loading || !canSubmit}>
-                    {loading ? ARABIC_TEXT.LOADING : ARABIC_TEXT.SUBMIT}
+                    {loading ? submitLoadingLabel : submitLabel}
                 </Button>
             </View>
         </ScrollView>
@@ -123,22 +147,42 @@ export const AddPartDetailsForm = ({
 }
 
 const styles = StyleSheet.create({
-    formContainer: {
+    container: {
         flex: 1,
     },
-    formContent: {
-        paddingBottom: 16,
+    content: {
+        paddingBottom: 24,
     },
-    input: {
+    sectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
         marginBottom: 16,
     },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 8,
-        gap: 12,
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: '700',
     },
-    button: {
+    input: {
+        marginBottom: 14,
+    },
+    buttons: {
+        flexDirection: 'row',
+        gap: 12,
+        marginTop: 8,
+    },
+    cancelBtn: {
         flex: 1,
+        borderRadius: 12,
+    },
+    submitBtn: {
+        flex: 1,
+        borderRadius: 12,
+    },
+    fullWidth: {
+        flex: 1,
+    },
+    submitContent: {
+        paddingVertical: 4,
     },
 })

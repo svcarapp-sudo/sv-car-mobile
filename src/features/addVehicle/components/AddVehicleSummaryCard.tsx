@@ -1,186 +1,146 @@
-import {StyleSheet, View, ScrollView, Image} from 'react-native'
-import {Card, Text, IconButton} from 'react-native-paper'
+import {StyleSheet, View, Image, TouchableOpacity} from 'react-native'
+import {Text, Icon, useTheme} from 'react-native-paper'
+
 import {Step} from './AddVehicleStepper'
 
+const AMBER = '#F59E0B'
+
 interface AddVehicleSummaryCardProps {
+    currentStep: Step
     originName?: string
     make?: string
     makeLogoUrl?: string | null
     model?: string
     year?: string
     fuelType?: string
-    onEdit: () => void
+    onStepPress: (step: Step) => void
+}
+
+interface SummaryItem {
+    step: Step
+    value: string
+    icon: string
+    logoUrl?: string | null
 }
 
 export const AddVehicleSummaryCard = ({
-    originName,
+    currentStep,
     make,
     makeLogoUrl,
     model,
     year,
     fuelType,
-    onEdit,
+    onStepPress,
 }: AddVehicleSummaryCardProps) => {
-    if (!originName && !make && !model && !year && !fuelType) {
-        return null
-    }
+    const theme = useTheme()
+
+    const allItems: SummaryItem[] = [
+        {step: Step.Manufacturer, value: make ?? '', icon: 'car-side', logoUrl: makeLogoUrl},
+        {step: Step.Model, value: model ?? '', icon: 'car-info'},
+        {step: Step.Year, value: year ?? '', icon: 'calendar-range'},
+        {step: Step.Fuel, value: fuelType ?? '', icon: 'gas-station'},
+    ]
+
+    const items = allItems.filter(item => item.step < currentStep && item.value !== '')
+
+    if (items.length === 0) return null
 
     return (
-        <Card style={styles.summaryCard} mode='outlined'>
-            <Card.Content style={styles.summaryContent}>
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.summaryScrollContent}
-                    style={styles.summaryScroll}>
-                    {originName && (
-                        <View style={styles.summaryItem}>
-                            <View style={styles.textGroup}>
-                                <Text variant='labelSmall' style={styles.label}>
-                                    المنشأ
-                                </Text>
-                                <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
-                                    {originName}
-                                </Text>
-                            </View>
-                        </View>
-                    )}
-                    {make && (
-                        <>
-                            {originName && <View style={styles.divider} />}
-                            <View style={styles.summaryItem}>
-                                {makeLogoUrl ? (
-                                    <View style={styles.logoCircle}>
-                                        <Image source={{uri: makeLogoUrl}} style={styles.summaryLogo} resizeMode='contain' />
-                                    </View>
-                                ) : null}
-                                <View style={styles.textGroup}>
-                                    <Text variant='labelSmall' style={styles.label}>
-                                        الماركة
-                                    </Text>
-                                    <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
-                                        {make}
-                                    </Text>
+        <View style={styles.bar}>
+            <View style={styles.accentEdge} />
+            <View style={styles.content}>
+                {items.map((item, index) => (
+                    <View key={item.step} style={styles.itemRow}>
+                        {index > 0 && (
+                            <Icon source="chevron-left" size={14} color={theme.colors.outline} />
+                        )}
+                        <TouchableOpacity
+                            onPress={() => onStepPress(item.step)}
+                            activeOpacity={0.5}
+                            style={[styles.chip, {backgroundColor: theme.colors.surfaceVariant}]}>
+                            {item.logoUrl ? (
+                                <View style={styles.logoWrap}>
+                                    <Image
+                                        source={{uri: item.logoUrl}}
+                                        style={styles.logo}
+                                        resizeMode="contain"
+                                    />
                                 </View>
-                            </View>
-                        </>
-                    )}
-                    {model && (
-                        <>
-                            <View style={styles.divider} />
-                            <View style={styles.summaryItem}>
-                                <View style={styles.textGroup}>
-                                    <Text variant='labelSmall' style={styles.label}>
-                                        الموديل
-                                    </Text>
-                                    <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
-                                        {model}
-                                    </Text>
-                                </View>
-                            </View>
-                        </>
-                    )}
-                    {year && (
-                        <>
-                            <View style={styles.divider} />
-                            <View style={styles.summaryItem}>
-                                <View style={styles.textGroup}>
-                                    <Text variant='labelSmall' style={styles.label}>
-                                        السنة
-                                    </Text>
-                                    <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
-                                        {year}
-                                    </Text>
-                                </View>
-                            </View>
-                        </>
-                    )}
-                    {fuelType && (
-                        <>
-                            <View style={styles.divider} />
-                            <View style={styles.summaryItem}>
-                                <View style={styles.textGroup}>
-                                    <Text variant='labelSmall' style={styles.label}>
-                                        نوع الوقود
-                                    </Text>
-                                    <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
-                                        {fuelType}
-                                    </Text>
-                                </View>
-                            </View>
-                        </>
-                    )}
-                </ScrollView>
-                <IconButton icon='pencil-outline' size={20} onPress={onEdit} style={styles.editButton} />
-            </Card.Content>
-        </Card>
+                            ) : (
+                                <Icon source={item.icon} size={13} color={AMBER} />
+                            )}
+                            <Text
+                                style={[styles.value, {color: theme.colors.onSurface}]}
+                                numberOfLines={1}>
+                                {item.value}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                ))}
+            </View>
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
-    summaryCard: {
+    bar: {
+        flexDirection: 'row',
+        alignItems: 'stretch',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 14,
         marginBottom: 16,
-        borderRadius: 12,
-        backgroundColor: '#fff',
-        borderColor: '#E2E8F0',
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        elevation: 3,
+        overflow: 'hidden',
     },
-    summaryContent: {
-        flexDirection: 'row-reverse',
-        alignItems: 'center',
-        paddingVertical: 8,
-        paddingHorizontal: 12,
+    accentEdge: {
+        width: 4,
+        backgroundColor: AMBER,
     },
-    summaryScroll: {
+    content: {
         flex: 1,
-        minWidth: 0,
-    },
-    summaryScrollContent: {
-        flexDirection: 'row-reverse',
+        flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 4,
+        paddingVertical: 10,
+        paddingStart: 12,
+        paddingEnd: 14,
+        gap: 4,
     },
-    summaryItem: {
-        flexDirection: 'row-reverse',
+    itemRow: {
+        flex: 1,
+        flexDirection: 'row',
         alignItems: 'center',
-        maxWidth: 160,
+        gap: 4,
     },
-    logoCircle: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: '#F8FAFC',
+    chip: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 5,
+        paddingVertical: 6,
+        paddingHorizontal: 8,
+        borderRadius: 8,
+    },
+    logoWrap: {
+        width: 18,
+        height: 18,
+        borderRadius: 9,
+        backgroundColor: '#FFFFFF',
         justifyContent: 'center',
         alignItems: 'center',
-        marginLeft: 8,
-        borderWidth: 1,
-        borderColor: '#E2E8F0',
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: 'rgba(0,0,0,0.1)',
     },
-    summaryLogo: {
-        width: 20,
-        height: 20,
-    },
-    textGroup: {
-        alignItems: 'flex-end',
-        minWidth: 0,
-        maxWidth: 140,
-    },
-    label: {
-        color: '#64748B',
-        fontSize: 10,
+    logo: {
+        width: 13,
+        height: 13,
     },
     value: {
-        fontWeight: 'bold',
-        fontSize: 13,
-        lineHeight: 16,
-    },
-    divider: {
-        width: 1,
-        height: 24,
-        backgroundColor: '#E2E8F0',
-        marginHorizontal: 12,
-    },
-    editButton: {
-        margin: 0,
-        marginRight: 'auto',
+        fontSize: 12,
+        fontWeight: '700',
     },
 })

@@ -1,5 +1,5 @@
-import {StyleSheet, View, ScrollView, Image} from 'react-native'
-import {Card, Text, IconButton} from 'react-native-paper'
+import {StyleSheet, View, Image} from 'react-native'
+import {Text, Icon, TouchableRipple, useTheme} from 'react-native-paper'
 
 interface AddPartSummaryCardProps {
     makeName?: string
@@ -18,151 +18,78 @@ export const AddPartSummaryCard = ({
     categoryName,
     onEdit,
 }: AddPartSummaryCardProps) => {
-    if (!makeName && !modelName && !year && !categoryName) {
-        return null
-    }
+    const theme = useTheme()
+
+    if (!makeName && !modelName && !year && !categoryName) return null
+
+    const items = [
+        makeName && {
+            label: 'الماركة',
+            value: makeName,
+            logo: makeLogoUrl,
+        },
+        modelName && {label: 'الموديل', value: modelName},
+        year && {label: 'السنة', value: String(year)},
+        categoryName && {label: 'الفئة', value: categoryName},
+    ].filter(Boolean) as {label: string; value: string; logo?: string | null}[]
 
     return (
-        <Card style={styles.summaryCard} mode='outlined'>
-            <Card.Content style={styles.summaryContent}>
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.summaryScrollContent}
-                    style={styles.summaryScroll}>
-                    {makeName && (
-                        <View style={styles.summaryItem}>
-                            {makeLogoUrl ? (
-                                <View style={styles.logoCircle}>
-                                    <Image source={{uri: makeLogoUrl}} style={styles.summaryLogo} resizeMode='contain' />
-                                </View>
+        <TouchableRipple onPress={onEdit} borderless style={[styles.card, {backgroundColor: theme.colors.surface}]}>
+            <View style={styles.inner}>
+                <View style={styles.chips}>
+                    {items.map(item => (
+                        <View key={item.label} style={[styles.chip, {backgroundColor: theme.colors.surfaceVariant}]}>
+                            {item.logo ? (
+                                <Image source={{uri: item.logo}} style={styles.chipLogo} resizeMode="contain" />
                             ) : null}
-                            <View style={styles.textGroup}>
-                                <Text variant='labelSmall' style={styles.label}>
-                                    الماركة
-                                </Text>
-                                <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
-                                    {makeName}
-                                </Text>
-                            </View>
+                            <Text style={[styles.chipValue, {color: theme.colors.onSurface}]} numberOfLines={1}>
+                                {item.value}
+                            </Text>
                         </View>
-                    )}
-                    {modelName && (
-                        <>
-                            <View style={styles.divider} />
-                            <View style={styles.summaryItem}>
-                                <View style={styles.textGroup}>
-                                    <Text variant='labelSmall' style={styles.label}>
-                                        الموديل
-                                    </Text>
-                                    <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
-                                        {modelName}
-                                    </Text>
-                                </View>
-                            </View>
-                        </>
-                    )}
-                    {year && (
-                        <>
-                            <View style={styles.divider} />
-                            <View style={styles.summaryItem}>
-                                <View style={styles.textGroup}>
-                                    <Text variant='labelSmall' style={styles.label}>
-                                        السنة
-                                    </Text>
-                                    <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
-                                        {year}
-                                    </Text>
-                                </View>
-                            </View>
-                        </>
-                    )}
-                    {categoryName && (
-                        <>
-                            <View style={styles.divider} />
-                            <View style={styles.summaryItem}>
-                                <View style={styles.textGroup}>
-                                    <Text variant='labelSmall' style={styles.label}>
-                                        الفئة
-                                    </Text>
-                                    <Text variant='titleSmall' style={styles.value} numberOfLines={1}>
-                                        {categoryName}
-                                    </Text>
-                                </View>
-                            </View>
-                        </>
-                    )}
-                </ScrollView>
-                <IconButton icon='pencil-outline' size={20} onPress={onEdit} style={styles.editButton} />
-            </Card.Content>
-        </Card>
+                    ))}
+                </View>
+                <Icon source="pencil-outline" size={18} color={theme.colors.onSurfaceVariant} />
+            </View>
+        </TouchableRipple>
     )
 }
 
 const styles = StyleSheet.create({
-    summaryCard: {
-        marginBottom: 16,
+    card: {
         borderRadius: 12,
-        backgroundColor: '#fff',
-        borderColor: '#E2E8F0',
+        marginBottom: 14,
+        shadowColor: '#0F172A',
+        shadowOffset: {width: 0, height: 1},
+        shadowOpacity: 0.04,
+        shadowRadius: 4,
+        elevation: 1,
     },
-    summaryContent: {
-        flexDirection: 'row-reverse',
+    inner: {
+        flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 8,
-        paddingHorizontal: 12,
+        padding: 12,
+        gap: 8,
     },
-    summaryScroll: {
+    chips: {
         flex: 1,
-        minWidth: 0,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 6,
     },
-    summaryScrollContent: {
-        flexDirection: 'row-reverse',
+    chip: {
+        flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 4,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 8,
+        gap: 5,
     },
-    summaryItem: {
-        flexDirection: 'row-reverse',
-        alignItems: 'center',
-        maxWidth: 160,
+    chipLogo: {
+        width: 16,
+        height: 16,
     },
-    logoCircle: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: '#F8FAFC',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginLeft: 8,
-        borderWidth: 1,
-        borderColor: '#E2E8F0',
-    },
-    summaryLogo: {
-        width: 20,
-        height: 20,
-    },
-    textGroup: {
-        alignItems: 'flex-end',
-        minWidth: 0,
-        maxWidth: 140,
-    },
-    label: {
-        color: '#64748B',
-        fontSize: 10,
-    },
-    value: {
-        fontWeight: 'bold',
-        fontSize: 13,
-        lineHeight: 16,
-    },
-    divider: {
-        width: 1,
-        height: 24,
-        backgroundColor: '#E2E8F0',
-        marginHorizontal: 12,
-    },
-    editButton: {
-        margin: 0,
-        marginRight: 'auto',
+    chipValue: {
+        fontSize: 12,
+        fontWeight: '600',
     },
 })

@@ -1,22 +1,12 @@
 import {StyleSheet, View, TouchableOpacity} from 'react-native'
-import {ProgressBar, Text, IconButton, useTheme} from 'react-native-paper'
-
-const ARABIC_TEXT = {
-    STEPS: {
-        MAKE: 'الماركة',
-        MODEL: 'الموديل',
-        YEAR: 'السنة',
-        CATEGORY: 'الفئة',
-        DETAILS: 'التفاصيل',
-    },
-}
+import {Text, Icon, useTheme} from 'react-native-paper'
 
 const STEPS_INFO = [
-    {label: ARABIC_TEXT.STEPS.MAKE, icon: 'car-outline'},
-    {label: ARABIC_TEXT.STEPS.MODEL, icon: 'car-info'},
-    {label: ARABIC_TEXT.STEPS.YEAR, icon: 'calendar'},
-    {label: ARABIC_TEXT.STEPS.CATEGORY, icon: 'shape'},
-    {label: ARABIC_TEXT.STEPS.DETAILS, icon: 'pencil'},
+    {label: 'الماركة', icon: 'car-outline'},
+    {label: 'الموديل', icon: 'car-info'},
+    {label: 'السنة', icon: 'calendar'},
+    {label: 'الفئة', icon: 'shape'},
+    {label: 'التفاصيل', icon: 'text-box-outline'},
 ]
 
 export enum Step {
@@ -34,92 +24,75 @@ interface AddPartStepperProps {
 
 export const AddPartStepper = ({currentStep, onStepPress}: AddPartStepperProps) => {
     const theme = useTheme()
-    const progress = (currentStep + 1) / STEPS_INFO.length
 
     return (
-        <View style={[styles.stepperContainer, {backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.outline}]}>
-            <View style={styles.stepperHeader}>
+        <View style={[styles.container, {backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.surfaceVariant}]}>
+            <View style={styles.stepsRow}>
                 {STEPS_INFO.map((step, index) => {
                     const isActive = index === currentStep
                     const isCompleted = index < currentStep
-                    const isLast = index === STEPS_INFO.length - 1
-                    const stepValue = index as Step
-                    const isClickable = isCompleted || isActive
+                    const isClickable = isCompleted
+                    const stepVal = index as Step
 
-                    const handlePress = () => {
-                        if (isClickable && onStepPress) {
-                            onStepPress(stepValue)
-                        }
-                    }
+                    const dotColor = isActive
+                        ? theme.colors.primary
+                        : isCompleted
+                          ? theme.colors.primary
+                          : theme.colors.surfaceVariant
+                    const textColor = isActive
+                        ? theme.colors.primary
+                        : isCompleted
+                          ? theme.colors.onSurfaceVariant
+                          : theme.colors.outline
 
-                    const StepContent = (
-                        <>
-                            {!isLast && (
-                                <View
-                                    style={[
-                                        styles.stepLine,
-                                        {
-                                            backgroundColor: isCompleted ? theme.colors.primary : theme.colors.outline,
-                                        },
-                                    ]}
-                                />
-                            )}
+                    const Wrapper = isClickable ? TouchableOpacity : View
+                    const wrapperProps = isClickable
+                        ? {onPress: () => onStepPress?.(stepVal), activeOpacity: 0.6}
+                        : {}
+
+                    return (
+                        <Wrapper key={step.label} style={styles.stepItem} {...wrapperProps}>
                             <View
                                 style={[
-                                    styles.stepIndicator,
+                                    styles.dot,
                                     {
-                                        backgroundColor: isActive || isCompleted ? theme.colors.primary : theme.colors.surface,
-                                        borderColor: isActive || isCompleted ? theme.colors.primary : theme.colors.outline,
+                                        backgroundColor: dotColor,
+                                        borderColor: isActive ? theme.colors.primary : 'transparent',
                                     },
                                 ]}>
                                 {isCompleted ? (
-                                    <IconButton
-                                        icon='check'
-                                        size={16}
-                                        iconColor={theme.colors.onPrimary}
-                                        style={styles.stepIcon}
-                                    />
+                                    <Icon source="check" size={14} color={theme.colors.onPrimary} />
                                 ) : (
-                                    <IconButton
-                                        icon={step.icon}
-                                        size={16}
-                                        iconColor={isActive ? theme.colors.onPrimary : theme.colors.outline}
-                                        style={styles.stepIcon}
+                                    <Icon
+                                        source={step.icon}
+                                        size={14}
+                                        color={isActive ? theme.colors.onPrimary : theme.colors.outline}
                                     />
                                 )}
                             </View>
                             <Text
-                                variant='labelSmall'
                                 style={[
-                                    styles.stepLabel,
-                                    {
-                                        color: isActive ? theme.colors.primary : theme.colors.onSurfaceVariant,
-                                        fontWeight: isActive ? 'bold' : 'normal',
-                                    },
-                                ]}>
+                                    styles.label,
+                                    {color: textColor, fontWeight: isActive ? '700' : '400'},
+                                ]}
+                                numberOfLines={1}>
                                 {step.label}
                             </Text>
-                        </>
-                    )
-
-                    return (
-                        <View key={step.label} style={styles.stepItem}>
-                            {isClickable ? (
-                                <TouchableOpacity onPress={handlePress} activeOpacity={0.7} style={styles.stepTouchable}>
-                                    {StepContent}
-                                </TouchableOpacity>
-                            ) : (
-                                StepContent
-                            )}
-                        </View>
+                        </Wrapper>
                     )
                 })}
             </View>
-            <View style={styles.progressBarContainer}>
-                <ProgressBar
-                    progress={progress}
-                    color={theme.colors.primary}
-                    style={[styles.progressBar, {transform: [{scaleX: -1}]}]}
+
+            {/* Progress track */}
+            <View style={[styles.progressTrack, {backgroundColor: theme.colors.surfaceVariant}]}>
+                <View
+                    style={[
+                        styles.progressFill,
+                        {
+                            backgroundColor: theme.colors.primary,
+                            width: `${((currentStep + 1) / STEPS_INFO.length) * 100}%`,
+                        },
+                    ]}
                 />
             </View>
         </View>
@@ -127,66 +100,41 @@ export const AddPartStepper = ({currentStep, onStepPress}: AddPartStepperProps) 
 }
 
 const styles = StyleSheet.create({
-    stepperContainer: {
-        paddingTop: 16,
+    container: {
+        paddingTop: 14,
+        paddingBottom: 12,
         borderBottomWidth: 1,
     },
-    stepperHeader: {
+    stepsRow: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        paddingHorizontal: 8,
-        marginBottom: 8,
+        paddingHorizontal: 12,
+        marginBottom: 12,
     },
     stepItem: {
         alignItems: 'center',
         flex: 1,
-        position: 'relative',
+        gap: 4,
     },
-    stepTouchable: {
-        alignItems: 'center',
-        width: '100%',
-    },
-    stepLine: {
-        position: 'absolute',
-        top: 18,
-        left: '50%',
-        width: '100%',
-        height: 2,
-        zIndex: 0,
-    },
-    stepIndicator: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        borderWidth: 2,
+    dot: {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 4,
-        zIndex: 1,
     },
-    stepIcon: {
-        margin: 0,
-        width: 36,
-        height: 36,
-    },
-    stepLabel: {
-        textAlign: 'center',
+    label: {
         fontSize: 10,
+        textAlign: 'center',
     },
-    progressBarContainer: {
-        marginTop: 8,
+    progressTrack: {
+        height: 4,
         marginHorizontal: 16,
-        borderRadius: 8,
+        borderRadius: 2,
         overflow: 'hidden',
-        backgroundColor: 'rgba(0, 0, 0, 0.05)',
-        elevation: 1,
-        shadowColor: '#000',
-        shadowOffset: {width: 0, height: 1},
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
     },
-    progressBar: {
-        height: 6,
-        borderRadius: 8,
+    progressFill: {
+        height: '100%',
+        borderRadius: 2,
     },
 })
