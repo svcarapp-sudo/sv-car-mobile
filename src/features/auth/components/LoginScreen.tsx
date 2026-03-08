@@ -1,7 +1,8 @@
 import {useState} from 'react'
 import {StyleSheet, View, KeyboardAvoidingView, Platform} from 'react-native'
-import {Text, TextInput, Button, useTheme, HelperText} from 'react-native-paper'
+import {Text, TextInput, Button, HelperText} from 'react-native-paper'
 
+import {useAppTheme} from '@/global/hooks'
 import {useAuthStore} from '@/global/store'
 import {authService} from '../services'
 
@@ -32,7 +33,7 @@ interface LoginScreenProps {
 }
 
 export const LoginScreen = ({navigation}: LoginScreenProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
     const login = useAuthStore(s => s.login)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')

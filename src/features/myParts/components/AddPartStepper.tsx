@@ -1,5 +1,6 @@
 import {StyleSheet, View, TouchableOpacity} from 'react-native'
-import {Text, Icon, useTheme} from 'react-native-paper'
+import {Text, Icon} from 'react-native-paper'
+import {useAppTheme} from '@/global/hooks'
 
 const STEPS_INFO = [
     {label: 'الماركة', icon: 'car-outline'},
@@ -23,7 +24,7 @@ interface AddPartStepperProps {
 }
 
 export const AddPartStepper = ({currentStep, onStepPress}: AddPartStepperProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.surfaceVariant}]}>

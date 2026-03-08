@@ -1,5 +1,6 @@
 import {StyleSheet, View, ScrollView} from 'react-native'
-import {Text, TextInput, Button, useTheme, Icon} from 'react-native-paper'
+import {Text, TextInput, Button, Icon} from 'react-native-paper'
+import {useAppTheme} from '@/global/hooks'
 
 const ARABIC_TEXT = {
     PART_NAME: 'اسم القطعة',
@@ -55,7 +56,7 @@ export const AddPartDetailsForm = ({
     submitLabel = ARABIC_TEXT.SUBMIT,
     submitLoadingLabel = ARABIC_TEXT.LOADING,
 }: AddPartDetailsFormProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     return (
         <ScrollView

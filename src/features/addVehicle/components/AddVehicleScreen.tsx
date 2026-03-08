@@ -1,10 +1,9 @@
 import {useState} from 'react'
 import {StyleSheet, View} from 'react-native'
-import {useTheme} from 'react-native-paper'
 
 import type {RootStackParamList} from '@/global/navigation/types'
 
-import {useVehicleInfo, useVehicleApi} from '@/global/hooks'
+import {useAppTheme, useVehicleInfo, useVehicleApi} from '@/global/hooks'
 import {ManufacturerScreen, ModelScreen, YearScreen} from '@/global/components'
 
 import type {NavigationProp} from '@react-navigation/native'
@@ -24,7 +23,7 @@ interface AddVehicleScreenProps {
 export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => {
     const vehicleInfo = useVehicleInfo()
     const {createVehicle, updateVehicle, loading: submitLoading, error: submitError} = useVehicleApi()
-    const theme = useTheme()
+    const theme = useAppTheme()
     const editVehicleId = route?.params?.vehicleId
     const [currentStep, setCurrentStep] = useState<Step>(Step.Origin)
     const [originId, setOriginId] = useState<number | null>(null)

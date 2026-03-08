@@ -22,15 +22,15 @@ export interface ModelApi {
     name: string
 }
 
-/** Spring Data Page response shape */
+/** Spring Data Page response shape (VIA_DTO) */
 export interface PageResponse<T> {
     content: T[]
-    totalElements: number
-    totalPages: number
-    size: number
-    number: number
-    first?: boolean
-    last?: boolean
+    page: {
+        totalElements: number
+        totalPages: number
+        size: number
+        number: number
+    }
 }
 
 const CATALOG_PREFIX = '/api/catalog'

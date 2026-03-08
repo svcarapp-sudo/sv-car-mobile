@@ -1,5 +1,8 @@
 import {StyleSheet, View, Image} from 'react-native'
-import {Text, Icon, TouchableRipple, useTheme} from 'react-native-paper'
+import {Text, Icon, TouchableRipple} from 'react-native-paper'
+
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 
 interface AddPartSummaryCardProps {
     makeName?: string
@@ -18,7 +21,7 @@ export const AddPartSummaryCard = ({
     categoryName,
     onEdit,
 }: AddPartSummaryCardProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     if (!makeName && !modelName && !year && !categoryName) return null
 
@@ -58,7 +61,7 @@ const styles = StyleSheet.create({
     card: {
         borderRadius: 12,
         marginBottom: 14,
-        shadowColor: '#0F172A',
+        shadowColor: themeColors.shadow,
         shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.04,
         shadowRadius: 4,

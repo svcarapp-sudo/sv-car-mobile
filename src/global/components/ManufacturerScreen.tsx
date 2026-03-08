@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react'
 import {StyleSheet, View, TouchableOpacity, FlatList, Image} from 'react-native'
-import {Text, useTheme, ActivityIndicator, Icon} from 'react-native-paper'
+import {Text, ActivityIndicator, Icon} from 'react-native-paper'
 
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 import type {MakeApi} from '../services/catalogService'
-
-const AMBER = '#F59E0B'
 
 const ARABIC_TEXT = {
     SELECT_MANUFACTURER: 'اختر الشركة المصنعة',
@@ -28,7 +28,7 @@ export const ManufacturerScreen = ({
     onSelect,
     onNext,
 }: ManufacturerScreenProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
     const [makes, setMakes] = useState<MakeApi[]>([])
     const [loading, setLoading] = useState(false)
 
@@ -87,7 +87,7 @@ export const ManufacturerScreen = ({
                     {isSelected && (
                         <View style={styles.selectedBadge}>
                             <View style={styles.selectedBadgeCircle}>
-                                <Icon source='check' size={9} color='#FFFFFF' />
+                                <Icon source='check' size={9} color={theme.colors.onPrimary} />
                             </View>
                         </View>
                     )}
@@ -112,7 +112,7 @@ export const ManufacturerScreen = ({
     if (loading && makes.length === 0) {
         return (
             <View style={styles.centered}>
-                <ActivityIndicator size='large' color={AMBER} />
+                <ActivityIndicator size='large' color={theme.colors.tertiary} />
                 <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant, marginTop: 16}}>
                     {ARABIC_TEXT.LOADING}
                 </Text>
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
         width: 6,
         height: 6,
         borderRadius: 3,
-        backgroundColor: AMBER,
+        backgroundColor: themeColors.tertiary,
         marginEnd: 8,
     },
     sectionTitle: {
@@ -208,16 +208,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 6,
         borderWidth: 1.5,
         borderColor: 'transparent',
-        shadowColor: '#000',
+        shadowColor: themeColors.shadowLight,
         shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.05,
         shadowRadius: 3,
         elevation: 1,
     },
     cardSelected: {
-        borderColor: AMBER,
-        backgroundColor: 'rgba(245, 158, 11, 0.04)',
-        shadowColor: AMBER,
+        borderColor: themeColors.tertiary,
+        backgroundColor: themeColors.accentSubtle,
+        shadowColor: themeColors.tertiary,
         shadowOpacity: 0.12,
         shadowRadius: 8,
         elevation: 3,
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
         width: 18,
         height: 18,
         borderRadius: 9,
-        backgroundColor: AMBER,
+        backgroundColor: themeColors.tertiary,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -242,14 +242,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 8,
-        backgroundColor: '#F8FAFC',
+        backgroundColor: themeColors.background,
         borderRadius: 30,
         borderWidth: 2,
-        borderColor: '#E2E8F0',
+        borderColor: themeColors.primaryContainer,
     },
     logoContainerSelected: {
-        borderColor: AMBER,
-        backgroundColor: 'rgba(245, 158, 11, 0.06)',
+        borderColor: themeColors.tertiary,
+        backgroundColor: themeColors.accentFaded,
     },
     logo: {
         width: 38,

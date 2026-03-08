@@ -1,7 +1,8 @@
 import {StyleSheet, ScrollView, View} from 'react-native'
-import {TextInput, Button, Text, Icon, useTheme, HelperText} from 'react-native-paper'
+import {TextInput, Button, Text, Icon, HelperText} from 'react-native-paper'
 
-const AMBER = '#F59E0B'
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 
 const ARABIC_TEXT = {
     VIN_DETAILS: 'التفاصيل الإضافية',
@@ -35,7 +36,7 @@ export const AddVinScreen = ({
     loading = false,
     error = null,
 }: VinScreenProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     return (
         <ScrollView style={styles.stepContent} showsVerticalScrollIndicator={false}>
@@ -52,7 +53,7 @@ export const AddVinScreen = ({
             <View style={[styles.fieldCard, {backgroundColor: theme.colors.surface}]}>
                 <View style={styles.fieldHeader}>
                     <View style={styles.fieldIconWrap}>
-                        <Icon source='barcode' size={18} color={AMBER} />
+                        <Icon source='barcode' size={18} color={theme.colors.tertiary} />
                     </View>
                     <View style={styles.fieldHeaderText}>
                         <View style={styles.fieldLabelRow}>
@@ -78,7 +79,7 @@ export const AddVinScreen = ({
                     maxLength={17}
                     outlineStyle={styles.inputOutline}
                     outlineColor={theme.colors.outline}
-                    activeOutlineColor={AMBER}
+                    activeOutlineColor={theme.colors.tertiary}
                     dense
                 />
             </View>
@@ -87,7 +88,7 @@ export const AddVinScreen = ({
             <View style={[styles.fieldCard, {backgroundColor: theme.colors.surface}]}>
                 <View style={styles.fieldHeader}>
                     <View style={styles.fieldIconWrap}>
-                        <Icon source='label-outline' size={18} color={AMBER} />
+                        <Icon source='label-outline' size={18} color={theme.colors.tertiary} />
                     </View>
                     <View style={styles.fieldHeaderText}>
                         <View style={styles.fieldLabelRow}>
@@ -111,7 +112,7 @@ export const AddVinScreen = ({
                     style={styles.input}
                     outlineStyle={styles.inputOutline}
                     outlineColor={theme.colors.outline}
-                    activeOutlineColor={AMBER}
+                    activeOutlineColor={theme.colors.tertiary}
                     dense
                 />
             </View>
@@ -129,8 +130,8 @@ export const AddVinScreen = ({
                 disabled={loading}
                 style={styles.submitButton}
                 contentStyle={styles.submitButtonContent}
-                buttonColor='#0F172A'
-                textColor='#FFFFFF'
+                buttonColor={theme.colors.surfaceDark}
+                textColor={theme.colors.onPrimary}
                 icon='check-bold'>
                 {ARABIC_TEXT.SUBMIT_BUTTON}
             </Button>
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         padding: 18,
         marginBottom: 14,
-        shadowColor: '#000',
+        shadowColor: themeColors.shadowLight,
         shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.06,
         shadowRadius: 4,
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
         width: 38,
         height: 38,
         borderRadius: 12,
-        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        backgroundColor: themeColors.accentGlow,
         justifyContent: 'center',
         alignItems: 'center',
         marginEnd: 14,
@@ -198,12 +199,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 6,
-        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        backgroundColor: themeColors.accentGlow,
     },
     optionalText: {
         fontSize: 9,
         fontWeight: '600',
-        color: AMBER,
+        color: themeColors.tertiary,
     },
     input: {
         backgroundColor: 'transparent',
@@ -220,7 +221,7 @@ const styles = StyleSheet.create({
         marginBottom: 32,
         borderRadius: 14,
         elevation: 0,
-        shadowColor: '#0F172A',
+        shadowColor: themeColors.shadow,
         shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.2,
         shadowRadius: 12,

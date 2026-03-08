@@ -1,7 +1,9 @@
 import React from 'react'
-import {Image, StyleSheet, View} from 'react-native'
-import {Icon, IconButton, Text, useTheme} from 'react-native-paper'
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native'
+import {Icon, Text} from 'react-native-paper'
 
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 import {Vehicle} from '@/global/types'
 
 interface VehicleSummaryProps {
@@ -9,255 +11,146 @@ interface VehicleSummaryProps {
     onChangeVehicle: () => void
 }
 
-const ARABIC_TEXT = {
-    MAKE: 'الماركة',
-    MODEL: 'الموديل',
-    YEAR: 'السنة',
-    FUEL: 'الوقود',
-}
-
-interface DetailItemProps {
+interface DetailChipProps {
     icon: string
-    label: string
-    value: string
-    color: string
-    labelColor: string
-    iconBg: string
-    iconColor: string
+    text: string
 }
 
-const DetailItem = ({icon, label, value, color, labelColor, iconBg, iconColor}: DetailItemProps) => (
-    <View style={detailStyles.item}>
-        <View style={[detailStyles.iconWrap, {backgroundColor: iconBg}]}>
-            <Icon source={icon} size={14} color={iconColor} />
-        </View>
-        <Text style={[detailStyles.label, {color: labelColor}]}>{label}</Text>
-        <Text style={[detailStyles.value, {color}]}>{value}</Text>
+const DetailChip = ({icon, text}: DetailChipProps) => (
+    <View style={chipStyles.chip}>
+        <Icon source={icon} size={12} color={themeColors.onDarkMedium} />
+        <Text style={chipStyles.text}>{text}</Text>
     </View>
 )
 
-const detailStyles = StyleSheet.create({
-    item: {
+const chipStyles = StyleSheet.create({
+    chip: {
+        flexDirection: 'row',
         alignItems: 'center',
-        flex: 1,
+        gap: 4,
+        backgroundColor: themeColors.onDarkSurfaceLight,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: themeColors.onDarkDivider,
     },
-    iconWrap: {
-        width: 28,
-        height: 28,
-        borderRadius: 9,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 6,
-    },
-    label: {
-        fontSize: 10,
-        letterSpacing: 0.5,
-        marginBottom: 2,
-        opacity: 0.65,
-    },
-    value: {
-        fontSize: 13,
-        fontWeight: '600',
-        letterSpacing: 0.15,
+    text: {
+        color: themeColors.onDarkHigh,
+        fontSize: 11,
+        fontWeight: '500',
+        letterSpacing: 0.1,
     },
 })
 
 export const VehicleSummary = ({vehicle, onChangeVehicle}: VehicleSummaryProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     return (
-        <View style={styles.card}>
-            {/* Dark Header */}
-            <View style={[styles.darkHeader, {backgroundColor: theme.colors.primary}]}>
-                <View style={styles.headerRow}>
-                    <View style={styles.logoRing}>
-                        <View style={styles.logoContainer}>
+        <TouchableOpacity activeOpacity={0.8} onPress={onChangeVehicle} style={styles.card}>
+            <View style={[styles.cardBody, {backgroundColor: theme.colors.primary}]}>
+                {/* Top row: logo + name + edit */}
+                <View style={styles.topRow}>
+                    <View style={[styles.logoRing, {borderColor: theme.colors.tertiary}]}>
+                        <View style={styles.logoInner}>
                             {vehicle.makeLogoUrl ? (
                                 <Image source={{uri: vehicle.makeLogoUrl}} style={styles.logo} resizeMode='contain' />
                             ) : (
-                                <Icon source='car-side' size={28} color='rgba(255,255,255,0.7)' />
+                                <Icon source='car-side' size={20} color={theme.colors.onDarkMedium} />
                             )}
                         </View>
                     </View>
-                    <View style={styles.headerText}>
-                        <Text variant='titleLarge' style={styles.vehicleName}>
+
+                    <View style={styles.nameBlock}>
+                        <Text style={styles.vehicleName} numberOfLines={1}>
                             {vehicle.make} {vehicle.model}
                         </Text>
-                        <View style={styles.chipRow}>
-                            {vehicle.year && (
-                                <View style={styles.chip}>
-                                    <Text style={styles.chipText}>{vehicle.year}</Text>
-                                </View>
-                            )}
-                            {vehicle.fuelType && (
-                                <View style={styles.chip}>
-                                    <Text style={styles.chipText}>{vehicle.fuelType}</Text>
-                                </View>
-                            )}
-                        </View>
                     </View>
-                    <IconButton
-                        icon='pencil-outline'
-                        size={18}
-                        iconColor='rgba(255,255,255,0.7)'
-                        onPress={onChangeVehicle}
-                        style={styles.editButton}
-                    />
+
+                    <View style={styles.editBtn}>
+                        <Icon source='swap-horizontal' size={16} color={theme.colors.onDarkMedium} />
+                    </View>
+                </View>
+
+                {/* Detail chips */}
+                <View style={styles.detailRow}>
+                    {vehicle.year && <DetailChip icon='calendar-outline' text={vehicle.year.toString()} />}
+                    {vehicle.fuelType && <DetailChip icon='gas-station-outline' text={vehicle.fuelType} />}
+                    {vehicle.engine && <DetailChip icon='engine-outline' text={vehicle.engine} />}
                 </View>
             </View>
 
-            {/* Light Details */}
-            <View style={[styles.detailsSection, {backgroundColor: theme.colors.surface}]}>
-                <View style={styles.detailsGrid}>
-                    {vehicle.make && (
-                        <DetailItem
-                            icon='car'
-                            label={ARABIC_TEXT.MAKE}
-                            value={vehicle.make}
-                            color={theme.colors.onSurface}
-                            labelColor={theme.colors.onSurfaceVariant}
-                            iconBg={theme.colors.primaryContainer}
-                            iconColor={theme.colors.primary}
-                        />
-                    )}
-                    {vehicle.make && vehicle.model && (
-                        <View style={[styles.gridDivider, {backgroundColor: theme.colors.outline}]} />
-                    )}
-                    {vehicle.model && (
-                        <DetailItem
-                            icon='tag-outline'
-                            label={ARABIC_TEXT.MODEL}
-                            value={vehicle.model}
-                            color={theme.colors.onSurface}
-                            labelColor={theme.colors.onSurfaceVariant}
-                            iconBg={theme.colors.primaryContainer}
-                            iconColor={theme.colors.primary}
-                        />
-                    )}
-                    {vehicle.model && vehicle.year && (
-                        <View style={[styles.gridDivider, {backgroundColor: theme.colors.outline}]} />
-                    )}
-                    {vehicle.year && (
-                        <DetailItem
-                            icon='calendar-range'
-                            label={ARABIC_TEXT.YEAR}
-                            value={vehicle.year.toString()}
-                            color={theme.colors.onSurface}
-                            labelColor={theme.colors.onSurfaceVariant}
-                            iconBg={theme.colors.primaryContainer}
-                            iconColor={theme.colors.primary}
-                        />
-                    )}
-                    {vehicle.year && vehicle.fuelType && (
-                        <View style={[styles.gridDivider, {backgroundColor: theme.colors.outline}]} />
-                    )}
-                    {vehicle.fuelType && (
-                        <DetailItem
-                            icon='gas-station'
-                            label={ARABIC_TEXT.FUEL}
-                            value={vehicle.fuelType}
-                            color={theme.colors.onSurface}
-                            labelColor={theme.colors.onSurfaceVariant}
-                            iconBg={theme.colors.primaryContainer}
-                            iconColor={theme.colors.primary}
-                        />
-                    )}
-                </View>
-            </View>
-
-            {/* Racing Accent Stripe */}
-            <View style={[styles.accentBar, {backgroundColor: theme.colors.tertiary}]} />
-        </View>
+            {/* Bottom accent */}
+            <View style={[styles.accent, {backgroundColor: theme.colors.tertiary}]} />
+        </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
     card: {
-        borderRadius: 24,
+        borderRadius: 16,
         overflow: 'hidden',
-        marginBottom: 24,
-        shadowColor: '#0F172A',
-        shadowOffset: {width: 0, height: 6},
-        shadowOpacity: 0.14,
-        shadowRadius: 16,
-        elevation: 6,
+        marginBottom: 20,
+        shadowColor: themeColors.shadow,
+        shadowOffset: {width: 0, height: 4},
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+        elevation: 5,
     },
-    darkHeader: {
-        paddingHorizontal: 20,
-        paddingVertical: 20,
+    cardBody: {
+        paddingHorizontal: 16,
+        paddingTop: 14,
+        paddingBottom: 12,
     },
-    headerRow: {
+    topRow: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     logoRing: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
+        width: 46,
+        height: 46,
+        borderRadius: 23,
         borderWidth: 2,
-        borderColor: 'rgba(255,255,255,0.18)',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    logoContainer: {
-        width: 52,
-        height: 52,
-        borderRadius: 26,
-        backgroundColor: 'rgba(255,255,255,0.1)',
+    logoInner: {
+        width: 38,
+        height: 38,
+        borderRadius: 19,
+        backgroundColor: '#FFFFFF',
         justifyContent: 'center',
         alignItems: 'center',
     },
     logo: {
-        width: 34,
-        height: 34,
+        width: 26,
+        height: 26,
     },
-    headerText: {
+    nameBlock: {
         flex: 1,
-        marginHorizontal: 14,
+        marginHorizontal: 12,
     },
     vehicleName: {
-        color: '#FFFFFF',
+        color: themeColors.onPrimary,
+        fontSize: 17,
         fontWeight: '700',
-        letterSpacing: -0.3,
-        lineHeight: 28,
-        marginBottom: 8,
+        letterSpacing: -0.2,
     },
-    chipRow: {
-        flexDirection: 'row',
-        gap: 8,
-    },
-    chip: {
-        backgroundColor: 'rgba(255,255,255,0.14)',
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 8,
-    },
-    chipText: {
-        color: 'rgba(255,255,255,0.85)',
-        fontSize: 12,
-        fontWeight: '500',
-        letterSpacing: 0.3,
-    },
-    editButton: {
-        margin: 0,
-        backgroundColor: 'rgba(255,255,255,0.1)',
-        borderRadius: 12,
-    },
-    detailsSection: {
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-    },
-    detailsGrid: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
+    editBtn: {
+        width: 30,
+        height: 30,
+        borderRadius: 10,
+        backgroundColor: themeColors.onDarkSurface,
+        justifyContent: 'center',
         alignItems: 'center',
     },
-    gridDivider: {
-        width: 1,
-        height: 32,
-        opacity: 0.15,
+    detailRow: {
+        flexDirection: 'row',
+        gap: 6,
+        marginTop: 10,
+        paddingStart: 58,
     },
-    accentBar: {
-        height: 4,
+    accent: {
+        height: 3,
     },
 })

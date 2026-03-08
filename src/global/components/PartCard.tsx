@@ -1,5 +1,7 @@
 import {StyleSheet, View, Image, TouchableOpacity} from 'react-native'
-import {Icon, Text, useTheme} from 'react-native-paper'
+import {Icon, Text} from 'react-native-paper'
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 import type {Part, PartCategoryApi} from '@/global/types'
 
 const ARABIC_TEXT = {
@@ -21,7 +23,7 @@ interface PartCardProps {
 }
 
 export const PartCard = ({part, makeInfo, modelInfo, categoryInfo, onPress, showStockStatus = false}: PartCardProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
     const hasVehicleInfo = makeInfo || modelInfo || part.year
 
     const content = (
@@ -49,8 +51,8 @@ export const PartCard = ({part, makeInfo, modelInfo, categoryInfo, onPress, show
                     )}
                     {showStockStatus && (
                         <View style={styles.stockRow}>
-                            <View style={[styles.stockDot, {backgroundColor: part.inStock ? '#22C55E' : '#EF4444'}]} />
-                            <Text style={[styles.stockText, {color: part.inStock ? '#16A34A' : '#DC2626'}]}>
+                            <View style={[styles.stockDot, {backgroundColor: part.inStock ? theme.colors.successBright : theme.colors.error}]} />
+                            <Text style={[styles.stockText, {color: part.inStock ? theme.colors.success : theme.colors.errorDark}]}>
                                 {part.inStock ? ARABIC_TEXT.IN_STOCK : ARABIC_TEXT.OUT_OF_STOCK}
                             </Text>
                         </View>
@@ -58,7 +60,7 @@ export const PartCard = ({part, makeInfo, modelInfo, categoryInfo, onPress, show
                 </View>
 
                 {/* Price accent */}
-                <View style={[styles.priceBox, {backgroundColor: '#FFF7ED'}]}>
+                <View style={[styles.priceBox, {backgroundColor: theme.colors.accentContainer}]}>
                     <Text style={[styles.priceCurrency, {color: theme.colors.tertiary}]}>$</Text>
                     <Text style={[styles.priceValue, {color: theme.colors.tertiary}]}>{part.price.toFixed(2)}</Text>
                 </View>
@@ -124,7 +126,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         marginBottom: 12,
         padding: 16,
-        shadowColor: '#0F172A',
+        shadowColor: themeColors.shadow,
         shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.07,
         shadowRadius: 8,
@@ -138,7 +140,7 @@ const styles = StyleSheet.create({
         width: 64,
         height: 64,
         borderRadius: 14,
-        backgroundColor: '#F1F5F9',
+        backgroundColor: themeColors.surfaceVariant,
         marginEnd: 14,
     },
     iconFallback: {

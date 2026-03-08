@@ -9,11 +9,12 @@ import {PartsCategoriesScreen, PartsListScreen, PartDetailScreen} from '@/featur
 import {HomeScreen} from '@/features/home'
 import {AddVehicleScreen} from '@/features/addVehicle'
 import {MyPartsListScreen, AddPartScreen, EditPartScreen} from '@/features/myParts'
-import {AppHeader, MainLayout} from '@/global/layouts'
+import {MainLayout} from '@/global/layouts'
 
 import {LaunchScreen} from '../components'
 
 import type {RootStackParamList} from './types'
+import {navigationRef} from './navigationRef'
 
 const ARABIC_TEXT = {
     MY_VEHICLE: 'مركبتي',
@@ -39,7 +40,7 @@ const MainFlow = () => {
             <Stack.Navigator
                 initialRouteName='Home'
                 screenOptions={{
-                    header: props => <AppHeader {...props} />,
+                    headerShown: false,
                 }}>
                 <Stack.Screen
                     name='Home'
@@ -105,7 +106,7 @@ const MainFlow = () => {
 
 export const AppNavigator = () => {
     return (
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
             <Stack.Navigator screenOptions={{headerShown: false}}>
                 <Stack.Screen name='Launch' component={LaunchScreen} />
                 <Stack.Screen name='Login' component={LoginScreen} />

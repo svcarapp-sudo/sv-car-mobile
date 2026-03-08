@@ -1,5 +1,6 @@
 import {StyleSheet, View, ScrollView} from 'react-native'
-import {Text, useTheme} from 'react-native-paper'
+import {Text} from 'react-native-paper'
+import {useAppTheme} from '@/global/hooks'
 import type {PartCategoryApi} from '@/global/types'
 import {CategoryGrid} from './CategoryGrid'
 
@@ -16,7 +17,7 @@ interface CategoryScreenProps {
 }
 
 export const CategoryScreen = ({categories, loading, valueId, onSelect, onNext}: CategoryScreenProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     const handleSelect = (category: PartCategoryApi) => {
         onSelect(category.id, category.name)

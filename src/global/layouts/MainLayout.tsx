@@ -1,6 +1,8 @@
 import React, {useEffect, useMemo, useCallback, useState} from 'react'
 import {StyleSheet, View, Animated, TouchableWithoutFeedback, Dimensions, PanResponder, I18nManager} from 'react-native'
 
+import {themeColors} from '@/global/theme'
+import {AppHeader} from './AppHeader'
 import {AppDrawer} from './AppDrawer'
 import {BottomNav} from './BottomNav'
 import {useLayoutStore} from './layoutStore'
@@ -90,6 +92,7 @@ export const MainLayout = ({children, onLogout}: MainLayoutProps) => {
 
     return (
         <View style={styles.container}>
+            <AppHeader />
             <View style={styles.content}>{children}</View>
             <BottomNav />
 
@@ -118,7 +121,7 @@ const styles = StyleSheet.create({
     },
     backdrop: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.5)',
+        backgroundColor: themeColors.backdrop,
         zIndex: 99,
     },
     drawerContainer: {

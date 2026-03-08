@@ -1,7 +1,9 @@
 import {StyleSheet, View, ScrollView} from 'react-native'
 
-import {Drawer, Text, Avatar, useTheme, Divider} from 'react-native-paper'
+import {Drawer, Text, Avatar, Divider} from 'react-native-paper'
 
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 import {useAuthStore} from '@/global/store'
 import {useLayoutStore} from './layoutStore'
 
@@ -26,7 +28,7 @@ interface AppDrawerProps {
 }
 
 export const AppDrawer = ({onClose, onLogout}: AppDrawerProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
     const {toggleDrawer} = useLayoutStore()
     const user = useAuthStore(s => s.user)
     const logout = useAuthStore(s => s.logout)
@@ -116,7 +118,7 @@ const styles = StyleSheet.create({
     footer: {
         padding: 16,
         borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: 'rgba(0,0,0,0.1)',
+        borderTopColor: themeColors.scrim,
         alignItems: 'center',
     },
     version: {

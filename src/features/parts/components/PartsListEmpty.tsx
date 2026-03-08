@@ -1,6 +1,9 @@
 import React, {useEffect, useRef} from 'react'
 import {Animated, StyleSheet, View} from 'react-native'
-import {ActivityIndicator, Button, Icon, Text, useTheme} from 'react-native-paper'
+import {ActivityIndicator, Button, Icon, Text} from 'react-native-paper'
+
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 import type {NavigationProp} from '@react-navigation/native'
 import type {RootStackParamList} from '@/global/navigation/types'
 
@@ -19,7 +22,7 @@ interface PartsListEmptyProps {
 }
 
 export const PartsListEmpty = ({loading, categoryName, navigation}: PartsListEmptyProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
     const fadeIn = useRef(new Animated.Value(0)).current
 
     useEffect(() => {
@@ -86,7 +89,7 @@ const styles = StyleSheet.create({
         borderRadius: 24,
         padding: 32,
         alignItems: 'center',
-        shadowColor: '#0F172A',
+        shadowColor: themeColors.shadow,
         shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.08,
         shadowRadius: 12,

@@ -1,9 +1,10 @@
 import {ScrollView, StyleSheet, View, TouchableOpacity} from 'react-native'
 import type {NavigationProp} from '@react-navigation/native'
-import {ActivityIndicator, Icon, Text, useTheme} from 'react-native-paper'
+import {ActivityIndicator, Icon, Text} from 'react-native-paper'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {PartCategory} from '@/global/types'
-import {useParts, usePartCategories} from '@/global/hooks'
+import {useAppTheme, useParts, usePartCategories} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 
 const ARABIC_TEXT = {
     TITLE: 'تصفح قطع الغيار',
@@ -23,7 +24,7 @@ export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({nav
     const {selectCategory} = useParts()
     const {categories, loading} = usePartCategories()
     const categoriesList = categories ?? []
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     const handleSelectCategory = (slug: PartCategory) => {
         selectCategory(slug)
@@ -59,15 +60,15 @@ export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({nav
             <TouchableOpacity onPress={handleViewAllParts} activeOpacity={0.8}>
                 <View style={[styles.viewAllBanner, {backgroundColor: theme.colors.primary}]}>
                     <View style={styles.viewAllContent}>
-                        <View style={[styles.viewAllIcon, {backgroundColor: 'rgba(255,255,255,0.12)'}]}>
-                            <Icon source='view-grid-outline' size={22} color='#FFFFFF' />
+                        <View style={[styles.viewAllIcon, {backgroundColor: theme.colors.onDarkContainer}]}>
+                            <Icon source='view-grid-outline' size={22} color={theme.colors.onPrimary} />
                         </View>
                         <View style={styles.viewAllText}>
                             <Text style={styles.viewAllTitle}>{ARABIC_TEXT.VIEW_ALL}</Text>
                             <Text style={styles.viewAllDesc}>{ARABIC_TEXT.VIEW_ALL_DESC}</Text>
                         </View>
                     </View>
-                    <Icon source='chevron-left' size={22} color='rgba(255,255,255,0.6)' />
+                    <Icon source='chevron-left' size={22} color={theme.colors.onDarkLow} />
                 </View>
             </TouchableOpacity>
 
@@ -194,14 +195,14 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     viewAllTitle: {
-        color: '#FFFFFF',
+        color: themeColors.onPrimary,
         fontSize: 16,
         fontWeight: '700',
         letterSpacing: -0.1,
         marginBottom: 2,
     },
     viewAllDesc: {
-        color: 'rgba(255,255,255,0.65)',
+        color: themeColors.onDarkLow,
         fontSize: 12,
         letterSpacing: 0.1,
     },
@@ -231,7 +232,7 @@ const styles = StyleSheet.create({
     categoryCard: {
         borderRadius: 20,
         padding: 18,
-        shadowColor: '#0F172A',
+        shadowColor: themeColors.shadow,
         shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.06,
         shadowRadius: 8,

@@ -1,8 +1,9 @@
 import React from 'react'
 import {StyleSheet, TouchableOpacity, View} from 'react-native'
-import {ActivityIndicator, Button, Icon, Text, useTheme} from 'react-native-paper'
+import {ActivityIndicator, Button, Icon, Text} from 'react-native-paper'
 
-import {usePartCategories} from '@/global/hooks'
+import {useAppTheme, usePartCategories} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 import type {PartCategory, PartCategoryApi} from '@/global/types'
 
 interface CategoryGridProps {
@@ -24,19 +25,19 @@ interface CategoryTileProps {
 }
 
 const CategoryTile = ({category, onPress}: CategoryTileProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     return (
         <TouchableOpacity style={tileStyles.wrapper} onPress={onPress} activeOpacity={0.65}>
             <View style={[tileStyles.tile, {backgroundColor: theme.colors.surface}]}>
                 <View style={[tileStyles.iconBox, {backgroundColor: theme.colors.primaryContainer}]}>
-                    <Icon source={category.icon || 'package-variant'} size={22} color={theme.colors.primary} />
+                    <Icon source={category.icon || 'package-variant'} size={20} color={theme.colors.primary} />
                 </View>
                 <Text style={[tileStyles.name, {color: theme.colors.onSurface}]} numberOfLines={1} ellipsizeMode='tail'>
                     {category.name}
                 </Text>
                 <View style={tileStyles.arrowWrap}>
-                    <Icon source='chevron-left' size={16} color={theme.colors.onSurfaceVariant} />
+                    <Icon source='chevron-left' size={14} color={theme.colors.onSurfaceVariant} />
                 </View>
             </View>
         </TouchableOpacity>
@@ -46,34 +47,34 @@ const CategoryTile = ({category, onPress}: CategoryTileProps) => {
 const tileStyles = StyleSheet.create({
     wrapper: {
         width: '50%',
-        padding: 5,
+        padding: 4,
     },
     tile: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 14,
-        paddingHorizontal: 14,
-        borderRadius: 16,
-        shadowColor: '#0F172A',
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        borderRadius: 14,
+        shadowColor: themeColors.shadow,
         shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.06,
         shadowRadius: 6,
         elevation: 1.5,
     },
     iconBox: {
-        width: 40,
-        height: 40,
-        borderRadius: 12,
+        width: 36,
+        height: 36,
+        borderRadius: 11,
         justifyContent: 'center',
         alignItems: 'center',
-        marginEnd: 10,
+        marginEnd: 8,
     },
     name: {
         flex: 1,
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: '600',
         letterSpacing: 0.1,
-        lineHeight: 18,
+        lineHeight: 16,
     },
     arrowWrap: {
         opacity: 0.4,
@@ -82,7 +83,7 @@ const tileStyles = StyleSheet.create({
 })
 
 export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
     const {categories: apiCategories, loading, error, refresh} = usePartCategories()
     const categories = (apiCategories ?? []).slice().sort((a, b) => a.sortOrder - b.sortOrder)
 
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
     grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginHorizontal: -5,
+        marginHorizontal: -4,
     },
     emptyContainer: {
         paddingVertical: 24,

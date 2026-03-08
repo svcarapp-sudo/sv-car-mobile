@@ -1,5 +1,4 @@
 // Export shared/common components
-export {Button} from './Button'
 export {LaunchScreen} from './LaunchScreen'
 export {ManufacturerScreen} from './ManufacturerScreen'
 export {ModelScreen} from './ModelScreen'

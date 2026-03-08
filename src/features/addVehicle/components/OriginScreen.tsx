@@ -1,9 +1,9 @@
 import {StyleSheet, View, TouchableOpacity, FlatList} from 'react-native'
-import {Text, Icon, useTheme, ActivityIndicator} from 'react-native-paper'
+import {Text, Icon, ActivityIndicator} from 'react-native-paper'
 
+import {useAppTheme} from '@/global/hooks'
 import type {OriginApi} from '@/global/services'
-
-const AMBER = '#F59E0B'
+import {themeColors} from '@/global/theme'
 
 const ARABIC_TEXT = {
     SELECT_ORIGIN: 'اختر المنشأ',
@@ -20,7 +20,7 @@ interface OriginScreenProps {
 }
 
 export const OriginScreen = ({origins, loading, value, onSelect, onNext}: OriginScreenProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     const handleSelect = (origin: OriginApi) => {
         onSelect(origin.id, origin.name)
@@ -30,7 +30,7 @@ export const OriginScreen = ({origins, loading, value, onSelect, onNext}: Origin
     if (loading && origins.length === 0) {
         return (
             <View style={styles.centered}>
-                <ActivityIndicator size='large' color={AMBER} />
+                <ActivityIndicator size='large' color={theme.colors.tertiary} />
                 <Text variant='bodyMedium' style={[styles.loadingText, {color: theme.colors.onSurfaceVariant}]}>
                     {ARABIC_TEXT.LOADING}
                 </Text>
@@ -56,10 +56,10 @@ export const OriginScreen = ({origins, loading, value, onSelect, onNext}: Origin
                         style={[
                             styles.originIcon,
                             {
-                                backgroundColor: isSelected ? 'rgba(245, 158, 11, 0.12)' : theme.colors.surfaceVariant,
+                                backgroundColor: isSelected ? theme.colors.accentSoft : theme.colors.surfaceVariant,
                             },
                         ]}>
-                        <Icon source='earth' size={20} color={isSelected ? AMBER : theme.colors.onSurfaceVariant} />
+                        <Icon source='earth' size={20} color={isSelected ? theme.colors.tertiary : theme.colors.onSurfaceVariant} />
                     </View>
                     <Text
                         variant='titleMedium'
@@ -73,7 +73,7 @@ export const OriginScreen = ({origins, loading, value, onSelect, onNext}: Origin
                 </View>
                 {isSelected && (
                     <View style={styles.checkWrap}>
-                        <Icon source='check-circle' size={22} color={AMBER} />
+                        <Icon source='check-circle' size={22} color={theme.colors.tertiary} />
                     </View>
                 )}
             </TouchableOpacity>
@@ -132,16 +132,16 @@ const styles = StyleSheet.create({
         borderWidth: 1.5,
         borderColor: 'transparent',
         overflow: 'hidden',
-        shadowColor: '#000',
+        shadowColor: themeColors.shadowLight,
         shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.06,
         shadowRadius: 4,
         elevation: 2,
     },
     originCardSelected: {
-        borderColor: AMBER,
-        backgroundColor: 'rgba(245, 158, 11, 0.04)',
-        shadowColor: AMBER,
+        borderColor: themeColors.tertiary,
+        backgroundColor: themeColors.accentSubtle,
+        shadowColor: themeColors.tertiary,
         shadowOpacity: 0.12,
         shadowRadius: 8,
         elevation: 3,
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
         bottom: 10,
         width: 4,
         borderRadius: 2,
-        backgroundColor: AMBER,
+        backgroundColor: themeColors.tertiary,
     },
     originContent: {
         flexDirection: 'row',

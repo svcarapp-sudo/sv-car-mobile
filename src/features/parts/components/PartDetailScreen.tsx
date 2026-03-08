@@ -1,8 +1,9 @@
 import {useState, useEffect, useRef} from 'react'
 import {Animated, ScrollView, StyleSheet, View, Image} from 'react-native'
-import {ActivityIndicator, Button, Icon, Text, useTheme} from 'react-native-paper'
+import {ActivityIndicator, Button, Icon, Text} from 'react-native-paper'
 import type {Part, CompatibilityResponse} from '@/global/types'
-import {usePartCategories} from '@/global/hooks'
+import {useAppTheme, usePartCategories} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 import {usePartApi} from '../hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {RouteProp} from '@react-navigation/native'
@@ -31,7 +32,7 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
     const partId = route?.params?.partId
     const {getPartById, checkCompatibility} = usePartApi()
     const {getBySlug} = usePartCategories()
-    const theme = useTheme()
+    const theme = useAppTheme()
     const [part, setPart] = useState<Part | null>(null)
     const [compatibility, setCompatibility] = useState<CompatibilityResponse | null>(null)
     const [loading, setLoading] = useState(true)
@@ -123,9 +124,9 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                         )}
                         <View style={styles.metaRow}>
                             {/* Stock badge */}
-                            <View style={[styles.stockBadge, {backgroundColor: part.inStock ? '#F0FDF4' : '#FEF2F2'}]}>
-                                <View style={[styles.stockDot, {backgroundColor: part.inStock ? '#22C55E' : '#EF4444'}]} />
-                                <Text style={[styles.stockLabel, {color: part.inStock ? '#16A34A' : '#DC2626'}]}>
+                            <View style={[styles.stockBadge, {backgroundColor: part.inStock ? theme.colors.successContainer : theme.colors.errorContainer}]}>
+                                <View style={[styles.stockDot, {backgroundColor: part.inStock ? theme.colors.successBright : theme.colors.error}]} />
+                                <Text style={[styles.stockLabel, {color: part.inStock ? theme.colors.success : theme.colors.errorDark}]}>
                                     {part.inStock ? ARABIC_TEXT.IN_STOCK : ARABIC_TEXT.OUT_OF_STOCK}
                                 </Text>
                             </View>
@@ -143,7 +144,7 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                 </View>
 
                 {/* Price card */}
-                <View style={[styles.priceCard, {backgroundColor: '#FFF7ED'}]}>
+                <View style={[styles.priceCard, {backgroundColor: theme.colors.accentContainer}]}>
                     <View style={styles.priceInner}>
                         <Text style={[styles.priceCurrency, {color: theme.colors.tertiary}]}>$</Text>
                         <Text style={[styles.priceValue, {color: theme.colors.tertiary}]}>{part.price.toFixed(2)}</Text>
@@ -176,13 +177,13 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                                 style={[
                                     styles.sectionIconBox,
                                     {
-                                        backgroundColor: compatibility.isCompatible ? '#F0FDF4' : '#FEF2F2',
+                                        backgroundColor: compatibility.isCompatible ? theme.colors.successContainer : theme.colors.errorContainer,
                                     },
                                 ]}>
                                 <Icon
                                     source={compatibility.isCompatible ? 'check-circle-outline' : 'close-circle-outline'}
                                     size={16}
-                                    color={compatibility.isCompatible ? '#16A34A' : '#DC2626'}
+                                    color={compatibility.isCompatible ? theme.colors.success : theme.colors.errorDark}
                                 />
                             </View>
                             <Text style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
@@ -193,15 +194,15 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                             style={[
                                 styles.compatBadge,
                                 {
-                                    backgroundColor: compatibility.isCompatible ? '#F0FDF4' : '#FEF2F2',
+                                    backgroundColor: compatibility.isCompatible ? theme.colors.successContainer : theme.colors.errorContainer,
                                 },
                             ]}>
                             <Icon
                                 source={compatibility.isCompatible ? 'check-circle' : 'close-circle'}
                                 size={18}
-                                color={compatibility.isCompatible ? '#16A34A' : '#DC2626'}
+                                color={compatibility.isCompatible ? theme.colors.success : theme.colors.errorDark}
                             />
-                            <Text style={[styles.compatText, {color: compatibility.isCompatible ? '#16A34A' : '#DC2626'}]}>
+                            <Text style={[styles.compatText, {color: compatibility.isCompatible ? theme.colors.success : theme.colors.errorDark}]}>
                                 {(() => {
                                     if (compatibility.isCompatible && compatibility.exactMatch) {
                                         return ARABIC_TEXT.PERFECT_MATCH
@@ -234,7 +235,7 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                         contentStyle={styles.actionContent}
                         labelStyle={styles.actionLabel}
                         buttonColor={theme.colors.tertiary}
-                        textColor='#000'>
+                        textColor={theme.colors.onTertiary}>
                         {ARABIC_TEXT.ADD_TO_CART}
                     </Button>
                     <Button
@@ -290,7 +291,7 @@ const styles = StyleSheet.create({
         padding: 20,
         flexDirection: 'row',
         alignItems: 'flex-start',
-        shadowColor: '#0F172A',
+        shadowColor: themeColors.shadow,
         shadowOffset: {width: 0, height: 3},
         shadowOpacity: 0.08,
         shadowRadius: 10,
@@ -301,7 +302,7 @@ const styles = StyleSheet.create({
         width: 96,
         height: 96,
         borderRadius: 18,
-        backgroundColor: '#F1F5F9',
+        backgroundColor: themeColors.surfaceVariant,
         marginEnd: 16,
     },
     heroIconBox: {
@@ -400,7 +401,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 20,
         marginBottom: 12,
-        shadowColor: '#0F172A',
+        shadowColor: themeColors.shadow,
         shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.05,
         shadowRadius: 6,

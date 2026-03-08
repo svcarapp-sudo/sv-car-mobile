@@ -1,9 +1,10 @@
 import {StyleSheet, View, Image, TouchableOpacity} from 'react-native'
-import {Text, Icon, useTheme} from 'react-native-paper'
+import {Text, Icon} from 'react-native-paper'
+
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 
 import {Step} from './AddVehicleStepper'
-
-const AMBER = '#F59E0B'
 
 interface AddVehicleSummaryCardProps {
     currentStep: Step
@@ -32,7 +33,7 @@ export const AddVehicleSummaryCard = ({
     fuelType,
     onStepPress,
 }: AddVehicleSummaryCardProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     const allItems: SummaryItem[] = [
         {step: Step.Manufacturer, value: make ?? '', icon: 'car-side', logoUrl: makeLogoUrl},
@@ -67,7 +68,7 @@ export const AddVehicleSummaryCard = ({
                                     />
                                 </View>
                             ) : (
-                                <Icon source={item.icon} size={13} color={AMBER} />
+                                <Icon source={item.icon} size={13} color={theme.colors.tertiary} />
                             )}
                             <Text
                                 style={[styles.value, {color: theme.colors.onSurface}]}
@@ -86,10 +87,10 @@ const styles = StyleSheet.create({
     bar: {
         flexDirection: 'row',
         alignItems: 'stretch',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: themeColors.surface,
         borderRadius: 14,
         marginBottom: 16,
-        shadowColor: '#000',
+        shadowColor: themeColors.shadowLight,
         shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.06,
         shadowRadius: 8,
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     },
     accentEdge: {
         width: 4,
-        backgroundColor: AMBER,
+        backgroundColor: themeColors.tertiary,
     },
     content: {
         flex: 1,
@@ -129,11 +130,11 @@ const styles = StyleSheet.create({
         width: 18,
         height: 18,
         borderRadius: 9,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: themeColors.surface,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: StyleSheet.hairlineWidth,
-        borderColor: 'rgba(0,0,0,0.1)',
+        borderColor: themeColors.scrim,
     },
     logo: {
         width: 13,

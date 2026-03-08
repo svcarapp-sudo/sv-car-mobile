@@ -1,3 +1,4 @@
+export {useAppTheme} from './useAppTheme'
 export {usePartCategories} from './usePartCategories'
 export {useParts} from './useParts'
 export {useVehicleInfo} from './useVehicleInfo'

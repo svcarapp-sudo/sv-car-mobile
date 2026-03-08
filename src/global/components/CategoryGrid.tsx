@@ -1,5 +1,7 @@
 import {StyleSheet, TouchableOpacity, View} from 'react-native'
-import {Card, IconButton, Text, useTheme, ActivityIndicator} from 'react-native-paper'
+import {Card, IconButton, Text, ActivityIndicator} from 'react-native-paper'
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 import type {PartCategoryApi} from '@/global/types'
 
 interface CategoryGridProps {
@@ -24,7 +26,7 @@ export const CategoryGrid = ({
     showHeader = false,
     title = ARABIC_TEXT.DEFAULT_TITLE,
 }: CategoryGridProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     const displayList = categories
         .slice()
@@ -152,7 +154,7 @@ const styles = StyleSheet.create({
     },
     card: {
         borderRadius: 16,
-        shadowColor: '#000',
+        shadowColor: themeColors.shadowLight,
         shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.05,
         shadowRadius: 2,

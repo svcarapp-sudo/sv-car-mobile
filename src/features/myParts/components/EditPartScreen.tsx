@@ -1,10 +1,10 @@
 import {useState, useEffect, useCallback} from 'react'
 import {StyleSheet, View, Alert, ScrollView, Image} from 'react-native'
-import {Text, TextInput, Button, useTheme, ActivityIndicator, Icon} from 'react-native-paper'
+import {Text, TextInput, Button, ActivityIndicator, Icon} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
 import {useMyParts} from '../hooks/useMyParts'
-import {useMakeModelCache, usePartCategories} from '@/global/hooks'
+import {useMakeModelCache, usePartCategories, useAppTheme} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 
 const ARABIC_TEXT = {
@@ -37,7 +37,7 @@ interface EditPartScreenProps {
 }
 
 export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
     const partId = route?.params?.partId
     const {parts, loading: partsLoading, updatePart} = useMyParts()
     const {getBySlug, categories} = usePartCategories()

@@ -1,7 +1,7 @@
 import React from 'react'
 import {FlatList, StyleSheet, View} from 'react-native'
-import {ActivityIndicator, Icon, TextInput, useTheme} from 'react-native-paper'
-import {useParts, usePartCategories, useMakeModelCache} from '@/global/hooks'
+import {ActivityIndicator, Icon, TextInput} from 'react-native-paper'
+import {useParts, usePartCategories, useMakeModelCache, useAppTheme} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 import {PartCardItem} from './PartCardItem'
@@ -20,7 +20,7 @@ interface PartsListScreenProps {
 export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
     const {parts, total, selectedCategory, loading, loadingMore, search, setSearch, hasMore, loadMore, refresh} = useParts()
     const {getBySlug} = usePartCategories()
-    const theme = useTheme()
+    const theme = useAppTheme()
     const makeModelCache = useMakeModelCache({parts})
 
     const category = route?.params?.category ?? selectedCategory

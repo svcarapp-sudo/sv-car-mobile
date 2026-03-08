@@ -1,7 +1,8 @@
 import {StyleSheet, View, TouchableOpacity} from 'react-native'
-import {Text, Icon, useTheme} from 'react-native-paper'
+import {Text, Icon} from 'react-native-paper'
 
-const AMBER = '#F59E0B'
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 
 const ARABIC_TEXT = {
     FUEL_TYPE: 'نوع الوقود',
@@ -22,7 +23,7 @@ interface FuelScreenProps {
 }
 
 export const FuelScreen = ({fuelTypes, value, onSelect, onNext}: FuelScreenProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     const handleSelect = (fuelType: string) => {
         onSelect(fuelType)
@@ -59,7 +60,7 @@ export const FuelScreen = ({fuelTypes, value, onSelect, onNext}: FuelScreenProps
                                 {isSelected && (
                                     <View style={styles.checkBadge}>
                                         <View style={styles.checkCircle}>
-                                            <Icon source='check' size={10} color='#FFFFFF' />
+                                            <Icon source='check' size={10} color={theme.colors.onPrimary} />
                                         </View>
                                     </View>
                                 )}
@@ -68,14 +69,14 @@ export const FuelScreen = ({fuelTypes, value, onSelect, onNext}: FuelScreenProps
                                         styles.iconCircle,
                                         {
                                             backgroundColor: isSelected
-                                                ? 'rgba(245, 158, 11, 0.15)'
+                                                ? theme.colors.accentMuted
                                                 : theme.colors.surfaceVariant,
                                         },
                                     ]}>
                                     <Icon
                                         source={f.icon}
                                         size={28}
-                                        color={isSelected ? AMBER : theme.colors.onSurfaceVariant}
+                                        color={isSelected ? theme.colors.tertiary : theme.colors.onSurfaceVariant}
                                     />
                                 </View>
                                 <Text
@@ -129,16 +130,16 @@ const styles = StyleSheet.create({
         borderWidth: 1.5,
         borderColor: 'transparent',
         position: 'relative',
-        shadowColor: '#000',
+        shadowColor: themeColors.shadowLight,
         shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.06,
         shadowRadius: 4,
         elevation: 2,
     },
     fuelCardSelected: {
-        borderColor: AMBER,
-        backgroundColor: 'rgba(245, 158, 11, 0.04)',
-        shadowColor: AMBER,
+        borderColor: themeColors.tertiary,
+        backgroundColor: themeColors.accentSubtle,
+        shadowColor: themeColors.tertiary,
         shadowOpacity: 0.15,
         shadowRadius: 10,
         elevation: 4,
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         borderRadius: 10,
-        backgroundColor: AMBER,
+        backgroundColor: themeColors.tertiary,
         justifyContent: 'center',
         alignItems: 'center',
     },

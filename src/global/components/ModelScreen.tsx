@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react'
 import {StyleSheet, View, TouchableOpacity, FlatList, I18nManager} from 'react-native'
-import {Text, Icon, useTheme, ActivityIndicator} from 'react-native-paper'
+import {Text, Icon, ActivityIndicator} from 'react-native-paper'
 
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 import type {ModelApi} from '../services/catalogService'
-
-const AMBER = '#F59E0B'
 
 const ARABIC_TEXT = {
     SELECT_MODEL: 'اختر الموديل',
@@ -31,7 +31,7 @@ export const ModelScreen = ({
     onSelect,
     onNext,
 }: ModelScreenProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
     const [models, setModels] = useState<ModelApi[]>([])
     const [loading, setLoading] = useState(false)
 
@@ -69,7 +69,7 @@ export const ModelScreen = ({
     if (loading && models.length === 0) {
         return (
             <View style={styles.centered}>
-                <ActivityIndicator size='large' color={AMBER} />
+                <ActivityIndicator size='large' color={theme.colors.tertiary} />
                 <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant, marginTop: 16}}>
                     {ARABIC_TEXT.LOADING}
                 </Text>
@@ -96,13 +96,13 @@ export const ModelScreen = ({
                     <View
                         style={[
                             styles.modelIcon,
-                            {backgroundColor: isSelected ? 'rgba(245, 158, 11, 0.12)' : theme.colors.surfaceVariant},
+                            {backgroundColor: isSelected ? theme.colors.accentSoft : theme.colors.surfaceVariant},
                         ]}>
                         <View style={needsFlip ? styles.flippedIcon : undefined}>
                             <Icon
                                 source={iconSource}
                                 size={18}
-                                color={isSelected ? AMBER : theme.colors.onSurfaceVariant}
+                                color={isSelected ? theme.colors.tertiary : theme.colors.onSurfaceVariant}
                             />
                         </View>
                     </View>
@@ -169,16 +169,16 @@ const styles = StyleSheet.create({
         borderWidth: 1.5,
         borderColor: 'transparent',
         overflow: 'hidden',
-        shadowColor: '#000',
+        shadowColor: themeColors.shadowLight,
         shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.05,
         shadowRadius: 3,
         elevation: 1,
     },
     modelCardSelected: {
-        borderColor: AMBER,
-        backgroundColor: 'rgba(245, 158, 11, 0.04)',
-        shadowColor: AMBER,
+        borderColor: themeColors.tertiary,
+        backgroundColor: themeColors.accentSubtle,
+        shadowColor: themeColors.tertiary,
         shadowOpacity: 0.12,
         shadowRadius: 8,
         elevation: 3,
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
         bottom: 10,
         width: 4,
         borderRadius: 2,
-        backgroundColor: AMBER,
+        backgroundColor: themeColors.tertiary,
     },
     modelContent: {
         flexDirection: 'row',

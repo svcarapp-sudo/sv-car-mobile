@@ -1,5 +1,7 @@
 import {StyleSheet, View, Image, TouchableOpacity} from 'react-native'
-import {Icon, Text, useTheme} from 'react-native-paper'
+import {Icon, Text} from 'react-native-paper'
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 import type {Part, PartCategoryApi} from '@/global/types'
 
 interface MakeInfo {
@@ -21,7 +23,7 @@ interface MyPartCardItemProps {
 }
 
 export const MyPartCardItem = ({part, onEdit, onDelete, makeModelCache = {}, categoryInfo}: MyPartCardItemProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     const makeInfo = part.makeId ? (makeModelCache[part.makeId] as MakeInfo | undefined) : null
     const modelInfo = part.modelId ? (makeModelCache[`model_${part.modelId}`] as ModelInfo | undefined) : null
@@ -68,7 +70,7 @@ export const MyPartCardItem = ({part, onEdit, onDelete, makeModelCache = {}, cat
                 </View>
 
                 {/* Price */}
-                <View style={[styles.priceBox, {backgroundColor: '#FFF7ED'}]}>
+                <View style={[styles.priceBox, {backgroundColor: theme.colors.accentContainer}]}>
                     <Text style={[styles.priceCurrency, {color: theme.colors.tertiary}]}>$</Text>
                     <Text style={[styles.priceValue, {color: theme.colors.tertiary}]}>{part.price.toFixed(0)}</Text>
                 </View>
@@ -94,7 +96,7 @@ export const MyPartCardItem = ({part, onEdit, onDelete, makeModelCache = {}, cat
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[styles.actionBtn, {backgroundColor: '#FEF2F2'}]}
+                        style={[styles.actionBtn, {backgroundColor: theme.colors.errorContainer}]}
                         onPress={() => onDelete(part.id, part.name)}
                         activeOpacity={0.7}>
                         <Icon source="delete-outline" size={16} color={theme.colors.error} />
@@ -110,7 +112,7 @@ const styles = StyleSheet.create({
     card: {
         borderRadius: 16,
         marginBottom: 12,
-        shadowColor: '#0F172A',
+        shadowColor: themeColors.shadow,
         shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.06,
         shadowRadius: 8,
@@ -126,7 +128,7 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 12,
-        backgroundColor: '#F1F5F9',
+        backgroundColor: themeColors.surfaceVariant,
         marginEnd: 12,
     },
     iconBox: {

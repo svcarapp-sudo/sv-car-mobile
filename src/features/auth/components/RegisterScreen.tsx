@@ -1,7 +1,8 @@
 import {useState} from 'react'
 import {StyleSheet, View, KeyboardAvoidingView, Platform, ScrollView} from 'react-native'
-import {Text, TextInput, Button, useTheme, HelperText} from 'react-native-paper'
+import {Text, TextInput, Button, HelperText} from 'react-native-paper'
 
+import {useAppTheme} from '@/global/hooks'
 import {useAuthStore} from '@/global/store'
 import {authService} from '../services'
 
@@ -28,7 +29,7 @@ interface RegisterScreenProps {
 }
 
 export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
     const login = useAuthStore(s => s.login)
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')

@@ -2,7 +2,9 @@ import {useEffect, useMemo} from 'react'
 
 import {StyleSheet, View, Animated, Easing} from 'react-native'
 
-import {Text, useTheme} from 'react-native-paper'
+import {Text} from 'react-native-paper'
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 
 import {useAuthStore} from '@/global/store'
 
@@ -14,7 +16,7 @@ interface LaunchScreenProps {
 }
 
 export const LaunchScreen = ({navigation}: LaunchScreenProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
     const isAuthenticated = useAuthStore(s => s.isAuthenticated)
 
     // Animation values
@@ -128,7 +130,7 @@ const styles = StyleSheet.create({
     logoText: {
         fontSize: 54,
         fontWeight: '900',
-        color: '#FFFFFF',
+        color: themeColors.onPrimary,
         letterSpacing: -1.5,
         lineHeight: 52,
     },

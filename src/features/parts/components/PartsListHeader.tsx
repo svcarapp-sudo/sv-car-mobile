@@ -1,5 +1,8 @@
 import {StyleSheet, View} from 'react-native'
-import {Icon, Text, useTheme} from 'react-native-paper'
+import {Icon, Text} from 'react-native-paper'
+
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 
 const ARABIC_TEXT = {
     PARTS_COUNT: (count: number) => `${count} قطعة`,
@@ -11,14 +14,14 @@ interface PartsListHeaderProps {
 }
 
 export const PartsListHeader = ({categoryName, partsCount}: PartsListHeaderProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     return (
         <View style={[styles.header, {backgroundColor: theme.colors.primary}]}>
             <View style={styles.headerContent}>
                 <View style={styles.titleRow}>
-                    <View style={[styles.iconBox, {backgroundColor: 'rgba(255,255,255,0.12)'}]}>
-                        <Icon source='filter-variant' size={18} color='rgba(255,255,255,0.8)' />
+                    <View style={[styles.iconBox, {backgroundColor: theme.colors.onDarkContainer}]}>
+                        <Icon source='filter-variant' size={18} color={theme.colors.onDarkIcon} />
                     </View>
                     <Text style={styles.headerTitle}>{categoryName}</Text>
                 </View>
@@ -57,7 +60,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerTitle: {
-        color: '#FFFFFF',
+        color: themeColors.onPrimary,
         fontSize: 18,
         fontWeight: '700',
         letterSpacing: -0.2,
@@ -70,7 +73,7 @@ const styles = StyleSheet.create({
         marginStart: 12,
     },
     countText: {
-        color: '#000',
+        color: themeColors.onTertiary,
         fontSize: 12,
         fontWeight: '700',
         letterSpacing: 0.2,

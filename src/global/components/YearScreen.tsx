@@ -1,7 +1,8 @@
 import {StyleSheet, View, FlatList, TouchableOpacity} from 'react-native'
-import {Text, useTheme} from 'react-native-paper'
+import {Text} from 'react-native-paper'
 
-const AMBER = '#F59E0B'
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 
 const ARABIC_TEXT = {
     PRODUCTION_YEAR: 'سنة الصنع',
@@ -16,7 +17,7 @@ interface YearScreenProps {
 }
 
 export const YearScreen = ({years, value, onSelect, onNext}: YearScreenProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     const handleSelect = (year: string) => {
         onSelect(year)
@@ -95,16 +96,16 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         borderWidth: 1.5,
         borderColor: 'transparent',
-        shadowColor: '#000',
+        shadowColor: themeColors.shadowLight,
         shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.05,
         shadowRadius: 3,
         elevation: 1,
     },
     yearItemSelected: {
-        backgroundColor: AMBER,
-        borderColor: AMBER,
-        shadowColor: AMBER,
+        backgroundColor: themeColors.tertiary,
+        borderColor: themeColors.tertiary,
+        shadowColor: themeColors.tertiary,
         shadowOpacity: 0.3,
         shadowRadius: 8,
         elevation: 4,
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     yearTextSelected: {
-        color: '#FFFFFF',
+        color: themeColors.onPrimary,
         fontWeight: '700',
     },
 })

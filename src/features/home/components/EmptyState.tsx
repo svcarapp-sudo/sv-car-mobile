@@ -1,6 +1,9 @@
 import React, {useEffect, useRef} from 'react'
 import {Animated, StyleSheet, View} from 'react-native'
-import {Button, Icon, Text, useTheme} from 'react-native-paper'
+import {Button, Icon, Text} from 'react-native-paper'
+
+import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 
 interface EmptyStateProps {
     onAddVehicle: () => void
@@ -13,7 +16,7 @@ const ARABIC_TEXT = {
 }
 
 export const EmptyState = ({onAddVehicle}: EmptyStateProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     const pulseAnim = useRef(new Animated.Value(1)).current
     const fadeIn = useRef(new Animated.Value(0)).current
@@ -71,7 +74,7 @@ export const EmptyState = ({onAddVehicle}: EmptyStateProps) => {
                     contentStyle={styles.addButtonContent}
                     labelStyle={styles.addButtonLabel}
                     buttonColor={theme.colors.tertiary}
-                    textColor='#000'
+                    textColor={theme.colors.onTertiary}
                     icon='plus-circle-outline'>
                     {ARABIC_TEXT.ADD_MY_VEHICLE}
                 </Button>
@@ -98,7 +101,7 @@ const styles = StyleSheet.create({
         padding: 36,
         alignItems: 'center',
         overflow: 'hidden',
-        shadowColor: '#0F172A',
+        shadowColor: themeColors.shadow,
         shadowOffset: {width: 0, height: 6},
         shadowOpacity: 0.1,
         shadowRadius: 16,

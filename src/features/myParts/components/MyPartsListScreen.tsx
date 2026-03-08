@@ -1,10 +1,10 @@
 import {useMemo} from 'react'
 import {StyleSheet, View, FlatList, Alert} from 'react-native'
-import {useTheme, FAB, Text, Icon} from 'react-native-paper'
+import {FAB, Text, Icon} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
 import {useMyParts} from '../hooks/useMyParts'
-import {useMakeModelCache, usePartCategories} from '@/global/hooks'
+import {useAppTheme, useMakeModelCache, usePartCategories} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {Part} from '@/global/types'
 import {MyPartCardItem} from './MyPartCardItem'
@@ -28,7 +28,7 @@ interface MyPartsListScreenProps {
 }
 
 export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
     const {parts, loading, deletePart, fetchMyParts} = useMyParts()
     const makeModelCache = useMakeModelCache({parts})
     const {getBySlug, categories} = usePartCategories()
@@ -75,7 +75,7 @@ export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
                         <Text style={[styles.statValue, {color: theme.colors.primary}]}>{stats.count}</Text>
                         <Text style={[styles.statLabel, {color: theme.colors.primary}]}>{ARABIC_TEXT.TOTAL_PARTS}</Text>
                     </View>
-                    <View style={[styles.statCard, {backgroundColor: '#FFF7ED'}]}>
+                    <View style={[styles.statCard, {backgroundColor: theme.colors.accentContainer}]}>
                         <Icon source="cash" size={20} color={theme.colors.tertiary} />
                         <Text style={[styles.statValue, {color: theme.colors.tertiary}]}>${stats.totalValue.toFixed(0)}</Text>
                         <Text style={[styles.statLabel, {color: theme.colors.tertiary}]}>{ARABIC_TEXT.TOTAL_VALUE}</Text>

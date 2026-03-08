@@ -1,5 +1,6 @@
 import {StyleSheet, View} from 'react-native'
-import {Text, Button, Icon, ActivityIndicator, useTheme} from 'react-native-paper'
+import {Text, Button, Icon, ActivityIndicator} from 'react-native-paper'
+import {useAppTheme} from '@/global/hooks'
 import type {NavigationProp} from '@react-navigation/native'
 import type {RootStackParamList} from '@/global/navigation/types'
 
@@ -16,7 +17,7 @@ interface MyPartsListEmptyProps {
 }
 
 export const MyPartsListEmpty = ({loading, navigation}: MyPartsListEmptyProps) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     if (loading) {
         return (
