@@ -1,1 +1,1 @@
-export {MyAccountScreen} from './components/MyAccountScreen'
+export {MyAccountScreen} from './components'

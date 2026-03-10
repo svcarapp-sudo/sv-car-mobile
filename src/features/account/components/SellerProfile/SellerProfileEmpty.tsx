@@ -1,0 +1,61 @@
+import React from 'react'
+import {StyleSheet, View} from 'react-native'
+import {Button, Icon, Text} from 'react-native-paper'
+
+import {useAppTheme} from '@/global/hooks'
+
+const ARABIC = {
+    SELLER_PROFILE: 'الملف التجاري',
+    CREATE_PROFILE: 'إنشاء ملف تجاري',
+    NO_PROFILE: 'لا يوجد ملف تجاري',
+    NO_PROFILE_DESC: 'أنشئ ملفك التجاري للبدء في بيع قطع الغيار',
+}
+
+interface SellerProfileEmptyProps {
+    onCreatePress: () => void
+}
+
+export const SellerProfileEmpty = ({onCreatePress}: SellerProfileEmptyProps) => {
+    const theme = useAppTheme()
+
+    return (
+        <View style={styles.section}>
+            <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
+                {ARABIC.SELLER_PROFILE}
+            </Text>
+            <View
+                style={[
+                    styles.emptyCard,
+                    {backgroundColor: theme.colors.elevation.level1, borderColor: theme.colors.outlineVariant},
+                ]}>
+                <View style={styles.emptyContent}>
+                    <Icon source='store-plus-outline' size={32} color={theme.colors.onSurfaceVariant} />
+                    <Text variant='bodyMedium' style={[styles.emptyTitle, {color: theme.colors.onSurface}]}>
+                        {ARABIC.NO_PROFILE}
+                    </Text>
+                    <Text variant='bodySmall' style={{color: theme.colors.onSurfaceVariant, textAlign: 'center'}}>
+                        {ARABIC.NO_PROFILE_DESC}
+                    </Text>
+                </View>
+                <Button
+                    mode='contained'
+                    onPress={onCreatePress}
+                    icon='plus'
+                    style={styles.createButton}
+                    contentStyle={styles.createButtonContent}>
+                    {ARABIC.CREATE_PROFILE}
+                </Button>
+            </View>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    section: {padding: 20},
+    sectionTitle: {fontWeight: '600', marginBottom: 16},
+    emptyCard: {borderRadius: 16, borderWidth: 1, padding: 24, alignItems: 'center'},
+    emptyContent: {alignItems: 'center', gap: 8, marginBottom: 20},
+    emptyTitle: {fontWeight: '600', marginTop: 4},
+    createButton: {borderRadius: 12, alignSelf: 'stretch'},
+    createButtonContent: {paddingVertical: 4},
+})

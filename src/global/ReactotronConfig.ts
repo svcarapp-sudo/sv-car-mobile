@@ -1,7 +1,13 @@
 import Reactotron from 'reactotron-react-native'
+import ExpoConstants from 'expo-constants'
 
 if (__DEV__) {
-    const reactotron = Reactotron.configure({name: 'SV Car', host: '10.58.107.91'})
+    // Reuse the same API host from .env (set automatically by scripts/set-api-host.js)
+    const host =
+        (ExpoConstants.expoConfig as {extra?: {apiHost?: string}} | null)?.extra?.apiHost ??
+        'localhost'
+
+    const reactotron = Reactotron.configure({name: 'SV Car', host})
         .useReactNative({
             networking: {
                 ignoreUrls: /symbolicate|logs/,
@@ -9,9 +15,6 @@ if (__DEV__) {
         })
         .connect()
 
-    // Verify connection — you should see this in the Reactotron timeline
     reactotron.log?.('Reactotron connected!')
-
-    // Also make it available on console for debugging
-    console.log('Reactotron configured, host: 10.58.107.91')
+    console.log(`Reactotron configured, host: ${host}`)
 }

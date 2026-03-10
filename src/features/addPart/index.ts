@@ -1,1 +1,1 @@
-export {AddPartScreen} from './components/AddPartScreen'
+export {AddPartScreen} from './components'

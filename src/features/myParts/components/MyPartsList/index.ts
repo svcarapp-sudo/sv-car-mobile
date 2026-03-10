@@ -1,0 +1,1 @@
+export {MyPartsListScreen} from './MyPartsListScreen'

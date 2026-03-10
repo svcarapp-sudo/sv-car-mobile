@@ -1,3 +1,3 @@
-export * from './PartDetailScreen'
-export * from './PartsCategoriesScreen'
-export * from './PartsListScreen'
+export * from './PartDetail'
+export * from './PartsList'
+export * from './PartsCategories'
