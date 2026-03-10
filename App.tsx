@@ -1,3 +1,4 @@
+import './src/global/ReactotronConfig'
 import {useEffect, useCallback} from 'react'
 import {StatusBar} from 'expo-status-bar'
 import * as SplashScreen from 'expo-splash-screen'

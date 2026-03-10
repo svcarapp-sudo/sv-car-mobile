@@ -4,8 +4,8 @@ import {useAppTheme} from '@/global/hooks'
 import type {NavigationProp} from '@react-navigation/native'
 
 import type {RootStackParamList} from '@/global/navigation/types'
-import {useParts, useVehicleApi} from '@/global/hooks'
-import {useAuthStore} from '@/global/store'
+import {useVehicleApi} from '@/global/hooks'
+import {useAuthStore, usePartsStore} from '@/global/store'
 import {useVehicles} from '../hooks'
 import type {PartCategory} from '@/global/types'
 import {GreetingSection} from './GreetingSection'
@@ -19,7 +19,7 @@ interface HomeScreenProps {
 
 export const HomeScreen = ({navigation}: HomeScreenProps) => {
     const {vehicle} = useVehicles()
-    const {selectCategory} = useParts()
+    const selectCategory = usePartsStore(s => s.selectCategory)
     const {fetchVehicle} = useVehicleApi()
     const user = useAuthStore(s => s.user)
     const theme = useAppTheme()

@@ -11,9 +11,8 @@ import type {RootStackParamList} from '@/global/navigation/types'
 
 const ARABIC_TEXT = {
     HOME: 'الرئيسية',
-    SEARCH: 'البحث',
-    MY_PARTS: 'قطع الغيار',
-    SETTINGS: 'الإعدادات',
+    MY_PARTS: 'إعلاناتي',
+    MY_ACCOUNT: 'حسابي',
 }
 
 interface NavItem {
@@ -22,7 +21,7 @@ interface NavItem {
     activeIcon: string
     label: string
     /** Screen name inside the Main stack */
-    screenName: 'Home' | 'PartsList' | 'MyParts'
+    screenName: 'Home' | 'PartsList' | 'MyParts' | 'MyAccount'
     params?: Record<string, unknown>
 }
 
@@ -35,14 +34,6 @@ const NAV_ITEMS: NavItem[] = [
         screenName: 'Home',
     },
     {
-        key: 'PartsList',
-        icon: 'magnify',
-        activeIcon: 'magnify',
-        label: ARABIC_TEXT.SEARCH,
-        screenName: 'PartsList',
-        params: {category: null},
-    },
-    {
         key: 'MyParts',
         icon: 'package-variant',
         activeIcon: 'package-variant-closed',
@@ -50,11 +41,11 @@ const NAV_ITEMS: NavItem[] = [
         screenName: 'MyParts',
     },
     {
-        key: 'Settings',
-        icon: 'cog-outline',
-        activeIcon: 'cog',
-        label: ARABIC_TEXT.SETTINGS,
-        screenName: 'Home', // TODO: Navigate to settings when implemented
+        key: 'MyAccount',
+        icon: 'account-outline',
+        activeIcon: 'account',
+        label: ARABIC_TEXT.MY_ACCOUNT,
+        screenName: 'MyAccount',
     },
 ]
 

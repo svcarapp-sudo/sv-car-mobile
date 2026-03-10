@@ -1,5 +1,5 @@
 import {useState, useEffect, useMemo, useRef} from 'react'
-import {useVehicleInfo} from './useVehicleInfo'
+import {catalogService} from '../services/catalogService'
 
 type MakeModelCache = Record<number, {name: string; logoUrl?: string | null}> & Record<string, {name: string}>
 
@@ -11,7 +11,7 @@ interface UseMakeModelCacheProps {
  * Hook to fetch and cache make/model names for parts
  */
 export const useMakeModelCache = ({parts}: UseMakeModelCacheProps) => {
-    const {getMakes, getModels} = useVehicleInfo()
+    // Call catalogService directly to avoid useVehicleInfo's auto-fetch of origins
     const [makeModelCache, setMakeModelCache] = useState<MakeModelCache>({})
     const fetchingRef = useRef(false)
 
@@ -44,7 +44,7 @@ export const useMakeModelCache = ({parts}: UseMakeModelCacheProps) => {
                 let allMakes: Array<{id: string; name: string; logoUrl?: string | null}> = []
                 if (uniqueMakeIds.size > 0) {
                     try {
-                        allMakes = await getMakes()
+                        allMakes = await catalogService.getMakes()
                     } catch {
                         // Ignore errors
                     }
@@ -74,7 +74,7 @@ export const useMakeModelCache = ({parts}: UseMakeModelCacheProps) => {
                 // Fetch models for each make
                 for (const [makeId, modelIds] of makeIdToModelIds) {
                     try {
-                        const models = await getModels(makeId)
+                        const models = await catalogService.getModels(makeId)
                         for (const modelId of modelIds) {
                             const model = models.find(m => Number(m.id) === modelId)
                             if (model) {

@@ -1,6 +1,5 @@
 import {PartCard} from '@/global/components'
-import {usePartCategories} from '@/global/hooks'
-import type {Part} from '@/global/types'
+import type {Part, PartCategoryApi} from '@/global/types'
 import type {NavigationProp} from '@react-navigation/native'
 import type {RootStackParamList} from '@/global/navigation/types'
 
@@ -10,14 +9,13 @@ interface PartCardItemProps {
     part: Part
     navigation?: NavigationProp<RootStackParamList>
     makeModelCache?: MakeModelCache
+    categories?: PartCategoryApi[]
 }
 
-export const PartCardItem = ({part, navigation, makeModelCache = {}}: PartCardItemProps) => {
-    const {getBySlug, categories} = usePartCategories()
-
+export const PartCardItem = ({part, navigation, makeModelCache = {}, categories = []}: PartCardItemProps) => {
     const makeInfo = part.makeId ? makeModelCache[part.makeId] : null
     const modelInfo = part.modelId ? makeModelCache[`model_${part.modelId}`] : null
-    const categoryInfo = getBySlug(part.category) || categories.find(c => c.id === part.categoryId)
+    const categoryInfo = categories.find(c => c.slug === part.category) || categories.find(c => c.id === part.categoryId)
 
     return (
         <PartCard

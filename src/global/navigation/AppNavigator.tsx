@@ -8,7 +8,9 @@ import {LoginScreen, RegisterScreen} from '@/features/auth'
 import {PartsCategoriesScreen, PartsListScreen, PartDetailScreen} from '@/features/parts'
 import {HomeScreen} from '@/features/home'
 import {AddVehicleScreen} from '@/features/addVehicle'
-import {MyPartsListScreen, AddPartScreen, EditPartScreen} from '@/features/myParts'
+import {MyPartsListScreen, EditPartScreen} from '@/features/myParts'
+import {AddPartScreen} from '@/features/addPart'
+import {MyAccountScreen} from '@/features/account'
 import {MainLayout} from '@/global/layouts'
 
 import {LaunchScreen} from '../components'
@@ -25,6 +27,7 @@ const ARABIC_TEXT = {
     ADD_PART: 'إضافة قطعة غيار',
     MY_PARTS: 'قطع الغيار الخاصة بي',
     EDIT_PART: 'تعديل قطعة غيار',
+    MY_ACCOUNT: 'حسابي',
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -97,6 +100,13 @@ const MainFlow = () => {
                     component={EditPartScreen}
                     options={{
                         title: ARABIC_TEXT.EDIT_PART,
+                    }}
+                />
+                <Stack.Screen
+                    name='MyAccount'
+                    component={MyAccountScreen}
+                    options={{
+                        title: ARABIC_TEXT.MY_ACCOUNT,
                     }}
                 />
             </Stack.Navigator>

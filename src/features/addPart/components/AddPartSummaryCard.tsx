@@ -26,32 +26,30 @@ export const AddPartSummaryCard = ({
     if (!makeName && !modelName && !year && !categoryName) return null
 
     const items = [
-        makeName && {
-            label: 'الماركة',
-            value: makeName,
-            logo: makeLogoUrl,
-        },
-        modelName && {label: 'الموديل', value: modelName},
-        year && {label: 'السنة', value: String(year)},
-        categoryName && {label: 'الفئة', value: categoryName},
-    ].filter(Boolean) as {label: string; value: string; logo?: string | null}[]
+        makeName && {icon: 'car', value: makeName, logo: makeLogoUrl},
+        modelName && {icon: 'tag-outline', value: modelName},
+        year && {icon: 'calendar-outline', value: String(year)},
+        categoryName && {icon: 'shape-outline', value: categoryName},
+    ].filter(Boolean) as {icon: string; value: string; logo?: string | null}[]
 
     return (
         <TouchableRipple onPress={onEdit} borderless style={[styles.card, {backgroundColor: theme.colors.surface}]}>
             <View style={styles.inner}>
                 <View style={styles.chips}>
                     {items.map(item => (
-                        <View key={item.label} style={[styles.chip, {backgroundColor: theme.colors.surfaceVariant}]}>
+                        <View key={item.value} style={[styles.chip, {backgroundColor: theme.colors.surfaceVariant}]}>
                             {item.logo ? (
-                                <Image source={{uri: item.logo}} style={styles.chipLogo} resizeMode="contain" />
-                            ) : null}
+                                <Image source={{uri: item.logo}} style={styles.chipLogo} resizeMode='contain' />
+                            ) : (
+                                <Icon source={item.icon} size={14} color={theme.colors.onSurfaceVariant} />
+                            )}
                             <Text style={[styles.chipValue, {color: theme.colors.onSurface}]} numberOfLines={1}>
                                 {item.value}
                             </Text>
                         </View>
                     ))}
                 </View>
-                <Icon source="pencil-outline" size={18} color={theme.colors.onSurfaceVariant} />
+                <Icon source='pencil-outline' size={16} color={theme.colors.onSurfaceVariant} />
             </View>
         </TouchableRipple>
     )
@@ -60,7 +58,7 @@ export const AddPartSummaryCard = ({
 const styles = StyleSheet.create({
     card: {
         borderRadius: 12,
-        marginBottom: 14,
+        marginBottom: 12,
         shadowColor: themeColors.shadow,
         shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.04,
@@ -70,7 +68,8 @@ const styles = StyleSheet.create({
     inner: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
         gap: 8,
     },
     chips: {
@@ -82,10 +81,10 @@ const styles = StyleSheet.create({
     chip: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
         borderRadius: 8,
-        gap: 5,
+        gap: 4,
     },
     chipLogo: {
         width: 16,

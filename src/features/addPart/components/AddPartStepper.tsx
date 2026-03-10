@@ -1,6 +1,7 @@
 import {StyleSheet, View, TouchableOpacity} from 'react-native'
 import {Text, Icon} from 'react-native-paper'
 import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 
 const STEPS_INFO = [
     {label: 'الماركة', icon: 'car-outline'},
@@ -27,24 +28,13 @@ export const AddPartStepper = ({currentStep, onStepPress}: AddPartStepperProps) 
     const theme = useAppTheme()
 
     return (
-        <View style={[styles.container, {backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.surfaceVariant}]}>
+        <View style={[styles.container, {backgroundColor: theme.colors.primary}]}>
             <View style={styles.stepsRow}>
                 {STEPS_INFO.map((step, index) => {
                     const isActive = index === currentStep
                     const isCompleted = index < currentStep
                     const isClickable = isCompleted
                     const stepVal = index as Step
-
-                    const dotColor = isActive
-                        ? theme.colors.primary
-                        : isCompleted
-                          ? theme.colors.primary
-                          : theme.colors.surfaceVariant
-                    const textColor = isActive
-                        ? theme.colors.primary
-                        : isCompleted
-                          ? theme.colors.onSurfaceVariant
-                          : theme.colors.outline
 
                     const Wrapper = isClickable ? TouchableOpacity : View
                     const wrapperProps = isClickable
@@ -56,25 +46,31 @@ export const AddPartStepper = ({currentStep, onStepPress}: AddPartStepperProps) 
                             <View
                                 style={[
                                     styles.dot,
-                                    {
-                                        backgroundColor: dotColor,
-                                        borderColor: isActive ? theme.colors.primary : 'transparent',
-                                    },
+                                    isActive && [styles.dotActive, {borderColor: theme.colors.tertiary}],
+                                    isCompleted && {backgroundColor: theme.colors.tertiary},
+                                    !isActive && !isCompleted && {backgroundColor: themeColors.onDarkSurface},
                                 ]}>
                                 {isCompleted ? (
-                                    <Icon source="check" size={14} color={theme.colors.onPrimary} />
+                                    <Icon source='check' size={13} color={themeColors.onPrimary} />
                                 ) : (
                                     <Icon
                                         source={step.icon}
-                                        size={14}
-                                        color={isActive ? theme.colors.onPrimary : theme.colors.outline}
+                                        size={13}
+                                        color={isActive ? themeColors.onPrimary : themeColors.onDarkMuted}
                                     />
                                 )}
                             </View>
                             <Text
                                 style={[
                                     styles.label,
-                                    {color: textColor, fontWeight: isActive ? '700' : '400'},
+                                    {
+                                        color: isActive
+                                            ? themeColors.onPrimary
+                                            : isCompleted
+                                              ? themeColors.onDarkHigh
+                                              : themeColors.onDarkMuted,
+                                        fontWeight: isActive ? '700' : '400',
+                                    },
                                 ]}
                                 numberOfLines={1}>
                                 {step.label}
@@ -84,13 +80,13 @@ export const AddPartStepper = ({currentStep, onStepPress}: AddPartStepperProps) 
                 })}
             </View>
 
-            {/* Progress track */}
-            <View style={[styles.progressTrack, {backgroundColor: theme.colors.surfaceVariant}]}>
+            {/* Progress bar */}
+            <View style={[styles.progressTrack, {backgroundColor: themeColors.onDarkSurface}]}>
                 <View
                     style={[
                         styles.progressFill,
                         {
-                            backgroundColor: theme.colors.primary,
+                            backgroundColor: theme.colors.tertiary,
                             width: `${((currentStep + 1) / STEPS_INFO.length) * 100}%`,
                         },
                     ]}
@@ -102,15 +98,14 @@ export const AddPartStepper = ({currentStep, onStepPress}: AddPartStepperProps) 
 
 const styles = StyleSheet.create({
     container: {
-        paddingTop: 14,
-        paddingBottom: 12,
-        borderBottomWidth: 1,
+        paddingTop: 12,
+        paddingBottom: 10,
     },
     stepsRow: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        paddingHorizontal: 12,
-        marginBottom: 12,
+        paddingHorizontal: 8,
+        marginBottom: 10,
     },
     stepItem: {
         alignItems: 'center',
@@ -118,18 +113,22 @@ const styles = StyleSheet.create({
         gap: 4,
     },
     dot: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
+        width: 28,
+        height: 28,
+        borderRadius: 14,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    dotActive: {
+        backgroundColor: themeColors.onDarkOverlay,
+        borderWidth: 2,
     },
     label: {
         fontSize: 10,
         textAlign: 'center',
     },
     progressTrack: {
-        height: 4,
+        height: 3,
         marginHorizontal: 16,
         borderRadius: 2,
         overflow: 'hidden',

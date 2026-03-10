@@ -51,13 +51,20 @@ export const useParts = () => {
         [setParts]
     )
 
+    // Skip the first search effect — the category effect already fetches on mount
+    const searchChangedRef = useRef(false)
+
     useEffect(() => {
         fetchParts(selectedCategory, search)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedCategory])
 
-    // Debounce search
+    // Debounce search — skip on initial mount (category effect already fetched)
     useEffect(() => {
+        if (!searchChangedRef.current) {
+            searchChangedRef.current = true
+            return
+        }
         const timer = setTimeout(() => {
             fetchParts(selectedCategory, search)
         }, 400)

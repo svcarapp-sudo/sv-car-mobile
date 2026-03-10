@@ -13,6 +13,7 @@ export type RootStackParamList = {
         | {screen: 'MyParts'; params?: undefined}
         | {screen: 'AddPart'; params?: undefined}
         | {screen: 'EditPart'; params: {partId: string}}
+        | {screen: 'MyAccount'; params?: undefined}
         | undefined
     Home: undefined
     AddVehicle: {vehicleId?: string} | undefined
@@ -22,4 +23,5 @@ export type RootStackParamList = {
     MyParts: undefined
     AddPart: undefined
     EditPart: {partId: string}
+    MyAccount: undefined
 }

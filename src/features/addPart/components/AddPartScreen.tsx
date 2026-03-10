@@ -2,12 +2,13 @@ import {useState, useCallback} from 'react'
 import {StyleSheet, View, Alert} from 'react-native'
 import type {NavigationProp} from '@react-navigation/native'
 
-import {useMyParts} from '../hooks/useMyParts'
+import {useAddPart} from '../hooks/useAddPart'
 import {useVehicleInfo, usePartCategories, useAppTheme} from '@/global/hooks'
 import {ManufacturerScreen, ModelScreen, YearScreen, CategoryScreen} from '@/global/components'
 import {AddPartStepper, Step} from './AddPartStepper'
 import {AddPartSummaryCard} from './AddPartSummaryCard'
 import {AddPartDetailsForm} from './AddPartDetailsForm'
+import {SellerProfileGate} from './SellerProfileGate'
 import type {RootStackParamList} from '@/global/navigation/types'
 
 const ARABIC_TEXT = {
@@ -25,7 +26,7 @@ interface AddPartScreenProps {
 
 export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
     const theme = useAppTheme()
-    const {createPart, loading} = useMyParts()
+    const {createPart, loading} = useAddPart()
     const {getMakes, getModels, years} = useVehicleInfo()
     const {categories, loading: categoriesLoading} = usePartCategories()
 
@@ -218,20 +219,22 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
     }
 
     return (
-        <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
-            <AddPartStepper currentStep={currentStep} onStepPress={handleStepChange} />
-            <View style={styles.mainContent}>
-                <AddPartSummaryCard
-                    makeName={makeName}
-                    makeLogoUrl={makeLogoUrl}
-                    modelName={modelName}
-                    year={year}
-                    categoryName={categoryName}
-                    onEdit={() => handleStepChange(Step.Make)}
-                />
-                <View style={styles.stepContent}>{renderStep()}</View>
+        <SellerProfileGate>
+            <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+                <AddPartStepper currentStep={currentStep} onStepPress={handleStepChange} />
+                <View style={styles.mainContent}>
+                    <AddPartSummaryCard
+                        makeName={makeName}
+                        makeLogoUrl={makeLogoUrl}
+                        modelName={modelName}
+                        year={year}
+                        categoryName={categoryName}
+                        onEdit={() => handleStepChange(Step.Make)}
+                    />
+                    <View style={styles.stepContent}>{renderStep()}</View>
+                </View>
             </View>
-        </View>
+        </SellerProfileGate>
     )
 }
 

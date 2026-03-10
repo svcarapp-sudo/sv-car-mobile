@@ -18,6 +18,6 @@ module.exports = {
         extra: {
             apiHost,
         },
-        plugins: [...(appJson.expo.plugins || []), 'expo-font'],
+        plugins: [...(appJson.expo.plugins || []), 'expo-font', 'expo-localization'],
     },
 }

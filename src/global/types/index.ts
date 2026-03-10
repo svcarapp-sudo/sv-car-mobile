@@ -3,7 +3,95 @@ export interface User {
     id: string
     name: string
     email: string
+    phone?: string | null
+    avatarUrl?: string | null
+    city?: string | null
+    bio?: string | null
+    role?: string
+    status?: string
     selectedVehicleId?: number | null
+}
+
+export interface UpdateProfileRequest {
+    name?: string
+    email?: string
+    phone?: string
+    city?: string
+    bio?: string
+}
+
+export interface PlanEntitlement {
+    id: number
+    entitlementKey: string
+    entitlementType: 'FLAG' | 'LIMIT'
+    valueLimit: number | null
+    valueFlag: boolean | null
+}
+
+export interface Plan {
+    id: number
+    name: string
+    slug: string
+    description: string | null
+    price: number
+    billingPeriod: string
+    isDefault: boolean
+    isActive: boolean
+    sortOrder: number
+    entitlements: PlanEntitlement[]
+}
+
+export interface UserSubscription {
+    id: number
+    userId: number
+    plan: Plan
+    status: string
+    startedAt: string
+    expiresAt: string | null
+    autoRenew: boolean
+}
+
+// Seller types
+export interface SellerType {
+    id: number
+    slug: string
+    name: string
+    description: string | null
+    sortOrder: number
+}
+
+export interface SellerProfile {
+    id: number
+    userId: number
+    userName: string
+    userEmail: string
+    sellerType: SellerType
+    storeName: string | null
+    phone: string
+    city: string | null
+    description: string | null
+    profileImageUrl: string | null
+    workingHours: string | null
+}
+
+export interface CreateSellerProfileRequest {
+    sellerTypeId: number
+    phone: string
+    storeName?: string
+    city?: string
+    description?: string
+    profileImageUrl?: string
+    workingHours?: string
+}
+
+export interface UpdateSellerProfileRequest {
+    sellerTypeId: number
+    phone: string
+    storeName?: string
+    city?: string
+    description?: string
+    profileImageUrl?: string
+    workingHours?: string
 }
 
 /** Auth API request/response (register, login) */
