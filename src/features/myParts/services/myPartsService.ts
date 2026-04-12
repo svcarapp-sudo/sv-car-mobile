@@ -1,17 +1,11 @@
 import {apiClient} from '@/global/services'
-import {partService, mapPartModelToPart} from '@/global/services/partService'
-import type {PartModelResponse} from '@/global/services/partService'
-import {partCategoriesService} from '@/global/services/partCategoriesService'
+import {catalogService} from '@/global/services/catalogService'
+import {mapPartModelToPart, type PartModelResponse} from '@/global/utils/partMapper'
 import type {CreatePartRequest, UpdatePartRequest, Part} from '@/global/types'
-
 
 class MyPartsService {
     private readonly basePath = '/api/parts'
 
-    /**
-     * Get all parts created by the current user
-     * Uses the dedicated /my-parts endpoint
-     */
     async getMyParts(): Promise<Part[]> {
         const response = await apiClient.get<{
             parts: PartModelResponse[]
@@ -23,36 +17,25 @@ class MyPartsService {
             params: {page: 0, limit: 1000},
         })
 
-        // Fetch categories to map categoryId to slug
-        const categories = await partCategoriesService.getPartCategories().catch(() => [])
+        const categories = await catalogService.getCategoriesForMapping()
 
-        return response.parts.map(part =>
-            mapPartModelToPart(
-                part,
-                categories.map(c => ({id: c.id, slug: c.slug})),
-            ),
-        )
+        return response.parts.map(part => mapPartModelToPart(part, categories))
     }
 
-    /**
-     * Create a new part
-     */
     async createPart(data: CreatePartRequest): Promise<Part> {
-        return partService.createPart(data)
+        const response = await apiClient.post<PartModelResponse>(this.basePath, data)
+        const categories = await catalogService.getCategoriesForMapping()
+        return mapPartModelToPart(response, categories)
     }
 
-    /**
-     * Update an existing part
-     */
     async updatePart(id: string, data: UpdatePartRequest): Promise<Part> {
-        return partService.updatePart(id, data)
+        const response = await apiClient.patch<PartModelResponse>(`${this.basePath}/${id}`, data)
+        const categories = await catalogService.getCategoriesForMapping()
+        return mapPartModelToPart(response, categories)
     }
 
-    /**
-     * Delete a part
-     */
     async deletePart(id: string): Promise<void> {
-        return partService.deletePart(id)
+        return apiClient.delete<void>(`${this.basePath}/${id}`)
     }
 }
 

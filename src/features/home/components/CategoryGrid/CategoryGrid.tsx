@@ -1,7 +1,7 @@
 import {StyleSheet, View} from 'react-native'
 import {ActivityIndicator, Button, Text} from 'react-native-paper'
 
-import {useAppTheme, usePartCategories} from '@/global/hooks'
+import {useAppTheme, useCatalog} from '@/global/hooks'
 import type {PartCategory} from '@/global/types'
 import {CategoryGridItem} from './CategoryGridItem'
 
@@ -43,7 +43,7 @@ const SectionHeader = ({theme, showViewAll, onViewAll}: {theme: ReturnType<typeo
 
 export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) => {
     const theme = useAppTheme()
-    const {categories: apiCategories, loading, error, refresh} = usePartCategories()
+    const {categories: apiCategories, categoriesLoading: loading, categoriesError: error, refreshCategories: refresh} = useCatalog()
     const categories = (apiCategories ?? []).slice().sort((a, b) => a.sortOrder - b.sortOrder)
 
     if (categories.length === 0 && !loading && error) {

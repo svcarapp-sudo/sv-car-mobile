@@ -1,6 +1,3 @@
 export {useAppTheme} from './useAppTheme'
-export {usePartCategories} from './usePartCategories'
-export {useParts} from './useParts'
-export {useVehicleInfo} from './useVehicleInfo'
+export {useCatalog} from './useCatalog'
 export {useVehicleApi} from './useVehicleApi'
-export {useMakeModelCache} from './useMakeModelCache'

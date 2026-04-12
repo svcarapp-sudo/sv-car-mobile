@@ -4,7 +4,7 @@ import {Text, ActivityIndicator, Icon} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
 import {useMyParts} from '../../hooks/useMyParts'
-import {useMakeModelCache, usePartCategories, useAppTheme} from '@/global/hooks'
+import {useCatalog, useAppTheme} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import {EditPartVehicleBanner} from './EditPartVehicleBanner'
 import {EditPartFormFields} from './EditPartFormFields'
@@ -28,11 +28,9 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
     const theme = useAppTheme()
     const partId = route?.params?.partId
     const {parts, loading: partsLoading, updatePart} = useMyParts()
-    const {getBySlug, categories} = usePartCategories()
-
     const part = parts.find(p => p.id === partId) ?? null
     const partsForCache = part ? [part] : []
-    const makeModelCache = useMakeModelCache({parts: partsForCache})
+    const {getBySlug, categories, makeModelCache} = useCatalog({parts: partsForCache})
 
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')

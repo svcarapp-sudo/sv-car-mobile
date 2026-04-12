@@ -1,15 +1,9 @@
 import {useState, useCallback} from 'react'
 
-import {ApiError, partService} from '@/global/services'
+import {ApiError} from '@/global/services'
 import type {PartCategory, GetPartsRequest, CreatePartRequest, UpdatePartRequest} from '@/global/types'
+import {partsListService} from '../services'
 
-import {usePartsStore} from '@/global/store'
-
-/**
- * Hook for parts API operations
- * This integrates with the backend API service
- * Backend automatically filters by user's selected vehicle
- */
 export const usePartApi = () => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -17,13 +11,8 @@ export const usePartApi = () => {
     const fetchParts = useCallback(async (params?: GetPartsRequest) => {
         setLoading(true)
         setError(null)
-
         try {
-            const response = await partService.getParts(params)
-            // Update store with fetched parts
-            usePartsStore.getState().setParts(response.parts)
-
-            return response
+            return await partsListService.getParts(params)
         } catch (err) {
             const message = err instanceof ApiError ? err.message : 'Failed to fetch parts'
             setError(message)
@@ -36,13 +25,8 @@ export const usePartApi = () => {
     const fetchPartsByCategory = useCallback(async (category: PartCategory) => {
         setLoading(true)
         setError(null)
-
         try {
-            const parts = await partService.getPartsByCategory(category)
-            // Update store with fetched parts
-            usePartsStore.getState().setParts(parts)
-
-            return parts
+            return await partsListService.getPartsByCategory(category)
         } catch (err) {
             const message = err instanceof ApiError ? err.message : 'Failed to fetch parts by category'
             setError(message)
@@ -55,11 +39,8 @@ export const usePartApi = () => {
     const searchParts = useCallback(async (query: string) => {
         setLoading(true)
         setError(null)
-
         try {
-            const parts = await partService.searchParts(query)
-
-            return parts
+            return await partsListService.searchParts(query)
         } catch (err) {
             const message = err instanceof ApiError ? err.message : 'Failed to search parts'
             setError(message)
@@ -72,9 +53,8 @@ export const usePartApi = () => {
     const getPartById = useCallback(async (id: string) => {
         setLoading(true)
         setError(null)
-
         try {
-            return await partService.getPartById(id)
+            return await partsListService.getPartById(id)
         } catch (err) {
             const message = err instanceof ApiError ? err.message : 'Failed to fetch part'
             setError(message)
@@ -84,16 +64,11 @@ export const usePartApi = () => {
         }
     }, [])
 
-    /**
-     * Check compatibility with user's selected vehicle
-     * Backend automatically uses user's selected vehicle
-     */
     const checkCompatibility = useCallback(async (partId: string) => {
         setLoading(true)
         setError(null)
-
         try {
-            return await partService.checkCompatibility(partId)
+            return await partsListService.checkCompatibility(partId)
         } catch (err) {
             const message = err instanceof ApiError ? err.message : 'Failed to check compatibility'
             setError(message)
@@ -106,12 +81,8 @@ export const usePartApi = () => {
     const createPart = useCallback(async (data: CreatePartRequest) => {
         setLoading(true)
         setError(null)
-
         try {
-            const part = await partService.createPart(data)
-            usePartsStore.getState().addPart(part)
-
-            return part
+            return await partsListService.createPart(data)
         } catch (err) {
             const message = err instanceof ApiError ? err.message : 'Failed to create part'
             setError(message)
@@ -124,12 +95,8 @@ export const usePartApi = () => {
     const updatePart = useCallback(async (id: string, data: UpdatePartRequest) => {
         setLoading(true)
         setError(null)
-
         try {
-            const part = await partService.updatePart(id, data)
-            usePartsStore.getState().updatePart(id, part)
-
-            return part
+            return await partsListService.updatePart(id, data)
         } catch (err) {
             const message = err instanceof ApiError ? err.message : 'Failed to update part'
             setError(message)
@@ -142,10 +109,8 @@ export const usePartApi = () => {
     const deletePart = useCallback(async (id: string) => {
         setLoading(true)
         setError(null)
-
         try {
-            await partService.deletePart(id)
-            usePartsStore.getState().deletePart(id)
+            await partsListService.deletePart(id)
         } catch (err) {
             const message = err instanceof ApiError ? err.message : 'Failed to delete part'
             setError(message)

@@ -1,7 +1,8 @@
 import React from 'react'
 import {FlatList, StyleSheet, View} from 'react-native'
 import {ActivityIndicator, Icon, TextInput} from 'react-native-paper'
-import {useParts, usePartCategories, useMakeModelCache, useAppTheme} from '@/global/hooks'
+import {useCatalog, useAppTheme} from '@/global/hooks'
+import {useParts} from '../../hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 import {PartCardItem} from './PartCardItem'
@@ -18,14 +19,13 @@ interface PartsListScreenProps {
 }
 
 export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
-    const {parts, total, selectedCategory, loading, loadingMore, search, setSearch, hasMore, loadMore, refresh} = useParts()
-    const {getBySlug, categories} = usePartCategories()
+    const routeCategory = route?.params?.category ?? null
+    const {parts, total, loading, loadingMore, search, setSearch, hasMore, loadMore, refresh} = useParts(routeCategory)
+    const {getBySlug, categories, makeModelCache} = useCatalog({parts})
     const theme = useAppTheme()
-    const makeModelCache = useMakeModelCache({parts})
 
-    const category = route?.params?.category ?? selectedCategory
-    const categoryFromApi = category ? getBySlug(category) : null
-    const categoryName = categoryFromApi?.name || category || null
+    const categoryFromApi = routeCategory ? getBySlug(routeCategory) : null
+    const categoryName = categoryFromApi?.name || routeCategory || null
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>

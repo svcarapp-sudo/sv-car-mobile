@@ -3,7 +3,7 @@ import {Alert} from 'react-native'
 import type {NavigationProp} from '@react-navigation/native'
 
 import {useAddPart} from './useAddPart'
-import {useVehicleInfo, usePartCategories} from '@/global/hooks'
+import {useCatalog} from '@/global/hooks'
 import {Step} from '../components/AddPart/AddPartStepper'
 import type {RootStackParamList} from '@/global/navigation/types'
 
@@ -18,8 +18,7 @@ const ARABIC_TEXT = {
 
 export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) => {
     const {createPart, loading} = useAddPart()
-    const {getMakes, getModels, years} = useVehicleInfo()
-    const {categories, loading: categoriesLoading} = usePartCategories()
+    const {getMakes, getModels, years, categories, categoriesLoading} = useCatalog()
 
     const [currentStep, setCurrentStep] = useState<Step>(Step.Make)
     const [originId] = useState<number | null>(null)

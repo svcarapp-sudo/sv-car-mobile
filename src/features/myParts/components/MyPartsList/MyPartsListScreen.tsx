@@ -4,7 +4,7 @@ import {FAB, Text, Icon} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
 import {useMyParts} from '../../hooks/useMyParts'
-import {useAppTheme, useMakeModelCache, usePartCategories} from '@/global/hooks'
+import {useAppTheme, useCatalog} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {Part} from '@/global/types'
 import {MyPartCardItem} from './MyPartCardItem'
@@ -30,8 +30,7 @@ interface MyPartsListScreenProps {
 export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
     const theme = useAppTheme()
     const {parts, loading, deletePart, fetchMyParts} = useMyParts()
-    const makeModelCache = useMakeModelCache({parts})
-    const {getBySlug, categories} = usePartCategories()
+    const {makeModelCache, getBySlug, categories} = useCatalog({parts})
 
     const stats = useMemo(() => {
         const totalValue = parts.reduce((sum, p) => sum + p.price, 0)

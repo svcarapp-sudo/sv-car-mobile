@@ -5,8 +5,7 @@ import type {NavigationProp} from '@react-navigation/native'
 
 import type {RootStackParamList} from '@/global/navigation/types'
 import {useVehicleApi} from '@/global/hooks'
-import {useAuthStore, usePartsStore} from '@/global/store'
-import {useVehicles} from '../hooks'
+import {useAuthStore, useVehicleStore} from '@/global/store'
 import type {PartCategory} from '@/global/types'
 import {GreetingSection} from './GreetingSection'
 import {EmptyState} from './EmptyState'
@@ -18,8 +17,7 @@ interface HomeScreenProps {
 }
 
 export const HomeScreen = ({navigation}: HomeScreenProps) => {
-    const {vehicle} = useVehicles()
-    const selectCategory = usePartsStore(s => s.selectCategory)
+    const vehicle = useVehicleStore(s => s.vehicle)
     const {fetchVehicle} = useVehicleApi()
     const user = useAuthStore(s => s.user)
     const theme = useAppTheme()
@@ -51,11 +49,9 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
     const handleAddVehicle = () => navigation?.navigate('AddVehicle')
     const handleChangeVehicle = () => navigation?.navigate('AddVehicle', vehicle ? {vehicleId: vehicle.id} : undefined)
     const handleSelectCategory = (category: PartCategory) => {
-        selectCategory(category)
         navigation?.navigate('PartsList', {category})
     }
     const handleViewAllParts = () => {
-        selectCategory(null)
         navigation?.navigate('PartsList', {category: null})
     }
 

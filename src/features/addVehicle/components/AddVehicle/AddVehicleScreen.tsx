@@ -2,7 +2,7 @@ import {useState} from 'react'
 import {StyleSheet, View} from 'react-native'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 import type {RootStackParamList} from '@/global/navigation/types'
-import {useAppTheme, useVehicleInfo, useVehicleApi} from '@/global/hooks'
+import {useAppTheme, useCatalog, useVehicleApi} from '@/global/hooks'
 import {AddVehicleStepper, Step} from './AddVehicleStepper'
 import {AddVehicleSummaryCard} from './AddVehicleSummaryCard'
 import {AddVehicleStepContent} from './AddVehicleStepContent'
@@ -13,7 +13,7 @@ interface AddVehicleScreenProps {
 }
 
 export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => {
-    const vehicleInfo = useVehicleInfo()
+    const vehicleInfo = useCatalog()
     const {createVehicle, updateVehicle, loading: submitLoading, error: submitError} = useVehicleApi()
     const theme = useAppTheme()
     const editVehicleId = route?.params?.vehicleId

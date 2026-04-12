@@ -3,7 +3,7 @@ import type {NavigationProp} from '@react-navigation/native'
 import {ActivityIndicator, Icon, Text} from 'react-native-paper'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {PartCategory} from '@/global/types'
-import {useAppTheme, useParts, usePartCategories} from '@/global/hooks'
+import {useAppTheme, useCatalog} from '@/global/hooks'
 import {ViewAllBanner} from './ViewAllBanner'
 import {PartsCategoryCard} from './PartsCategoryCard'
 
@@ -19,18 +19,15 @@ interface PartsCategoriesScreenProps {
 }
 
 export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({navigation}) => {
-    const {selectCategory} = useParts()
-    const {categories, loading} = usePartCategories()
+    const {categories, categoriesLoading: loading} = useCatalog()
     const categoriesList = categories ?? []
     const theme = useAppTheme()
 
     const handleSelectCategory = (slug: PartCategory) => {
-        selectCategory(slug)
         navigation?.navigate('PartsList', {category: slug})
     }
 
     const handleViewAllParts = () => {
-        selectCategory(null)
         navigation?.navigate('PartsList', {category: null})
     }
 

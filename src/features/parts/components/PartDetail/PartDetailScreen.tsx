@@ -2,7 +2,7 @@ import {useState, useEffect, useRef} from 'react'
 import {Animated, ScrollView, StyleSheet, View} from 'react-native'
 import {ActivityIndicator, Icon, Text} from 'react-native-paper'
 import type {Part, CompatibilityResponse} from '@/global/types'
-import {useAppTheme, usePartCategories} from '@/global/hooks'
+import {useAppTheme, useCatalog} from '@/global/hooks'
 import {usePartApi} from '../../hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {RouteProp} from '@react-navigation/native'
@@ -24,7 +24,7 @@ interface PartDetailScreenProps {
 export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
     const partId = route?.params?.partId
     const {getPartById, checkCompatibility} = usePartApi()
-    const {getBySlug} = usePartCategories()
+    const {getBySlug} = useCatalog()
     const theme = useAppTheme()
     const [part, setPart] = useState<Part | null>(null)
     const [compatibility, setCompatibility] = useState<CompatibilityResponse | null>(null)

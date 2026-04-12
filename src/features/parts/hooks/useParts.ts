@@ -2,13 +2,16 @@ import {useEffect, useState, useCallback, useRef} from 'react'
 
 import type {PartCategory, Part} from '@/global/types'
 
-import {partService} from '@/global/services'
-import {usePartsStore} from '@/global/store'
+import {useVehicleStore} from '@/global/store'
+
+import {partsListService} from '../services'
 
 const PAGE_SIZE = 20
 
-export const useParts = () => {
-    const {parts, selectedCategory, selectCategory, setParts} = usePartsStore()
+export const useParts = (initialCategory?: PartCategory | null) => {
+    const vehicle = useVehicleStore(s => s.vehicle)
+    const [parts, setParts] = useState<Part[]>([])
+    const [selectedCategory, setSelectedCategory] = useState<PartCategory | null>(initialCategory ?? null)
     const [loading, setLoading] = useState(false)
     const [loadingMore, setLoadingMore] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -28,7 +31,7 @@ export const useParts = () => {
             setPage(0)
             setHasMore(false)
             try {
-                const response = await partService.getParts({
+                const response = await partsListService.getParts({
                     category: category || undefined,
                     search: searchQuery || undefined,
                     page: 0,
@@ -48,7 +51,7 @@ export const useParts = () => {
                 }
             }
         },
-        [setParts]
+        [],
     )
 
     // Skip the first search effect — the category effect already fetches on mount
@@ -57,7 +60,7 @@ export const useParts = () => {
     useEffect(() => {
         fetchParts(selectedCategory, search)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedCategory])
+    }, [selectedCategory, vehicle?.id])
 
     // Debounce search — skip on initial mount (category effect already fetched)
     useEffect(() => {
@@ -77,7 +80,7 @@ export const useParts = () => {
         const nextPage = page + 1
         setLoadingMore(true)
         try {
-            const response = await partService.getParts({
+            const response = await partsListService.getParts({
                 category: selectedCategory || undefined,
                 search: search || undefined,
                 page: nextPage,
@@ -85,7 +88,7 @@ export const useParts = () => {
             })
             const existingIds = new Set(parts.map(p => p.id))
             const newParts = response.parts.filter(p => !existingIds.has(p.id))
-            setParts([...parts, ...newParts])
+            setParts(prev => [...prev, ...newParts])
             setPage(nextPage)
             setHasMore(nextPage + 1 < response.totalPages)
         } catch (err) {
@@ -93,28 +96,16 @@ export const useParts = () => {
         } finally {
             setLoadingMore(false)
         }
-    }, [loadingMore, loading, hasMore, page, selectedCategory, search, parts, setParts])
+    }, [loadingMore, loading, hasMore, page, selectedCategory, search, parts])
 
-    const handleSelectCategory = useCallback(
-        async (category: PartCategory | null) => {
-            selectCategory(category)
-            setSearch('')
-        },
-        [selectCategory]
-    )
+    const selectCategory = useCallback((category: PartCategory | null) => {
+        setSelectedCategory(category)
+        setSearch('')
+    }, [])
 
     const refresh = useCallback(() => {
         fetchParts(selectedCategory, search)
     }, [fetchParts, selectedCategory, search])
-
-    const getCategoryParts = useCallback(async (category: PartCategory): Promise<Part[]> => {
-        try {
-            return await partService.getPartsByCategory(category)
-        } catch (err) {
-            setError((err as Error).message || 'Failed to fetch parts by category')
-            return []
-        }
-    }, [])
 
     return {
         parts,
@@ -126,9 +117,8 @@ export const useParts = () => {
         search,
         setSearch,
         hasMore,
-        selectCategory: handleSelectCategory,
+        selectCategory,
         loadMore,
         refresh,
-        getCategoryParts,
     }
 }

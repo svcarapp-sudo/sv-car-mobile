@@ -1,5 +1,5 @@
 import {MakeScreen, ModelScreen, YearScreen} from '@/global/components'
-import type {useVehicleInfo} from '@/global/hooks'
+import type {useCatalog} from '@/global/hooks'
 
 import {Step} from './AddVehicleStepper'
 import {OriginScreen} from '../Origin'
@@ -8,7 +8,7 @@ import {AddVinScreen} from '../AddVin'
 
 interface AddVehicleStepContentProps {
     currentStep: Step
-    vehicleInfo: ReturnType<typeof useVehicleInfo>
+    vehicleInfo: ReturnType<typeof useCatalog>
     originId: number | null
     make: string
     makeId: string | null
@@ -60,7 +60,7 @@ export const AddVehicleStepContent = ({
             return (
                 <OriginScreen
                     origins={vehicleInfo.origins}
-                    loading={vehicleInfo.loading}
+                    loading={vehicleInfo.originsLoading}
                     value={originId}
                     onSelect={onOriginSelect}
                     onNext={onNext}
