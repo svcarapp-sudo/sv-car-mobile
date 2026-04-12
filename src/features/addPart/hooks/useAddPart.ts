@@ -1,7 +1,7 @@
 import {useState, useCallback} from 'react'
 
 import {apiClient, ApiError} from '@/global/services'
-import {catalogService} from '@/global/services/catalogService'
+import {getCategoriesForMapping} from '@/global/services/catalogService'
 import {mapPartModelToPart, type PartModelResponse} from '@/global/utils/partMapper'
 import type {CreatePartRequest, Part} from '@/global/types'
 
@@ -17,7 +17,7 @@ export const useAddPart = () => {
 
         try {
             const response = await apiClient.post<PartModelResponse>(PARTS_PATH, data)
-            const categories = await catalogService.getCategoriesForMapping()
+            const categories = await getCategoriesForMapping()
             return mapPartModelToPart(response, categories)
         } catch (err) {
             const message = err instanceof ApiError ? err.message : 'Failed to create part'

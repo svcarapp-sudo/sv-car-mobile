@@ -1,9 +1,10 @@
-import {useState, useEffect, useCallback, useMemo, useRef} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useQuery, useQueryClient} from '@tanstack/react-query'
 
-import {catalogService} from '../services/catalogService'
+import {catalogApi, catalogKeys} from '../services/catalogService'
 import {FUEL_TYPES, MAX_YEAR, MIN_YEAR} from '../constants'
 
-import type {OriginApi, MakeApi, ModelApi} from '../services/catalogService'
+import type {MakeApi, ModelApi} from '../services/catalogService'
 import type {PartCategoryApi} from '@/global/types'
 
 type MakeModelCache = Record<number, {name: string; logoUrl?: string | null}> & Record<string, {name: string}>
@@ -15,70 +16,55 @@ interface UseCatalogOptions {
 
 export const useCatalog = (options?: UseCatalogOptions) => {
     const parts = options?.parts
+    const qc = useQueryClient()
 
     // --- Origins ---
-    const [origins, setOrigins] = useState<OriginApi[]>([])
-    const [originsLoading, setOriginsLoading] = useState(true)
-
-    const fetchOrigins = useCallback(async () => {
-        setOriginsLoading(true)
-        try {
-            setOrigins(await catalogService.getOrigins())
-        } catch {
-            setOrigins([])
-        } finally {
-            setOriginsLoading(false)
-        }
-    }, [])
-
-    useEffect(() => {
-        fetchOrigins()
-    }, [fetchOrigins])
+    const originsQuery = useQuery({
+        queryKey: catalogKeys.origins(),
+        queryFn: catalogApi.getOrigins,
+    })
 
     // --- Part categories ---
-    const [categories, setCategories] = useState<PartCategoryApi[]>([])
-    const [categoriesLoading, setCategoriesLoading] = useState(true)
-    const [categoriesError, setCategoriesError] = useState<string | null>(null)
+    const categoriesQuery = useQuery({
+        queryKey: catalogKeys.partCategories(),
+        queryFn: catalogApi.getPartCategories,
+    })
 
-    const fetchCategories = useCallback(async () => {
-        setCategoriesLoading(true)
-        setCategoriesError(null)
-        try {
-            const list = await catalogService.getPartCategories()
-            setCategories(Array.isArray(list) ? list : [])
-        } catch (err) {
-            setCategories([])
-            setCategoriesError((err as Error)?.message ?? 'فشل تحميل الفئات')
-        } finally {
-            setCategoriesLoading(false)
-        }
-    }, [])
-
-    useEffect(() => {
-        fetchCategories()
-    }, [fetchCategories])
+    const categories = categoriesQuery.data ?? []
 
     const getBySlug = useCallback(
         (slug: string): PartCategoryApi | undefined => categories.find(c => c.slug === slug),
         [categories],
     )
 
-    // --- On-demand fetchers (cached in catalogService) ---
-    const getMakes = useCallback(async (originId?: number | null): Promise<MakeApi[]> => {
-        try {
-            return await catalogService.getMakes(originId)
-        } catch {
-            return []
-        }
-    }, [])
+    // --- On-demand fetchers (go through queryClient cache) ---
+    const getMakes = useCallback(
+        async (originId?: number | null): Promise<MakeApi[]> => {
+            try {
+                return await qc.fetchQuery({
+                    queryKey: catalogKeys.makes(originId),
+                    queryFn: () => catalogApi.getMakes(originId),
+                })
+            } catch {
+                return []
+            }
+        },
+        [qc],
+    )
 
-    const getModels = useCallback(async (makeId: number): Promise<ModelApi[]> => {
-        try {
-            return await catalogService.getModels(makeId)
-        } catch {
-            return []
-        }
-    }, [])
+    const getModels = useCallback(
+        async (makeId: number): Promise<ModelApi[]> => {
+            try {
+                return await qc.fetchQuery({
+                    queryKey: catalogKeys.models(makeId),
+                    queryFn: () => catalogApi.getModels(makeId),
+                })
+            } catch {
+                return []
+            }
+        },
+        [qc],
+    )
 
     // --- Static lists ---
     const years = useMemo(() => {
@@ -111,7 +97,7 @@ export const useCatalog = (options?: UseCatalogOptions) => {
                 let allMakes: MakeApi[] = []
                 if (uniqueMakeIds.size > 0) {
                     try {
-                        allMakes = await catalogService.getMakes()
+                        allMakes = await getMakes()
                     } catch {
                         // ignore
                     }
@@ -134,7 +120,7 @@ export const useCatalog = (options?: UseCatalogOptions) => {
 
                 for (const [makeId, modelIds] of makeIdToModelIds) {
                     try {
-                        const models = await catalogService.getModels(makeId)
+                        const models = await getModels(makeId)
                         for (const modelId of modelIds) {
                             const model = models.find(m => Number(m.id) === modelId)
                             if (model) cache[`model_${modelId}`] = {name: model.name}
@@ -156,16 +142,16 @@ export const useCatalog = (options?: UseCatalogOptions) => {
 
     return {
         // Origins
-        origins,
-        originsLoading,
-        refreshOrigins: fetchOrigins,
+        origins: originsQuery.data ?? [],
+        originsLoading: originsQuery.isLoading,
+        refreshOrigins: () => qc.invalidateQueries({queryKey: catalogKeys.origins()}),
 
         // Part categories
         categories,
-        categoriesLoading,
-        categoriesError,
+        categoriesLoading: categoriesQuery.isLoading,
+        categoriesError: categoriesQuery.error?.message ?? null,
         getBySlug,
-        refreshCategories: fetchCategories,
+        refreshCategories: () => qc.invalidateQueries({queryKey: catalogKeys.partCategories()}),
 
         // On-demand fetchers
         getMakes,
@@ -175,7 +161,7 @@ export const useCatalog = (options?: UseCatalogOptions) => {
         years,
         fuelTypes: FUEL_TYPES,
 
-        // Make/model name cache (populated when `parts` option is provided)
+        // Make/model name cache
         makeModelCache,
     }
 }

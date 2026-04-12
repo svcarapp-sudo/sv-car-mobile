@@ -3,7 +3,9 @@ import {useEffect, useCallback} from 'react'
 import {StatusBar} from 'expo-status-bar'
 import * as SplashScreen from 'expo-splash-screen'
 import {useFonts, Cairo_400Regular, Cairo_500Medium, Cairo_600SemiBold, Cairo_700Bold} from '@expo-google-fonts/cairo'
+import {PersistQueryClientProvider} from '@tanstack/react-query-persist-client'
 
+import {queryClient, asyncStoragePersister} from '@/global/services/queryClient'
 import {AppNavigator} from '@/global/navigation'
 import {ThemeProvider} from '@/global/providers'
 
@@ -31,9 +33,11 @@ export default function App() {
     if (!fontsLoaded) return null
 
     return (
-        <ThemeProvider>
-            <AppNavigator />
-            <StatusBar style='auto' />
-        </ThemeProvider>
+        <PersistQueryClientProvider client={queryClient} persistOptions={{persister: asyncStoragePersister}}>
+            <ThemeProvider>
+                <AppNavigator />
+                <StatusBar style='auto' />
+            </ThemeProvider>
+        </PersistQueryClientProvider>
     )
 }

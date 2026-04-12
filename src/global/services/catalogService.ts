@@ -1,8 +1,8 @@
 import {apiClient} from './ApiClient'
-import {RequestCache} from '@/global/utils/requestCache'
+import {queryClient} from './queryClient'
 import type {PartCategoryApi} from '@/global/types'
 
-/** API response types for catalog endpoints (origins, makes, models) */
+/** API response types for catalog endpoints */
 export interface OriginApi {
     id: number
     name: string
@@ -27,7 +27,7 @@ export interface ModelApi {
     sortOrder: number
 }
 
-/** Spring Data Page response shape (VIA_DTO) */
+/** Spring Data Page response shape */
 export interface PageResponse<T> {
     content: T[]
     page: {
@@ -39,49 +39,51 @@ export interface PageResponse<T> {
 }
 
 const CATALOG_PREFIX = '/api/catalog'
-const cache = new RequestCache(30)
 
-export const catalogService = {
-    async getOrigins(): Promise<OriginApi[]> {
-        return cache.get('origins', () => apiClient.get<OriginApi[]>(`${CATALOG_PREFIX}/origins`))
+/** Query key factory for catalog queries */
+export const catalogKeys = {
+    all: ['catalog'] as const,
+    origins: () => [...catalogKeys.all, 'origins'] as const,
+    makes: (originId?: number | null) => [...catalogKeys.all, 'makes', originId ?? 'all'] as const,
+    models: (makeId: number) => [...catalogKeys.all, 'models', makeId] as const,
+    partCategories: () => [...catalogKeys.all, 'part-categories'] as const,
+}
+
+/** Plain fetch functions — no caching, TanStack Query handles that */
+export const catalogApi = {
+    getOrigins: (): Promise<OriginApi[]> => apiClient.get<OriginApi[]>(`${CATALOG_PREFIX}/origins`),
+
+    getMakes: async (originId?: number | null): Promise<MakeApi[]> => {
+        const params: Record<string, string | number> = {page: 0, size: 200}
+        if (originId != null) params.originId = originId
+        const page = await apiClient.get<PageResponse<MakeApi>>(`${CATALOG_PREFIX}/makes`, {params})
+        return page.content ?? []
     },
 
-    async getMakes(originId?: number | null): Promise<MakeApi[]> {
-        const key = `makes_${originId ?? 'all'}`
-        return cache.get(key, async () => {
-            const params: Record<string, string | number> = {page: 0, size: 200}
-            if (originId != null) params.originId = originId
-            const page = await apiClient.get<PageResponse<MakeApi>>(`${CATALOG_PREFIX}/makes`, {params})
-            return page.content ?? []
+    getModels: async (makeId: number): Promise<ModelApi[]> => {
+        const page = await apiClient.get<PageResponse<ModelApi>>(`${CATALOG_PREFIX}/models`, {
+            params: {makeId, page: 0, size: 200},
         })
+        return page.content ?? []
     },
 
-    async getModels(makeId: number): Promise<ModelApi[]> {
-        return cache.get(`models_${makeId}`, async () => {
-            const page = await apiClient.get<PageResponse<ModelApi>>(`${CATALOG_PREFIX}/models`, {
-                params: {makeId, page: 0, size: 200},
-            })
-            return page.content ?? []
+    getPartCategories: (): Promise<PartCategoryApi[]> =>
+        apiClient.get<PartCategoryApi[]>(`${CATALOG_PREFIX}/part-categories`),
+}
+
+/**
+ * Fetch categories for mapping (categoryId → slug).
+ * Uses queryClient.fetchQuery so it returns cached data if fresh.
+ * Safe to call from services outside React.
+ */
+export async function getCategoriesForMapping(): Promise<Array<{id: number; slug: string}>> {
+    try {
+        const categories = await queryClient.fetchQuery({
+            queryKey: catalogKeys.partCategories(),
+            queryFn: catalogApi.getPartCategories,
         })
-    },
-
-    async getPartCategories(): Promise<PartCategoryApi[]> {
-        return cache.get('part-categories', () =>
-            apiClient.get<PartCategoryApi[]>(`${CATALOG_PREFIX}/part-categories`),
-        )
-    },
-
-    /** Lightweight projection used by part mappers (categoryId → slug). */
-    async getCategoriesForMapping(): Promise<Array<{id: number; slug: string}>> {
-        try {
-            const categories = await this.getPartCategories()
-            return categories.map(c => ({id: c.id, slug: c.slug}))
-        } catch {
-            return []
-        }
-    },
-
-    invalidateCache() {
-        cache.invalidate()
-    },
+        return categories.map(c => ({id: c.id, slug: c.slug}))
+    } catch {
+        return []
+    }
 }

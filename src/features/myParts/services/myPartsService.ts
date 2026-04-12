@@ -1,5 +1,5 @@
 import {apiClient} from '@/global/services'
-import {catalogService} from '@/global/services/catalogService'
+import {getCategoriesForMapping} from '@/global/services/catalogService'
 import {mapPartModelToPart, type PartModelResponse} from '@/global/utils/partMapper'
 import type {CreatePartRequest, UpdatePartRequest, Part} from '@/global/types'
 
@@ -17,20 +17,20 @@ class MyPartsService {
             params: {page: 0, limit: 1000},
         })
 
-        const categories = await catalogService.getCategoriesForMapping()
+        const categories = await getCategoriesForMapping()
 
         return response.parts.map(part => mapPartModelToPart(part, categories))
     }
 
     async createPart(data: CreatePartRequest): Promise<Part> {
         const response = await apiClient.post<PartModelResponse>(this.basePath, data)
-        const categories = await catalogService.getCategoriesForMapping()
+        const categories = await getCategoriesForMapping()
         return mapPartModelToPart(response, categories)
     }
 
     async updatePart(id: string, data: UpdatePartRequest): Promise<Part> {
         const response = await apiClient.patch<PartModelResponse>(`${this.basePath}/${id}`, data)
-        const categories = await catalogService.getCategoriesForMapping()
+        const categories = await getCategoriesForMapping()
         return mapPartModelToPart(response, categories)
     }
 
