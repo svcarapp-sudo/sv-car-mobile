@@ -6,7 +6,5 @@ export type {
     UpdatePartRequest,
     PartResponse,
     PartsListResponse,
-    CheckCompatibilityRequest,
-    CompatibilityResponse,
     PartApiError,
 } from './types'

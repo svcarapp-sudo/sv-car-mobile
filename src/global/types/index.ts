@@ -201,11 +201,10 @@ export interface CompatibilityResult {
 
 export type {
     GetPartsRequest,
+    CompatibilityInput,
     CreatePartRequest,
     UpdatePartRequest,
     PartResponse,
     PartsListResponse,
-    CheckCompatibilityRequest,
-    CompatibilityResponse,
     PartApiError,
 } from './partsApi'

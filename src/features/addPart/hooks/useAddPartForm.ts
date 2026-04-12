@@ -85,7 +85,8 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
         }
         try {
             await createPart({
-                makeId, modelId, year, categoryId,
+                compatibilities: [{makeId, modelId, yearFrom: year, yearTo: year}],
+                categoryId,
                 name: name.trim(), description: description.trim() || undefined,
                 price: priceNum, imageUrl: imageUrl.trim() || undefined, sku: sku.trim() || undefined,
             })

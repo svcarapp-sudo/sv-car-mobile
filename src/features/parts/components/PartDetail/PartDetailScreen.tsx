@@ -1,15 +1,15 @@
 import {useState, useEffect, useRef} from 'react'
 import {Animated, ScrollView, StyleSheet, View} from 'react-native'
 import {ActivityIndicator, Icon, Text} from 'react-native-paper'
-import type {Part, CompatibilityResponse} from '@/global/types'
+import type {Part} from '@/global/types'
 import {useAppTheme, useCatalog} from '@/global/hooks'
 import {usePartApi} from '../../hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {RouteProp} from '@react-navigation/native'
 import {PartDetailHero} from './PartDetailHero'
-import {PartDetailCompat} from './PartDetailCompat'
 import {PartDetailActions} from './PartDetailActions'
 import {PartDetailDescription} from './PartDetailDescription'
+import {PartDetailVehicles} from './PartDetailVehicles'
 
 const ARABIC_TEXT = {
     LOADING: 'جاري التحميل...',
@@ -23,11 +23,10 @@ interface PartDetailScreenProps {
 
 export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
     const partId = route?.params?.partId
-    const {getPartById, checkCompatibility} = usePartApi()
+    const {getPartById} = usePartApi()
     const {getBySlug} = useCatalog()
     const theme = useAppTheme()
     const [part, setPart] = useState<Part | null>(null)
-    const [compatibility, setCompatibility] = useState<CompatibilityResponse | null>(null)
     const [loading, setLoading] = useState(true)
     const fadeIn = useRef(new Animated.Value(0)).current
 
@@ -41,15 +40,6 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
             try {
                 const fetchedPart = await getPartById(partId)
                 setPart(fetchedPart)
-
-                if (fetchedPart) {
-                    try {
-                        const compat = await checkCompatibility(partId)
-                        setCompatibility(compat)
-                    } catch (error) {
-                        console.error('Failed to check compatibility:', error)
-                    }
-                }
             } catch (error) {
                 console.error('Failed to fetch part:', error)
             } finally {
@@ -110,8 +100,8 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
                     )}
                 </View>
 
+                <PartDetailVehicles vehicles={part.compatibleVehicles} />
                 {part.description && <PartDetailDescription description={part.description} />}
-                {compatibility && <PartDetailCompat compatibility={compatibility} />}
                 <PartDetailActions inStock={part.inStock} />
             </ScrollView>
         </Animated.View>

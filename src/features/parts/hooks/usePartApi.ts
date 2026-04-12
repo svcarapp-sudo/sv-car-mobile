@@ -64,20 +64,6 @@ export const usePartApi = () => {
         }
     }, [])
 
-    const checkCompatibility = useCallback(async (partId: string) => {
-        setLoading(true)
-        setError(null)
-        try {
-            return await partsListService.checkCompatibility(partId)
-        } catch (err) {
-            const message = err instanceof ApiError ? err.message : 'Failed to check compatibility'
-            setError(message)
-            throw err
-        } finally {
-            setLoading(false)
-        }
-    }, [])
-
     const createPart = useCallback(async (data: CreatePartRequest) => {
         setLoading(true)
         setError(null)
@@ -127,7 +113,6 @@ export const usePartApi = () => {
         fetchPartsByCategory,
         searchParts,
         getPartById,
-        checkCompatibility,
         createPart,
         updatePart,
         deletePart,

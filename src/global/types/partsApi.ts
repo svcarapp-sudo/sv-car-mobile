@@ -9,10 +9,15 @@ export interface GetPartsRequest {
     sortOrder?: 'asc' | 'desc'
 }
 
-export interface CreatePartRequest {
+export interface CompatibilityInput {
     makeId: number
     modelId: number
-    year: number
+    yearFrom: number
+    yearTo: number
+}
+
+export interface CreatePartRequest {
+    compatibilities: CompatibilityInput[]
     categoryId: number
     name: string
     description?: string
@@ -22,16 +27,13 @@ export interface CreatePartRequest {
 }
 
 export interface UpdatePartRequest {
+    compatibilities?: CompatibilityInput[]
+    categoryId?: number
     name?: string
     description?: string
-    category?: PartCategory
     price?: number
     imageUrl?: string
     sku?: string
-    brand?: string
-    compatibleVehicles?: {make: string; model: string; yearFrom?: number; yearTo?: number; engine?: string; trim?: string}[]
-    inStock?: boolean
-    rating?: number
 }
 
 export type PartResponse = Part
@@ -42,16 +44,6 @@ export interface PartsListResponse {
     page: number
     limit: number
     totalPages: number
-}
-
-export interface CheckCompatibilityRequest {
-    partId: string
-}
-
-export interface CompatibilityResponse {
-    isCompatible: boolean
-    exactMatch: boolean
-    reason?: string
 }
 
 export interface PartApiError {

@@ -5,7 +5,6 @@ import {useVehicleStore} from '@/global/store'
 import type {
     GetPartsRequest,
     PartsListResponse,
-    CompatibilityResponse,
     CreatePartRequest,
     UpdatePartRequest,
     Part,
@@ -73,10 +72,6 @@ class PartsListService {
     async searchParts(query: string): Promise<Part[]> {
         const response = await this.getParts({search: query})
         return response.parts
-    }
-
-    async checkCompatibility(partId: string): Promise<CompatibilityResponse> {
-        return apiClient.post<CompatibilityResponse>(`${this.basePath}/${partId}/compatibility`, {})
     }
 
     async createPart(data: CreatePartRequest): Promise<Part> {
