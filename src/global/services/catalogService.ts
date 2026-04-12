@@ -4,6 +4,7 @@ import {apiClient} from './ApiClient'
 export interface OriginApi {
     id: number
     name: string
+    sortOrder: number
     makeCount?: number
     modelCount?: number
 }
@@ -14,12 +15,14 @@ export interface MakeApi {
     logoUrl?: string | null
     originCountry?: string | null
     originId?: number | null
+    sortOrder: number
 }
 
 export interface ModelApi {
     id: string
     makeId: number
     name: string
+    sortOrder: number
 }
 
 /** Spring Data Page response shape (VIA_DTO) */
