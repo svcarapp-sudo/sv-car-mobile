@@ -21,7 +21,7 @@ interface PartsListScreenProps {
 export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
     const routeCategory = route?.params?.category ?? null
     const {parts, total, loading, loadingMore, search, setSearch, hasMore, loadMore, refresh} = useParts(routeCategory)
-    const {getBySlug, categories, makeModelCache} = useCatalog({parts})
+    const {getBySlug, categories} = useCatalog()
     const theme = useAppTheme()
 
     const categoryFromApi = routeCategory ? getBySlug(routeCategory) : null
@@ -48,7 +48,7 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
 
             <FlatList
                 data={parts}
-                renderItem={({item}) => <PartCardItem part={item} navigation={navigation} makeModelCache={makeModelCache} categories={categories} />}
+                renderItem={({item}) => <PartCardItem part={item} navigation={navigation} categories={categories} />}
                 keyExtractor={item => item.id}
                 contentContainerStyle={[styles.listContent, parts.length === 0 && styles.emptyContent]}
                 showsVerticalScrollIndicator={false}

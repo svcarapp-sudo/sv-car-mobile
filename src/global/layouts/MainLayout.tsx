@@ -4,7 +4,7 @@ import {StyleSheet, View, Animated, TouchableWithoutFeedback, Dimensions, PanRes
 import {themeColors} from '@/global/theme'
 import {AppHeader} from './AppHeader'
 import {AppDrawer} from './AppDrawer'
-import {BottomNav} from './BottomNav'
+import {BottomNav} from './bottomNav'
 import {useLayoutStore} from './layoutStore'
 
 const {width} = Dimensions.get('window')

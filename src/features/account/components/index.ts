@@ -1,4 +1,4 @@
-export {SellerProfileCard} from './SellerProfile'
+export {SellerProfileCard} from './sellerProfile'
 export {MyAccountScreen} from './MyAccountScreen'
 export {ProfileForm} from './ProfileForm'
 export type {ProfileFormState} from './ProfileForm'

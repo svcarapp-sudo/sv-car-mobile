@@ -2,9 +2,9 @@ import {MakeScreen, ModelScreen, YearScreen} from '@/global/components'
 import type {useCatalog} from '@/global/hooks'
 
 import {Step} from './AddVehicleStepper'
-import {OriginScreen} from '../Origin'
+import {OriginScreen} from '../origin'
 import {FuelScreen} from '../FuelScreen'
-import {AddVinScreen} from '../AddVin'
+import {AddVinScreen} from '../addVin'
 
 interface AddVehicleStepContentProps {
     currentStep: Step

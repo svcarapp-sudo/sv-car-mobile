@@ -1,3 +1,3 @@
-export * from './PartDetail'
-export * from './PartsList'
-export * from './PartsCategories'
+export * from './partDetail'
+export * from './partsList'
+export * from './partsCategories'

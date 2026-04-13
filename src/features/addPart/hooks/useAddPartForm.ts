@@ -4,7 +4,7 @@ import type {NavigationProp} from '@react-navigation/native'
 
 import {useAddPart} from './useAddPart'
 import {useCatalog} from '@/global/hooks'
-import {Step} from '../components/AddPart/AddPartStepper'
+import {Step} from '../components/addPart/AddPartStepper'
 import type {RootStackParamList} from '@/global/navigation/types'
 
 const ARABIC_TEXT = {

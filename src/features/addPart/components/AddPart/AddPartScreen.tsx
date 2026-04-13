@@ -6,7 +6,7 @@ import {useAppTheme} from '@/global/hooks'
 import {AddPartStepper, Step} from './AddPartStepper'
 import {AddPartSummaryCard} from './AddPartSummaryCard'
 import {AddPartStepRenderer} from './AddPartStepRenderer'
-import {SellerProfileGate} from '../SellerProfileGate'
+import {SellerProfileGate} from '../sellerProfileGate'
 import type {RootStackParamList} from '@/global/navigation/types'
 
 interface AddPartScreenProps {

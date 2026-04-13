@@ -1,2 +1,2 @@
-export {AddPartScreen} from './AddPart'
-export {SellerProfileGate} from './SellerProfileGate'
+export {AddPartScreen} from './addPart'
+export {SellerProfileGate} from './sellerProfileGate'

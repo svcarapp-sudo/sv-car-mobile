@@ -1,2 +1,2 @@
-export {EditPartScreen} from './EditPart'
-export {MyPartsListScreen} from './MyPartsList'
+export {EditPartScreen} from './editPart'
+export {MyPartsListScreen} from './myPartsList'

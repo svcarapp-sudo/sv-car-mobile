@@ -10,7 +10,7 @@ import type {PartCategory} from '@/global/types'
 import {GreetingSection} from './GreetingSection'
 import {EmptyState} from './EmptyState'
 import {VehicleSummary} from './VehicleSummary'
-import {CategoryGrid} from './CategoryGrid'
+import {CategoryGrid} from './categoryGrid'
 
 interface HomeScreenProps {
     navigation?: NavigationProp<RootStackParamList>
