@@ -33,19 +33,15 @@ export const PartCardDetails = ({part, categoryInfo}: PartCardDetailsProps) => {
 
     return (
         <View style={styles.container}>
-            {/* Category badge */}
-            {categoryInfo && (
-                <View style={[styles.categoryBadge, {backgroundColor: theme.colors.primaryContainer}]}>
-                    <Text style={[styles.categoryText, {color: theme.colors.primary}]}>{categoryInfo.name}</Text>
-                </View>
-            )}
+            {/* Row 1: Name + Price */}
+            <View style={styles.topRow}>
+                <Text style={[styles.name, {color: theme.colors.onSurface}]} numberOfLines={2}>
+                    {part.name}
+                </Text>
+                <Text style={[styles.price, {color: theme.colors.tertiary}]}>${part.price.toFixed(0)}</Text>
+            </View>
 
-            {/* Part name */}
-            <Text style={[styles.name, {color: theme.colors.onSurface}]} numberOfLines={2}>
-                {part.name}
-            </Text>
-
-            {/* Vehicle compatibility */}
+            {/* Row 2: Vehicle compatibility */}
             {vehicleLabel && (
                 <View style={styles.metaRow}>
                     <Icon source="check-circle" size={13} color={theme.colors.success} />
@@ -53,41 +49,47 @@ export const PartCardDetails = ({part, categoryInfo}: PartCardDetailsProps) => {
                         {vehicleLabel}
                     </Text>
                     {vehicles.length > 1 && (
-                        <Text style={[styles.moreText, {color: theme.colors.onSurfaceVariant}]}>+{vehicles.length - 1}</Text>
+                        <Text style={[styles.badge, {color: theme.colors.onSurfaceVariant, backgroundColor: theme.colors.surfaceVariant}]}>
+                            +{vehicles.length - 1}
+                        </Text>
                     )}
                 </View>
             )}
 
-            {/* Seller city */}
-            {part.sellerCity && (
-                <View style={styles.metaRow}>
-                    <Icon source="map-marker-outline" size={13} color={theme.colors.onSurfaceVariant} />
-                    <Text style={[styles.metaText, {color: theme.colors.onSurfaceVariant}]} numberOfLines={1}>
-                        {part.sellerName ? `${part.sellerName} · ${part.sellerCity}` : part.sellerCity}
-                    </Text>
+            {/* Row 3: Footer — seller/city + category + time */}
+            <View style={styles.footer}>
+                <View style={styles.footerLeft}>
+                    {part.sellerCity && (
+                        <>
+                            <Icon source="map-marker-outline" size={12} color={theme.colors.onSurfaceVariant} />
+                            <Text style={[styles.footerText, {color: theme.colors.onSurfaceVariant}]} numberOfLines={1}>
+                                {part.sellerCity}
+                            </Text>
+                        </>
+                    )}
+                    {part.sellerCity && categoryInfo && <Text style={[styles.dot, {color: theme.colors.outline}]}>·</Text>}
+                    {categoryInfo && (
+                        <Text style={[styles.footerText, {color: theme.colors.onSurfaceVariant}]} numberOfLines={1}>
+                            {categoryInfo.name}
+                        </Text>
+                    )}
                 </View>
-            )}
-
-            {/* Price + time ago */}
-            <View style={styles.priceRow}>
-                <Text style={[styles.price, {color: theme.colors.tertiary}]}>${part.price.toFixed(2)}</Text>
-                {timeAgo && (
-                    <Text style={[styles.timeAgo, {color: theme.colors.onSurfaceVariant}]}>{timeAgo}</Text>
-                )}
+                {timeAgo && <Text style={[styles.footerText, {color: theme.colors.outline}]}>{timeAgo}</Text>}
             </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {flex: 1, marginStart: 14, justifyContent: 'center'},
-    categoryBadge: {alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, marginBottom: 4},
-    categoryText: {fontSize: 10, fontWeight: '600', letterSpacing: 0.3},
-    name: {fontSize: 15, fontWeight: '600', lineHeight: 21, marginBottom: 4},
-    metaRow: {flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 3},
-    metaText: {fontSize: 12, fontWeight: '500', flex: 1},
-    moreText: {fontSize: 11, fontWeight: '500'},
-    priceRow: {flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 2},
-    price: {fontSize: 18, fontWeight: '700', letterSpacing: -0.3},
-    timeAgo: {fontSize: 10, opacity: 0.6},
+    container: {flex: 1, marginStart: 12, justifyContent: 'space-between'},
+    topRow: {flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 4},
+    name: {flex: 1, fontSize: 14, fontWeight: '600', lineHeight: 20},
+    price: {fontSize: 17, fontWeight: '700', letterSpacing: -0.3},
+    metaRow: {flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4},
+    metaText: {fontSize: 11, fontWeight: '500', flex: 1},
+    badge: {fontSize: 10, fontWeight: '600', paddingHorizontal: 5, paddingVertical: 1, borderRadius: 4, overflow: 'hidden'},
+    footer: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
+    footerLeft: {flexDirection: 'row', alignItems: 'center', gap: 3, flex: 1},
+    footerText: {fontSize: 11},
+    dot: {fontSize: 11},
 })

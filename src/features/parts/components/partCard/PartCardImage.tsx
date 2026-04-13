@@ -17,23 +17,12 @@ export const PartCardImage = ({imageUrl, categoryIcon}: PartCardImageProps) => {
 
     return (
         <View style={[styles.placeholder, {backgroundColor: theme.colors.primaryContainer}]}>
-            <Icon source={categoryIcon || 'package-variant'} size={28} color={theme.colors.primary} />
+            <Icon source={categoryIcon || 'package-variant'} size={26} color={theme.colors.primary} />
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    image: {
-        width: 100,
-        height: 100,
-        borderRadius: 12,
-        backgroundColor: themeColors.surfaceVariant,
-    },
-    placeholder: {
-        width: 100,
-        height: 100,
-        borderRadius: 12,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
+    image: {width: 84, height: 84, borderRadius: 12, backgroundColor: themeColors.surfaceVariant},
+    placeholder: {width: 84, height: 84, borderRadius: 12, justifyContent: 'center', alignItems: 'center'},
 })
