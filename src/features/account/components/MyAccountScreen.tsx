@@ -66,8 +66,8 @@ export const MyAccountScreen = () => {
         form.city !== (user?.city ?? '') ||
         form.bio !== (user?.bio ?? '')
 
-    const handleSave = useCallback(async () => {
-        if (!form.name.trim()) return
+    const handleSave = useCallback(async (): Promise<boolean> => {
+        if (!form.name.trim()) return false
         setSaving(true)
         try {
             const updated = await profileService.updateProfile({
@@ -79,12 +79,24 @@ export const MyAccountScreen = () => {
             })
             updateUser(updated)
             setToast(ARABIC.SAVED)
+            return true
         } catch {
             setToast(ARABIC.ERROR)
+            return false
         } finally {
             setSaving(false)
         }
     }, [form, updateUser])
+
+    const handleCancel = useCallback(() => {
+        setForm({
+            name: user?.name ?? '',
+            email: user?.email ?? '',
+            phone: user?.phone ?? '',
+            city: user?.city ?? '',
+            bio: user?.bio ?? '',
+        })
+    }, [user])
 
     if (loading) {
         return (
@@ -111,7 +123,8 @@ export const MyAccountScreen = () => {
                 <ProfileForm
                     form={form}
                     onFormChange={patch => setForm(f => ({...f, ...patch}))}
-                    onSave={() => void handleSave()}
+                    onSave={handleSave}
+                    onCancel={handleCancel}
                     saving={saving}
                     hasChanges={hasChanges}
                 />

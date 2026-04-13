@@ -91,10 +91,10 @@ export const SubscriptionCard = ({plan}: SubscriptionCardProps) => {
 
 const cardShadow = {
     shadowColor: themeColors.shadow,
-    shadowOffset: {width: 0, height: 18},
-    shadowOpacity: 0.45,
-    shadowRadius: 36,
-    elevation: 24,
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 6,
 }
 
 const styles = StyleSheet.create({
