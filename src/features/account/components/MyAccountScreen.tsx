@@ -115,7 +115,6 @@ export const MyAccountScreen = () => {
                 contentContainerStyle={{paddingBottom: insets.bottom + 24}}
                 keyboardShouldPersistTaps='handled'>
                 <ProfileHeader name={user?.name ?? ''} email={user?.email ?? ''} plan={plan} />
-                <Divider />
                 <SellerProfileCard onToast={setToast} />
                 <Divider />
                 <SubscriptionCard plan={plan} />
