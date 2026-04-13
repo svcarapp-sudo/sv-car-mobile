@@ -29,8 +29,7 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
     const partId = route?.params?.partId
     const {parts, loading: partsLoading, updatePart} = useMyParts()
     const part = parts.find(p => p.id === partId) ?? null
-    const partsForCache = part ? [part] : []
-    const {getBySlug, categories, makeModelCache} = useCatalog({parts: partsForCache})
+    const {getBySlug, categories} = useCatalog()
 
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
@@ -49,10 +48,8 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
         }
     }, [part?.id])
 
-    const makeInfo = part?.makeId ? (makeModelCache[part.makeId] as {name: string; logoUrl?: string | null} | undefined) : null
-    const modelInfo = part?.modelId ? (makeModelCache[`model_${part.modelId}`] as {name: string} | undefined) : null
     const categoryInfo = part ? getBySlug(part.category) || categories.find(c => c.id === part.categoryId) : null
-    const vehicleLabel = [makeInfo?.name, modelInfo?.name, part?.year].filter(Boolean).join(' ')
+    const vehicles = part?.compatibleVehicles ?? []
 
     const handleSave = useCallback(async () => {
         if (!partId) return
@@ -112,8 +109,7 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled">
                 <EditPartVehicleBanner
-                    vehicleLabel={vehicleLabel}
-                    makeLogoUrl={makeInfo?.logoUrl}
+                    vehicles={vehicles}
                     categoryName={categoryInfo?.name}
                 />
                 <EditPartFormFields

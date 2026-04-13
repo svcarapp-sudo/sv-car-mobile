@@ -1,76 +1,55 @@
-import {StyleSheet, View, Image} from 'react-native'
+import {StyleSheet, View} from 'react-native'
 import {Text, Icon} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
+import type {VehicleCompatibility} from '@/global/types'
 
 const ARABIC_TEXT = {
-    VEHICLE_INFO: 'معلومات المركبة',
+    VEHICLES: 'المركبات المتوافقة',
 }
 
 interface EditPartVehicleBannerProps {
-    vehicleLabel: string
-    makeLogoUrl?: string | null
+    vehicles: VehicleCompatibility[]
     categoryName?: string | null
 }
 
-export const EditPartVehicleBanner = ({vehicleLabel, makeLogoUrl, categoryName}: EditPartVehicleBannerProps) => {
+export const EditPartVehicleBanner = ({vehicles, categoryName}: EditPartVehicleBannerProps) => {
     const theme = useAppTheme()
 
-    if (!vehicleLabel) return null
+    if (vehicles.length === 0) return null
 
     return (
-        <View style={[styles.vehicleBanner, {backgroundColor: theme.colors.surfaceVariant}]}>
-            {makeLogoUrl ? (
-                <Image source={{uri: makeLogoUrl}} style={styles.vehicleLogo} resizeMode="contain" />
-            ) : (
-                <Icon source="car" size={20} color={theme.colors.onSurfaceVariant} />
-            )}
-            <View style={styles.vehicleTextGroup}>
-                <Text style={[styles.vehicleLabel, {color: theme.colors.onSurfaceVariant}]}>
-                    {ARABIC_TEXT.VEHICLE_INFO}
-                </Text>
-                <Text style={[styles.vehicleValue, {color: theme.colors.onSurface}]}>{vehicleLabel}</Text>
+        <View style={[styles.banner, {backgroundColor: theme.colors.surfaceVariant}]}>
+            <View style={styles.header}>
+                <Icon source="car-multiple" size={18} color={theme.colors.primary} />
+                <Text style={[styles.title, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.VEHICLES}</Text>
+                {categoryName && (
+                    <View style={[styles.catBadge, {backgroundColor: theme.colors.primaryContainer}]}>
+                        <Text style={[styles.catText, {color: theme.colors.primary}]}>{categoryName}</Text>
+                    </View>
+                )}
             </View>
-            {categoryName ? (
-                <View style={[styles.catBadge, {backgroundColor: theme.colors.primaryContainer}]}>
-                    <Text style={[styles.catBadgeText, {color: theme.colors.primary}]}>{categoryName}</Text>
-                </View>
-            ) : null}
+            {vehicles.map((v, i) => {
+                const yearLabel = v.yearFrom === v.yearTo ? String(v.yearFrom) : `${v.yearFrom}-${v.yearTo}`
+                return (
+                    <View key={i} style={styles.vehicleRow}>
+                        <Icon source="check-circle" size={14} color={theme.colors.success} />
+                        <Text style={[styles.vehicleText, {color: theme.colors.onSurfaceVariant}]}>
+                            {v.make} {v.model} {yearLabel}
+                        </Text>
+                    </View>
+                )
+            })}
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    vehicleBanner: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 14,
-        borderRadius: 14,
-        marginBottom: 20,
-        gap: 10,
-    },
-    vehicleLogo: {
-        width: 28,
-        height: 28,
-    },
-    vehicleTextGroup: {
-        flex: 1,
-    },
-    vehicleLabel: {
-        fontSize: 10,
-        fontWeight: '500',
-    },
-    vehicleValue: {
-        fontSize: 14,
-        fontWeight: '700',
-    },
-    catBadge: {
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 8,
-    },
-    catBadgeText: {
-        fontSize: 11,
-        fontWeight: '600',
-    },
+    banner: {borderRadius: 14, padding: 14, marginBottom: 20},
+    header: {flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10},
+    title: {fontSize: 14, fontWeight: '600', flex: 1},
+    catBadge: {paddingHorizontal: 10, paddingVertical: 3, borderRadius: 8},
+    catText: {fontSize: 11, fontWeight: '600'},
+    vehicleRow: {flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 3},
+    vehicleText: {fontSize: 13},
 })

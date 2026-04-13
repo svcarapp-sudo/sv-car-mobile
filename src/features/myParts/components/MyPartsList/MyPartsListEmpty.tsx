@@ -6,7 +6,7 @@ import type {RootStackParamList} from '@/global/navigation/types'
 
 const ARABIC_TEXT = {
     NO_PARTS: 'لا توجد قطع غيار بعد',
-    NO_PARTS_DESC: 'أضف قطع الغيار التي تريد بيعها وابدأ\nبعرضها للمشترين المهتمين',
+    NO_PARTS_DESC: 'أضف أول قطعة غيار وانضم لآلاف البائعين\nالمشترون يبحثون عن قطع مثل قطعك الآن!',
     LOADING: 'جاري تحميل قطع الغيار...',
     ADD_FIRST_PART: 'أضف أول قطعة',
 }
@@ -32,8 +32,10 @@ export const MyPartsListEmpty = ({loading, navigation}: MyPartsListEmptyProps) =
 
     return (
         <View style={styles.container}>
-            <View style={[styles.iconCircle, {backgroundColor: theme.colors.primaryContainer}]}>
-                <Icon source="package-variant-plus" size={48} color={theme.colors.primary} />
+            <View style={[styles.iconOuter, {backgroundColor: theme.colors.primaryContainer}]}>
+                <View style={[styles.iconInner, {borderColor: theme.colors.primary}]}>
+                    <Icon source="package-variant-plus" size={36} color={theme.colors.primary} />
+                </View>
             </View>
 
             <Text variant="titleLarge" style={[styles.title, {color: theme.colors.onSurface}]}>
@@ -57,39 +59,12 @@ export const MyPartsListEmpty = ({loading, navigation}: MyPartsListEmptyProps) =
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 40,
-        minHeight: 450,
-    },
-    iconCircle: {
-        width: 96,
-        height: 96,
-        borderRadius: 48,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 24,
-    },
-    title: {
-        fontWeight: '700',
-        textAlign: 'center',
-        marginBottom: 8,
-    },
-    description: {
-        textAlign: 'center',
-        lineHeight: 22,
-        marginBottom: 32,
-    },
-    loadingText: {
-        marginTop: 16,
-    },
-    addButton: {
-        borderRadius: 12,
-    },
-    addButtonContent: {
-        paddingVertical: 6,
-        paddingHorizontal: 8,
-    },
+    container: {flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 40, minHeight: 450},
+    iconOuter: {width: 96, height: 96, borderRadius: 48, justifyContent: 'center', alignItems: 'center', marginBottom: 24},
+    iconInner: {width: 68, height: 68, borderRadius: 34, borderWidth: 2, justifyContent: 'center', alignItems: 'center', opacity: 0.7},
+    title: {fontWeight: '700', textAlign: 'center', marginBottom: 8},
+    description: {textAlign: 'center', lineHeight: 24, marginBottom: 32, opacity: 0.8},
+    loadingText: {marginTop: 16},
+    addButton: {borderRadius: 12},
+    addButtonContent: {paddingVertical: 6, paddingHorizontal: 8},
 })
