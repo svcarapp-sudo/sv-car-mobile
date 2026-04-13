@@ -3,6 +3,7 @@ import {Platform, Pressable, StyleSheet, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 import type {SellerType} from '@/global/types'
 
 interface SellerTypePickerProps {
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     cardShadow: Platform.select({
-        ios: {shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.08, shadowRadius: 4},
+        ios: {shadowColor: themeColors.shadow, shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.08, shadowRadius: 4},
         android: {elevation: 2},
     }) as object,
     radio: {

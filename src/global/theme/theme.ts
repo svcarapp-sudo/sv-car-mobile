@@ -11,13 +11,9 @@ export const CAIRO_SEMIBOLD = 'Cairo_600SemiBold'
 export const CAIRO_BOLD = 'Cairo_700Bold'
 
 const createCairoFonts = () => {
-    // Apply Cairo Regular as the base for every MD3 variant
     const base = configureFonts({config: {fontFamily: CAIRO_REGULAR}})
-
-    // Override variants that need heavier weights
     return {
         ...base,
-        // Medium-weight variants (500)
         titleMedium: {...base.titleMedium, fontFamily: CAIRO_MEDIUM},
         titleSmall: {...base.titleSmall, fontFamily: CAIRO_MEDIUM},
         labelLarge: {...base.labelLarge, fontFamily: CAIRO_MEDIUM},
@@ -27,36 +23,49 @@ const createCairoFonts = () => {
 }
 
 /**
- * Extended custom color tokens beyond MD3.
- * Import `themeColors` for static StyleSheet usage (e.g. shadowColor).
- * Use `useAppTheme()` hook for dynamic runtime usage inside components.
+ * SV Car Light Theme Palette
+ *
+ * Identity: Deep Navy (#1A2744) + Rich Amber (#D97706)
+ * Premium automotive marketplace feel with WCAG AA compliance.
  */
 const customColors = {
-    // Accent (Amber #F59E0B) extended palette
-    accentContainer: '#FFF7ED',
-    accentSoft: 'rgba(245, 158, 11, 0.12)',
-    accentMuted: 'rgba(245, 158, 11, 0.15)',
-    accentSubtle: 'rgba(245, 158, 11, 0.04)',
-    accentBorder: 'rgba(245, 158, 11, 0.3)',
-    accentFaded: 'rgba(245, 158, 11, 0.06)',
-    accentHalf: 'rgba(245, 158, 11, 0.6)',
-    accentDivider: 'rgba(245, 158, 11, 0.08)',
-    accentGlow: 'rgba(245, 158, 11, 0.1)',
+    // Accent / Tertiary extended (amber)
+    accentContainer: '#FEF3C7',
+    accentSoft: 'rgba(217, 119, 6, 0.12)',
+    accentMuted: 'rgba(217, 119, 6, 0.15)',
+    accentSubtle: 'rgba(217, 119, 6, 0.04)',
+    accentBorder: 'rgba(217, 119, 6, 0.3)',
+    accentFaded: 'rgba(217, 119, 6, 0.06)',
+    accentHalf: 'rgba(217, 119, 6, 0.6)',
+    accentDivider: 'rgba(217, 119, 6, 0.08)',
+    accentGlow: 'rgba(217, 119, 6, 0.1)',
 
-    // Success status
+    // Semantic — Success
     success: '#16A34A',
     successBright: '#22C55E',
-    successContainer: '#F0FDF4',
+    successContainer: '#DCFCE7',
+    onSuccessContainer: '#14532D',
 
-    // Error extended
-    errorDark: '#DC2626',
-    errorContainer: '#FEF2F2',
+    // Semantic — Error extended
+    errorDark: '#B91C1C',
+    errorContainer: '#FEE2E2',
+    onErrorContainer: '#7F1D1D',
 
-    // Dark surface (stepper, vehicle header, dark cards)
+    // Semantic — Warning
+    warning: '#EA580C',
+    warningContainer: '#FFF7ED',
+    onWarningContainer: '#7C2D12',
+
+    // Semantic — Info
+    info: '#2563EB',
+    infoContainer: '#DBEAFE',
+    onInfoContainer: '#1E3A5F',
+
+    // Dark surface (stepper, dark cards)
     surfaceDark: '#0F172A',
 
-    // On-dark text/icon hierarchy (white at varying opacities)
-    onDarkHigh: 'rgba(255,255,255,0.85)',
+    // On-dark text/icon hierarchy
+    onDarkHigh: 'rgba(255,255,255,0.87)',
     onDarkIcon: 'rgba(255,255,255,0.8)',
     onDarkMedium: 'rgba(255,255,255,0.7)',
     onDarkLow: 'rgba(255,255,255,0.6)',
@@ -72,47 +81,59 @@ const customColors = {
     onDarkSurfaceLight: 'rgba(255,255,255,0.06)',
     onDarkFaint: 'rgba(255,255,255,0.04)',
 
+    // Surface hierarchy (MD3 elevation)
+    surfaceContainerLow: '#F3F5F8',
+    surfaceContainer: '#ECEEF2',
+    surfaceContainerHigh: '#E3E6EB',
+
+    // Text hierarchy
+    textPrice: '#92400E',
+
     // Shadows
-    shadow: '#0F172A',
+    shadow: '#1A2744',
     shadowLight: '#000000',
 
     // Overlays / Scrims
-    backdrop: 'rgba(0,0,0,0.5)',
-    scrim: 'rgba(0,0,0,0.1)',
-    scrimLight: 'rgba(0,0,0,0.08)',
+    backdrop: 'rgba(26,39,68,0.5)',
+    scrim: 'rgba(26,39,68,0.1)',
+    scrimLight: 'rgba(26,39,68,0.08)',
 }
 
 /**
- * Full flattened color palette for static usage (e.g. StyleSheet.create).
+ * Full flattened color palette for static usage (StyleSheet.create).
  * Combines MD3 overrides + custom tokens.
  */
 export const themeColors = {
-    // Primary brand colors
-    primary: '#1E293B',
+    // Primary — Deep Navy
+    primary: '#1A2744',
     onPrimary: '#FFFFFF',
-    primaryContainer: '#E2E8F0',
-    onPrimaryContainer: '#0F172A',
+    primaryContainer: '#D4DDEF',
+    onPrimaryContainer: '#0E1829',
 
-    // Secondary / Industrial
-    secondary: '#475569',
+    // Secondary — Cool Slate
+    secondary: '#506070',
     onSecondary: '#FFFFFF',
-    secondaryContainer: '#F1F5F9',
-    onSecondaryContainer: '#1E293B',
+    secondaryContainer: '#E0E6ED',
+    onSecondaryContainer: '#2A3440',
 
-    // Accent
-    tertiary: '#F59E0B',
-    onTertiary: '#000000',
+    // Tertiary — Rich Amber
+    tertiary: '#D97706',
+    onTertiary: '#FFFFFF',
+    tertiaryContainer: '#FEF3C7',
+    onTertiaryContainer: '#92400E',
 
-    // Status
-    error: '#EF4444',
+    // Error
+    error: '#DC2626',
+    onError: '#FFFFFF',
 
-    // Neutral / Background
+    // Background / Surface
     background: '#F8FAFC',
     surface: '#FFFFFF',
-    surfaceVariant: '#F1F5F9',
-    onSurface: '#0F172A',
-    onSurfaceVariant: '#64748B',
-    outline: '#CBD5E1',
+    surfaceVariant: '#E2E6EC',
+    onSurface: '#1A2744',
+    onSurfaceVariant: '#5A6577',
+    outline: '#C8CDD5',
+    outlineVariant: '#DFE3E8',
 
     // Custom tokens
     ...customColors,
@@ -127,10 +148,7 @@ export type AppTheme = MD3Theme & {
 
 /**
  * SV Car App Identity Theme
- * Industrial automotive palette:
- * - Primary: Deep Charcoal / Racing Blue
- * - Secondary: Industrial Slate
- * - Accent: Safety Orange / Racing Amber
+ * Deep Navy + Rich Amber — premium automotive marketplace
  */
 export const createAppTheme = (isRTL: boolean = false): AppTheme => {
     const baseTheme = {

@@ -4,153 +4,126 @@ import {Icon, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
-import {Vehicle} from '@/global/types'
+import type {Vehicle} from '@/global/types'
+
+const ARABIC_TEXT = {
+    MY_VEHICLE: 'مركبتي',
+    CHANGE: 'تغيير',
+    BROWSE_PARTS: 'تصفح قطع الغيار المتوافقة',
+}
 
 interface VehicleSummaryProps {
     vehicle: Partial<Vehicle>
     onChangeVehicle: () => void
 }
 
-interface DetailChipProps {
-    icon: string
-    text: string
-}
-
-const DetailChip = ({icon, text}: DetailChipProps) => (
-    <View style={chipStyles.chip}>
-        <Icon source={icon} size={12} color={themeColors.onDarkMedium} />
-        <Text style={chipStyles.text}>{text}</Text>
-    </View>
-)
-
-const chipStyles = StyleSheet.create({
-    chip: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 4,
-        backgroundColor: themeColors.onDarkSurfaceLight,
-        paddingHorizontal: 8,
-        paddingVertical: 3,
-        borderRadius: 6,
-        borderWidth: 1,
-        borderColor: themeColors.onDarkDivider,
-    },
-    text: {
-        color: themeColors.onDarkHigh,
-        fontSize: 11,
-        fontWeight: '500',
-        letterSpacing: 0.1,
-    },
-})
-
 export const VehicleSummary = ({vehicle, onChangeVehicle}: VehicleSummaryProps) => {
     const theme = useAppTheme()
+    const displayName = vehicle.displayName || `${vehicle.make} ${vehicle.model}`
 
     return (
-        <TouchableOpacity activeOpacity={0.8} onPress={onChangeVehicle} style={styles.card}>
-            <View style={[styles.cardBody, {backgroundColor: theme.colors.primary}]}>
-                {/* Top row: logo + name + edit */}
-                <View style={styles.topRow}>
-                    <View style={[styles.logoRing, {borderColor: theme.colors.tertiary}]}>
-                        <View style={styles.logoInner}>
-                            {vehicle.makeLogoUrl ? (
-                                <Image source={{uri: vehicle.makeLogoUrl}} style={styles.logo} resizeMode='contain' />
-                            ) : (
-                                <Icon source='car-side' size={20} color={theme.colors.onDarkMedium} />
-                            )}
-                        </View>
-                    </View>
+        <View style={[styles.card, {backgroundColor: theme.colors.surface, borderColor: theme.colors.outline}]}>
+            {/* Header */}
+            <View style={styles.header}>
+                <View style={styles.headerLeft}>
+                    <View style={[styles.headerDot, {backgroundColor: theme.colors.tertiary}]} />
+                    <Text style={[styles.headerLabel, {color: theme.colors.onSurfaceVariant}]}>{ARABIC_TEXT.MY_VEHICLE}</Text>
+                </View>
+                <TouchableOpacity
+                    style={[styles.changeBtn, {backgroundColor: theme.colors.tertiary}]}
+                    onPress={onChangeVehicle}
+                    activeOpacity={0.75}>
+                    <Icon source="pencil-outline" size={13} color={theme.colors.onTertiary} />
+                    <Text style={[styles.changeText, {color: theme.colors.onTertiary}]}>{ARABIC_TEXT.CHANGE}</Text>
+                </TouchableOpacity>
+            </View>
 
-                    <View style={styles.nameBlock}>
-                        <Text style={styles.vehicleName} numberOfLines={1}>
-                            {vehicle.make} {vehicle.model}
-                        </Text>
-                    </View>
-
-                    <View style={styles.editBtn}>
-                        <Icon source='swap-horizontal' size={16} color={theme.colors.onDarkMedium} />
-                    </View>
+            {/* Main */}
+            <View style={styles.main}>
+                <View style={[styles.logoBox, {backgroundColor: theme.colors.surfaceVariant}]}>
+                    {vehicle.makeLogoUrl ? (
+                        <Image source={{uri: vehicle.makeLogoUrl}} style={styles.logo} resizeMode="contain" />
+                    ) : (
+                        <Icon source="car-side" size={28} color={theme.colors.primary} />
+                    )}
                 </View>
 
-                {/* Detail chips */}
-                <View style={styles.detailRow}>
-                    {vehicle.year && <DetailChip icon='calendar-outline' text={vehicle.year.toString()} />}
-                    {vehicle.fuelType && <DetailChip icon='gas-station-outline' text={vehicle.fuelType} />}
-                    {vehicle.engine && <DetailChip icon='engine-outline' text={vehicle.engine} />}
+                <View style={styles.details}>
+                    <Text style={[styles.vehicleName, {color: theme.colors.onSurface}]} numberOfLines={1}>
+                        {displayName}
+                    </Text>
+
+                    <View style={styles.specs}>
+                        {vehicle.year && (
+                            <View style={[styles.specChip, {backgroundColor: theme.colors.primaryContainer}]}>
+                                <Icon source="calendar-outline" size={11} color={theme.colors.primary} />
+                                <Text style={[styles.specText, {color: theme.colors.primary}]}>{vehicle.year}</Text>
+                            </View>
+                        )}
+                        {vehicle.fuelType && (
+                            <View style={[styles.specChip, {backgroundColor: theme.colors.accentContainer}]}>
+                                <Icon source="gas-station-outline" size={11} color={theme.colors.tertiary} />
+                                <Text style={[styles.specText, {color: theme.colors.tertiary}]}>{vehicle.fuelType}</Text>
+                            </View>
+                        )}
+                        {vehicle.engine && (
+                            <View style={[styles.specChip, {backgroundColor: theme.colors.surfaceVariant}]}>
+                                <Icon source="engine-outline" size={11} color={theme.colors.onSurfaceVariant} />
+                                <Text style={[styles.specText, {color: theme.colors.onSurfaceVariant}]}>{vehicle.engine}</Text>
+                            </View>
+                        )}
+                    </View>
                 </View>
             </View>
 
-            {/* Bottom accent */}
-            <View style={[styles.accent, {backgroundColor: theme.colors.tertiary}]} />
-        </TouchableOpacity>
+            {/* Footer */}
+            <View style={[styles.footer, {backgroundColor: theme.colors.surfaceVariant}]}>
+                <Icon source="information-outline" size={14} color={theme.colors.onSurfaceVariant} />
+                <Text style={[styles.footerText, {color: theme.colors.onSurfaceVariant}]}>{ARABIC_TEXT.BROWSE_PARTS}</Text>
+            </View>
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
     card: {
-        borderRadius: 16,
-        overflow: 'hidden',
+        borderRadius: 20,
         marginBottom: 20,
+        borderWidth: StyleSheet.hairlineWidth,
         shadowColor: themeColors.shadow,
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 5,
+        shadowOffset: {width: 0, height: 6},
+        shadowOpacity: 0.1,
+        shadowRadius: 16,
+        elevation: 4,
+        overflow: 'hidden',
     },
-    cardBody: {
-        paddingHorizontal: 16,
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 18,
         paddingTop: 14,
-        paddingBottom: 12,
+        paddingBottom: 4,
     },
-    topRow: {
+    headerLeft: {flexDirection: 'row', alignItems: 'center', gap: 6},
+    headerDot: {width: 6, height: 6, borderRadius: 3},
+    headerLabel: {fontSize: 12, fontWeight: '600', letterSpacing: 0.3},
+    changeBtn: {flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10},
+    changeText: {fontSize: 12, fontWeight: '700'},
+    main: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, paddingVertical: 12},
+    logoBox: {width: 60, height: 60, borderRadius: 18, justifyContent: 'center', alignItems: 'center', marginEnd: 14},
+    logo: {width: 34, height: 34},
+    details: {flex: 1},
+    vehicleName: {fontSize: 19, fontWeight: '700', letterSpacing: -0.3, marginBottom: 8},
+    specs: {flexDirection: 'row', gap: 6, flexWrap: 'wrap'},
+    specChip: {flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8},
+    specText: {fontSize: 11, fontWeight: '600'},
+    footer: {
         flexDirection: 'row',
         alignItems: 'center',
-    },
-    logoRing: {
-        width: 46,
-        height: 46,
-        borderRadius: 23,
-        borderWidth: 2,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    logoInner: {
-        width: 38,
-        height: 38,
-        borderRadius: 19,
-        backgroundColor: '#FFFFFF',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    logo: {
-        width: 26,
-        height: 26,
-    },
-    nameBlock: {
-        flex: 1,
-        marginHorizontal: 12,
-    },
-    vehicleName: {
-        color: themeColors.onPrimary,
-        fontSize: 17,
-        fontWeight: '700',
-        letterSpacing: -0.2,
-    },
-    editBtn: {
-        width: 30,
-        height: 30,
-        borderRadius: 10,
-        backgroundColor: themeColors.onDarkSurface,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    detailRow: {
-        flexDirection: 'row',
         gap: 6,
-        marginTop: 10,
-        paddingStart: 58,
+        paddingHorizontal: 18,
+        paddingVertical: 10,
     },
-    accent: {
-        height: 3,
-    },
+    footerText: {flex: 1, fontSize: 12, opacity: 0.7},
 })
