@@ -82,6 +82,7 @@ const customColors = {
     onDarkFaint: 'rgba(255,255,255,0.04)',
 
     // Surface hierarchy (MD3 elevation)
+    surfaceContainerLowest: '#FFFFFF',
     surfaceContainerLow: '#F3F5F8',
     surfaceContainer: '#ECEEF2',
     surfaceContainerHigh: '#E3E6EB',
@@ -185,5 +186,4 @@ export const createAppTheme = (isRTL: boolean = false): AppTheme => {
     } as AppTheme
 }
 
-// Default theme (LTR) for backwards compatibility
 export const appTheme = createAppTheme(false)
