@@ -177,10 +177,14 @@ export interface Part {
     makeName?: string
     modelName?: string
     compatibleVehicles: VehicleCompatibility[]
+    // Seller info
+    sellerName?: string
+    sellerCity?: string
     // Additional metadata
     inStock: boolean
     rating?: number
     categoryId?: number
+    createdAt?: number
 }
 
 export interface VehicleCompatibility {

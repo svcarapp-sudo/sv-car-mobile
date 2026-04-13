@@ -14,6 +14,8 @@ export interface PartCompatibilityResponse {
 export interface PartModelResponse {
     id: number
     sellerUserId: number
+    sellerName?: string | null
+    sellerCity?: string | null
     categoryId?: number
     name: string
     description?: string | null
@@ -62,7 +64,10 @@ export function mapPartModelToPart(
             yearFrom: c.yearFrom,
             yearTo: c.yearTo,
         })),
+        sellerName: model.sellerName || undefined,
+        sellerCity: model.sellerCity || undefined,
         inStock: true,
         rating: undefined,
+        createdAt: model.createdAt ? new Date(model.createdAt).getTime() : undefined,
     }
 }

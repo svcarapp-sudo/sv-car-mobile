@@ -5,9 +5,8 @@ import type {NavigationProp} from '@react-navigation/native'
 
 import type {RootStackParamList} from '@/global/navigation/types'
 import {useVehicleApi} from '@/global/hooks'
-import {useAuthStore, useVehicleStore} from '@/global/store'
+import {useVehicleStore} from '@/global/store'
 import type {PartCategory} from '@/global/types'
-import {GreetingSection} from './GreetingSection'
 import {EmptyState} from './EmptyState'
 import {VehicleSummary} from './VehicleSummary'
 import {CategoryGrid} from './categoryGrid'
@@ -19,7 +18,6 @@ interface HomeScreenProps {
 export const HomeScreen = ({navigation}: HomeScreenProps) => {
     const vehicle = useVehicleStore(s => s.vehicle)
     const {fetchVehicle} = useVehicleApi()
-    const user = useAuthStore(s => s.user)
     const theme = useAppTheme()
 
     const fadeAnim = useRef(new Animated.Value(0)).current
@@ -63,8 +61,6 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
                 showsVerticalScrollIndicator={false}
                 bounces>
                 <Animated.View style={{opacity: fadeAnim, transform: [{translateY: slideAnim}]}}>
-                    <GreetingSection userName={user?.name} />
-
                     {!vehicle ? (
                         <EmptyState onAddVehicle={handleAddVehicle} />
                     ) : (

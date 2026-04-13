@@ -3,6 +3,7 @@ import {StyleSheet, View} from 'react-native'
 import {Button, Icon, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 
 const ARABIC = {
     SELLER_PROFILE: 'الملف التجاري',
@@ -23,11 +24,7 @@ export const SellerProfileEmpty = ({onCreatePress}: SellerProfileEmptyProps) => 
             <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
                 {ARABIC.SELLER_PROFILE}
             </Text>
-            <View
-                style={[
-                    styles.emptyCard,
-                    {backgroundColor: theme.colors.elevation.level1, borderColor: theme.colors.outlineVariant},
-                ]}>
+            <View style={[styles.emptyCard, {backgroundColor: theme.colors.surface}]}>
                 <View style={styles.emptyContent}>
                     <Icon source='store-plus-outline' size={32} color={theme.colors.onSurfaceVariant} />
                     <Text variant='bodyMedium' style={[styles.emptyTitle, {color: theme.colors.onSurface}]}>
@@ -53,7 +50,16 @@ export const SellerProfileEmpty = ({onCreatePress}: SellerProfileEmptyProps) => 
 const styles = StyleSheet.create({
     section: {padding: 20},
     sectionTitle: {fontWeight: '600', marginBottom: 16},
-    emptyCard: {borderRadius: 16, borderWidth: 1, padding: 24, alignItems: 'center'},
+    emptyCard: {
+        borderRadius: 16,
+        padding: 24,
+        alignItems: 'center',
+        shadowColor: themeColors.shadow,
+        shadowOffset: {width: 0, height: 18},
+        shadowOpacity: 0.45,
+        shadowRadius: 36,
+        elevation: 24,
+    },
     emptyContent: {alignItems: 'center', gap: 8, marginBottom: 20},
     emptyTitle: {fontWeight: '600', marginTop: 4},
     createButton: {borderRadius: 12, alignSelf: 'stretch'},

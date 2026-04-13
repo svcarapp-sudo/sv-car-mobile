@@ -3,6 +3,7 @@ import {StyleSheet, View} from 'react-native'
 import {Button, Chip, Divider, Icon, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
+import {themeColors} from '@/global/theme'
 import type {SellerProfile} from '@/global/types'
 
 const ARABIC = {
@@ -33,11 +34,7 @@ export const SellerProfileDisplay = ({sellerProfile, onEditPress}: SellerProfile
                 </Button>
             </View>
 
-            <View
-                style={[
-                    styles.profileCard,
-                    {backgroundColor: theme.colors.elevation.level2, borderColor: theme.colors.outlineVariant},
-                ]}>
+            <View style={[styles.profileCard, {backgroundColor: theme.colors.surface}]}>
                 <View style={styles.profileHeader}>
                     <View style={{flex: 1}}>
                         <Text variant='titleMedium' style={[styles.profileName, {color: theme.colors.onSurface}]}>
@@ -107,7 +104,14 @@ const styles = StyleSheet.create({
     section: {padding: 20},
     sectionTitle: {fontWeight: '600', marginBottom: 16},
     sectionHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12},
-    profileCard: {borderRadius: 16, borderWidth: 1, overflow: 'hidden'},
+    profileCard: {
+        borderRadius: 16,
+        shadowColor: themeColors.shadow,
+        shadowOffset: {width: 0, height: 18},
+        shadowOpacity: 0.45,
+        shadowRadius: 36,
+        elevation: 24,
+    },
     profileHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, gap: 12},
     profileName: {fontWeight: '700'},
     chipText: {fontSize: 12, fontWeight: '600'},
