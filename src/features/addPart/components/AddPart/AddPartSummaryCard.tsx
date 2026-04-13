@@ -13,14 +13,7 @@ interface AddPartSummaryCardProps {
     onEdit: () => void
 }
 
-export const AddPartSummaryCard = ({
-    makeName,
-    makeLogoUrl,
-    modelName,
-    year,
-    categoryName,
-    onEdit,
-}: AddPartSummaryCardProps) => {
+export const AddPartSummaryCard = ({makeName, makeLogoUrl, modelName, year, categoryName, onEdit}: AddPartSummaryCardProps) => {
     const theme = useAppTheme()
 
     if (!makeName && !modelName && !year && !categoryName) return null

@@ -27,9 +27,9 @@ export const VehicleSummary = ({vehicle, onChangeVehicle}: VehicleSummaryProps) 
                     {/* Logo */}
                     <View style={[styles.logoBox, {backgroundColor: theme.colors.primaryContainer}]}>
                         {vehicle.makeLogoUrl ? (
-                            <Image source={{uri: vehicle.makeLogoUrl}} style={styles.logo} resizeMode="contain" />
+                            <Image source={{uri: vehicle.makeLogoUrl}} style={styles.logo} resizeMode='contain' />
                         ) : (
-                            <Icon source="car-side" size={24} color={theme.colors.primary} />
+                            <Icon source='car-side' size={24} color={theme.colors.primary} />
                         )}
                     </View>
 
@@ -51,7 +51,7 @@ export const VehicleSummary = ({vehicle, onChangeVehicle}: VehicleSummaryProps) 
                         style={[styles.changeBtn, {backgroundColor: theme.colors.primaryContainer}]}
                         onPress={onChangeVehicle}
                         activeOpacity={0.7}>
-                        <Icon source="pencil-outline" size={14} color={theme.colors.primary} />
+                        <Icon source='pencil-outline' size={14} color={theme.colors.primary} />
                         <Text style={[styles.changeText, {color: theme.colors.primary}]}>{ARABIC_TEXT.CHANGE}</Text>
                     </TouchableOpacity>
                 </View>
@@ -59,7 +59,7 @@ export const VehicleSummary = ({vehicle, onChangeVehicle}: VehicleSummaryProps) 
 
             {/* Filter hint below card */}
             <View style={styles.hintRow}>
-                <Icon source="filter-check-outline" size={14} color={theme.colors.tertiary} />
+                <Icon source='filter-check-outline' size={14} color={theme.colors.tertiary} />
                 <Text style={[styles.hintText, {color: theme.colors.onSurfaceVariant}]}>{ARABIC_TEXT.FILTERED_HINT}</Text>
             </View>
         </View>

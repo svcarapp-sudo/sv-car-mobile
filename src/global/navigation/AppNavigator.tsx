@@ -1,6 +1,5 @@
 import React from 'react'
-import {useNavigation} from '@react-navigation/native'
-import {NavigationContainer} from '@react-navigation/native'
+import {useNavigation, NavigationContainer} from '@react-navigation/native'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack'
 

@@ -27,11 +27,7 @@ export const StepIndicator = ({index, icon, label, currentStep, scaleAnim, onSte
     const iconSource = isCompleted ? 'check' : icon
     const needsFlip = !isCompleted && I18nManager.isRTL && DIRECTIONAL_ICONS.has(icon)
 
-    const iconColor = isCompleted
-        ? theme.colors.onPrimary
-        : isActive
-          ? theme.colors.onPrimary
-          : theme.colors.onSurfaceVariant
+    const iconColor = isCompleted ? theme.colors.onPrimary : isActive ? theme.colors.onPrimary : theme.colors.onSurfaceVariant
     const iconSize = isActive ? 16 : 13
 
     const iconElement = (
@@ -66,7 +62,7 @@ export const StepIndicator = ({index, icon, label, currentStep, scaleAnim, onSte
     )
 
     return (
-        <React.Fragment>
+        <>
             {index > 0 && (
                 <View
                     style={[
@@ -86,7 +82,7 @@ export const StepIndicator = ({index, icon, label, currentStep, scaleAnim, onSte
             ) : (
                 dotContent
             )}
-        </React.Fragment>
+        </>
     )
 }
 

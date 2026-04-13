@@ -1,10 +1,9 @@
 import React, {useEffect, useRef} from 'react'
 import {Animated, ScrollView, StyleSheet, View} from 'react-native'
-import {useAppTheme} from '@/global/hooks'
+import {useAppTheme, useVehicleApi} from '@/global/hooks'
 import type {NavigationProp} from '@react-navigation/native'
 
 import type {RootStackParamList} from '@/global/navigation/types'
-import {useVehicleApi} from '@/global/hooks'
 import {useVehicleStore} from '@/global/store'
 import type {PartCategory} from '@/global/types'
 import {EmptyState} from './EmptyState'

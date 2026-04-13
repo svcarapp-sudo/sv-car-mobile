@@ -31,7 +31,12 @@ interface FormState {
 }
 
 const EMPTY_FORM: FormState = {
-    sellerTypeId: null, phone: '', storeName: '', city: '', description: '', workingHours: '',
+    sellerTypeId: null,
+    phone: '',
+    storeName: '',
+    city: '',
+    description: '',
+    workingHours: '',
 }
 
 export const SellerProfileGate = ({children}: {children: React.ReactNode}) => {
@@ -62,8 +67,14 @@ export const SellerProfileGate = ({children}: {children: React.ReactNode}) => {
     }, [])
 
     const handleCreate = useCallback(async () => {
-        if (!form.sellerTypeId) { setError(ARABIC.TYPE_REQUIRED); return }
-        if (!form.phone.trim()) { setError(ARABIC.PHONE_REQUIRED); return }
+        if (!form.sellerTypeId) {
+            setError(ARABIC.TYPE_REQUIRED)
+            return
+        }
+        if (!form.phone.trim()) {
+            setError(ARABIC.PHONE_REQUIRED)
+            return
+        }
         setSaving(true)
         setError(null)
         try {
@@ -84,11 +95,12 @@ export const SellerProfileGate = ({children}: {children: React.ReactNode}) => {
         }
     }, [form])
 
-    if (checking) return (
-        <View style={[styles.centered, {backgroundColor: theme.colors.background}]}>
-            <ActivityIndicator size='large' color={theme.colors.primary} />
-        </View>
-    )
+    if (checking)
+        return (
+            <View style={[styles.centered, {backgroundColor: theme.colors.background}]}>
+                <ActivityIndicator size='large' color={theme.colors.primary} />
+            </View>
+        )
 
     if (hasProfile) return <>{children}</>
 
@@ -97,67 +109,70 @@ export const SellerProfileGate = ({children}: {children: React.ReactNode}) => {
             style={styles.flex}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 80}>
-        <ScrollView
-            style={[styles.flex, {backgroundColor: theme.colors.background}]}
-            contentContainerStyle={styles.scrollContent}
-            keyboardShouldPersistTaps='handled'>
-            <GateSetupHeader />
-            <GateWhyCard />
+            <ScrollView
+                style={[styles.flex, {backgroundColor: theme.colors.background}]}
+                contentContainerStyle={styles.scrollContent}
+                keyboardShouldPersistTaps='handled'>
+                <GateSetupHeader />
+                <GateWhyCard />
 
-            <Divider style={styles.divider} />
+                <Divider style={styles.divider} />
 
-            <View style={styles.formSection}>
-                <SellerTypePicker
-                    types={sellerTypes}
-                    selectedId={form.sellerTypeId}
-                    onSelect={id => setForm(f => ({...f, sellerTypeId: id}))}
-                    label={ARABIC.SELECT_TYPE}
-                />
-
-                <TextInput
-                    label={ARABIC.PHONE}
-                    value={form.phone}
-                    onChangeText={phone => setForm(f => ({...f, phone}))}
-                    mode='outlined'
-                    keyboardType='phone-pad'
-                    textContentType='telephoneNumber'
-                    style={styles.input}
-                    left={<TextInput.Icon icon='phone-outline' />}
-                />
-
-                {form.sellerTypeId && (
-                    <GateTypeFields
-                        sellerTypes={sellerTypes}
-                        sellerTypeId={form.sellerTypeId}
-                        storeName={form.storeName}
-                        city={form.city}
-                        workingHours={form.workingHours}
-                        description={form.description}
-                        onChangeStoreName={storeName => setForm(f => ({...f, storeName}))}
-                        onChangeCity={city => setForm(f => ({...f, city}))}
-                        onChangeWorkingHours={workingHours => setForm(f => ({...f, workingHours}))}
-                        onChangeDescription={description => setForm(f => ({...f, description}))}
+                <View style={styles.formSection}>
+                    <SellerTypePicker
+                        types={sellerTypes}
+                        selectedId={form.sellerTypeId}
+                        onSelect={id => setForm(f => ({...f, sellerTypeId: id}))}
+                        label={ARABIC.SELECT_TYPE}
                     />
-                )}
 
-                {error && (
-                    <Chip icon='alert-circle-outline' style={[styles.errorChip, {backgroundColor: theme.colors.errorContainer}]} textStyle={{color: theme.colors.error}}>
-                        {error}
-                    </Chip>
-                )}
+                    <TextInput
+                        label={ARABIC.PHONE}
+                        value={form.phone}
+                        onChangeText={phone => setForm(f => ({...f, phone}))}
+                        mode='outlined'
+                        keyboardType='phone-pad'
+                        textContentType='telephoneNumber'
+                        style={styles.input}
+                        left={<TextInput.Icon icon='phone-outline' />}
+                    />
 
-                <Button
-                    mode='contained'
-                    onPress={() => void handleCreate()}
-                    loading={saving}
-                    disabled={saving || !form.sellerTypeId || !form.phone.trim()}
-                    style={styles.createButton}
-                    contentStyle={styles.createButtonContent}
-                    icon='check-circle-outline'>
-                    {saving ? ARABIC.CREATING : ARABIC.CREATE}
-                </Button>
-            </View>
-        </ScrollView>
+                    {form.sellerTypeId && (
+                        <GateTypeFields
+                            sellerTypes={sellerTypes}
+                            sellerTypeId={form.sellerTypeId}
+                            storeName={form.storeName}
+                            city={form.city}
+                            workingHours={form.workingHours}
+                            description={form.description}
+                            onChangeStoreName={storeName => setForm(f => ({...f, storeName}))}
+                            onChangeCity={city => setForm(f => ({...f, city}))}
+                            onChangeWorkingHours={workingHours => setForm(f => ({...f, workingHours}))}
+                            onChangeDescription={description => setForm(f => ({...f, description}))}
+                        />
+                    )}
+
+                    {error && (
+                        <Chip
+                            icon='alert-circle-outline'
+                            style={[styles.errorChip, {backgroundColor: theme.colors.errorContainer}]}
+                            textStyle={{color: theme.colors.error}}>
+                            {error}
+                        </Chip>
+                    )}
+
+                    <Button
+                        mode='contained'
+                        onPress={() => void handleCreate()}
+                        loading={saving}
+                        disabled={saving || !form.sellerTypeId || !form.phone.trim()}
+                        style={styles.createButton}
+                        contentStyle={styles.createButtonContent}
+                        icon='check-circle-outline'>
+                        {saving ? ARABIC.CREATING : ARABIC.CREATE}
+                    </Button>
+                </View>
+            </ScrollView>
         </KeyboardAvoidingView>
     )
 }

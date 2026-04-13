@@ -38,10 +38,7 @@ export const MyAccountScreen = () => {
 
     const loadData = useCallback(async () => {
         try {
-            const [profile, sub] = await Promise.allSettled([
-                profileService.getProfile(),
-                profileService.getMySubscription(),
-            ])
+            const [profile, sub] = await Promise.allSettled([profileService.getProfile(), profileService.getMySubscription()])
             if (profile.status === 'fulfilled') {
                 const p = profile.value
                 setForm({name: p.name ?? '', email: p.email ?? '', phone: p.phone ?? '', city: p.city ?? '', bio: p.bio ?? ''})

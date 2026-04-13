@@ -44,12 +44,16 @@ export const PartCardDetails = ({part, categoryInfo}: PartCardDetailsProps) => {
             {/* Row 2: Vehicle compatibility */}
             {vehicleLabel && (
                 <View style={styles.metaRow}>
-                    <Icon source="check-circle" size={13} color={theme.colors.success} />
+                    <Icon source='check-circle' size={13} color={theme.colors.success} />
                     <Text style={[styles.metaText, {color: theme.colors.success}]} numberOfLines={1}>
                         {vehicleLabel}
                     </Text>
                     {vehicles.length > 1 && (
-                        <Text style={[styles.badge, {color: theme.colors.onSurfaceVariant, backgroundColor: theme.colors.surfaceVariant}]}>
+                        <Text
+                            style={[
+                                styles.badge,
+                                {color: theme.colors.onSurfaceVariant, backgroundColor: theme.colors.surfaceVariant},
+                            ]}>
                             +{vehicles.length - 1}
                         </Text>
                     )}
@@ -61,7 +65,7 @@ export const PartCardDetails = ({part, categoryInfo}: PartCardDetailsProps) => {
                 <View style={styles.footerLeft}>
                     {part.sellerCity && (
                         <>
-                            <Icon source="map-marker-outline" size={12} color={theme.colors.onSurfaceVariant} />
+                            <Icon source='map-marker-outline' size={12} color={theme.colors.onSurfaceVariant} />
                             <Text style={[styles.footerText, {color: theme.colors.onSurfaceVariant}]} numberOfLines={1}>
                                 {part.sellerCity}
                             </Text>

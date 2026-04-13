@@ -53,8 +53,12 @@ const EntitlementRow = ({entitlement: e}: {entitlement: PlanEntitlement}) => {
     const isEnabled = e.entitlementType === 'FLAG' ? e.valueFlag : true
     const value =
         e.entitlementType === 'FLAG'
-            ? e.valueFlag ? ARABIC.ENABLED : ARABIC.DISABLED
-            : e.valueLimit != null ? String(e.valueLimit) : '—'
+            ? e.valueFlag
+                ? ARABIC.ENABLED
+                : ARABIC.DISABLED
+            : e.valueLimit != null
+              ? String(e.valueLimit)
+              : '—'
 
     return (
         <View style={styles.entitlementRow}>

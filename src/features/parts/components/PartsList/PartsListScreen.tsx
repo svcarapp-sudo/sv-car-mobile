@@ -36,18 +36,13 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
 
     const renderItem = useCallback(
         ({item}: {item: (typeof parts)[0]}) => <PartCardItem part={item} navigation={navigation} categories={categories} />,
-        [navigation, categories],
+        [navigation, categories]
     )
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
             <Animated.View style={[styles.headerWrap, {transform: [{translateY: headerTranslate}]}]}>
-                <PartsListHeader
-                    categoryName={categoryName}
-                    partsCount={total}
-                    search={search}
-                    onSearchChange={setSearch}
-                />
+                <PartsListHeader categoryName={categoryName} partsCount={total} search={search} onSearchChange={setSearch} />
             </Animated.View>
 
             <Animated.FlatList
@@ -66,7 +61,7 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
                 ListFooterComponent={
                     loadingMore ? (
                         <View style={styles.footer}>
-                            <ActivityIndicator size="small" color={theme.colors.primary} />
+                            <ActivityIndicator size='small' color={theme.colors.primary} />
                         </View>
                     ) : null
                 }

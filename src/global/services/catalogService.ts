@@ -67,8 +67,7 @@ export const catalogApi = {
         return page.content ?? []
     },
 
-    getPartCategories: (): Promise<PartCategoryApi[]> =>
-        apiClient.get<PartCategoryApi[]>(`${CATALOG_PREFIX}/part-categories`),
+    getPartCategories: (): Promise<PartCategoryApi[]> => apiClient.get<PartCategoryApi[]>(`${CATALOG_PREFIX}/part-categories`),
 }
 
 /**
@@ -76,7 +75,7 @@ export const catalogApi = {
  * Uses queryClient.fetchQuery so it returns cached data if fresh.
  * Safe to call from services outside React.
  */
-export async function getCategoriesForMapping(): Promise<Array<{id: number; slug: string}>> {
+export async function getCategoriesForMapping(): Promise<{id: number; slug: string}[]> {
     try {
         const categories = await queryClient.fetchQuery({
             queryKey: catalogKeys.partCategories(),

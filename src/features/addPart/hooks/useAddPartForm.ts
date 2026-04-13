@@ -37,15 +37,34 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
     const [sku, setSku] = useState('')
 
     const resetFrom = (step: Step) => {
-        if (step <= Step.Details) { setName(''); setDescription(''); setPrice(''); setImageUrl(''); setSku('') }
-        if (step <= Step.Category) { setCategoryId(null); setCategoryName('') }
+        if (step <= Step.Details) {
+            setName('')
+            setDescription('')
+            setPrice('')
+            setImageUrl('')
+            setSku('')
+        }
+        if (step <= Step.Category) {
+            setCategoryId(null)
+            setCategoryName('')
+        }
         if (step <= Step.Year) setYear(null)
-        if (step <= Step.Model) { setModelId(null); setModelName('') }
-        if (step <= Step.Make) { setMakeId(null); setMakeName(''); setMakeLogoUrl(null) }
+        if (step <= Step.Model) {
+            setModelId(null)
+            setModelName('')
+        }
+        if (step <= Step.Make) {
+            setMakeId(null)
+            setMakeName('')
+            setMakeLogoUrl(null)
+        }
     }
 
     const handleStepChange = (step: Step) => {
-        if (step < currentStep) { resetFrom(step); setCurrentStep(step) }
+        if (step < currentStep) {
+            resetFrom(step)
+            setCurrentStep(step)
+        }
     }
 
     const advanceStep = () => {
@@ -54,41 +73,61 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
 
     const handleMakeSelect = useCallback(
         (n: string, id: string, logoUrl?: string | null) => {
-            setMakeId(Number(id)); setMakeName(n); setMakeLogoUrl(logoUrl ?? null)
-            setModelId(null); setModelName(''); advanceStep()
+            setMakeId(Number(id))
+            setMakeName(n)
+            setMakeLogoUrl(logoUrl ?? null)
+            setModelId(null)
+            setModelName('')
+            advanceStep()
         },
-        [currentStep],
+        [currentStep]
     )
 
     const handleModelSelect = useCallback(
-        (n: string, id: string) => { setModelId(Number(id)); setModelName(n); advanceStep() },
-        [currentStep],
+        (n: string, id: string) => {
+            setModelId(Number(id))
+            setModelName(n)
+            advanceStep()
+        },
+        [currentStep]
     )
 
     const handleYearSelect = useCallback(
-        (yearStr: string) => { setYear(Number(yearStr)); advanceStep() },
-        [currentStep],
+        (yearStr: string) => {
+            setYear(Number(yearStr))
+            advanceStep()
+        },
+        [currentStep]
     )
 
     const handleCategorySelect = useCallback(
-        (id: number, n: string) => { setCategoryId(id); setCategoryName(n); advanceStep() },
-        [currentStep],
+        (id: number, n: string) => {
+            setCategoryId(id)
+            setCategoryName(n)
+            advanceStep()
+        },
+        [currentStep]
     )
 
     const handleSubmit = useCallback(async () => {
         if (!makeId || !modelId || !year || !categoryId || !name.trim() || !price.trim()) {
-            Alert.alert(ARABIC_TEXT.ERROR, ARABIC_TEXT.REQUIRED_FIELD); return
+            Alert.alert(ARABIC_TEXT.ERROR, ARABIC_TEXT.REQUIRED_FIELD)
+            return
         }
         const priceNum = parseFloat(price)
         if (isNaN(priceNum) || priceNum < 0) {
-            Alert.alert(ARABIC_TEXT.ERROR, ARABIC_TEXT.INVALID_PRICE); return
+            Alert.alert(ARABIC_TEXT.ERROR, ARABIC_TEXT.INVALID_PRICE)
+            return
         }
         try {
             await createPart({
                 compatibilities: [{makeId, modelId, yearFrom: year, yearTo: year}],
                 categoryId,
-                name: name.trim(), description: description.trim() || undefined,
-                price: priceNum, imageUrl: imageUrl.trim() || undefined, sku: sku.trim() || undefined,
+                name: name.trim(),
+                description: description.trim() || undefined,
+                price: priceNum,
+                imageUrl: imageUrl.trim() || undefined,
+                sku: sku.trim() || undefined,
             })
             Alert.alert(ARABIC_TEXT.SUCCESS, ARABIC_TEXT.SUCCESS_MSG, [
                 {text: ARABIC_TEXT.OK, onPress: () => navigation?.navigate('MyParts')},
@@ -101,11 +140,38 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
     const canSubmit = !!(makeId && modelId && year && categoryId && name.trim() && price.trim())
 
     return {
-        currentStep, originId, makeId, makeName, makeLogoUrl, modelId, modelName,
-        year, categoryId, categoryName, name, description, price, imageUrl, sku,
-        loading, categories, categoriesLoading, getMakes, getModels, years, canSubmit,
-        setName, setDescription, setPrice, setImageUrl, setSku,
-        handleStepChange, handleMakeSelect, handleModelSelect,
-        handleYearSelect, handleCategorySelect, handleSubmit,
+        currentStep,
+        originId,
+        makeId,
+        makeName,
+        makeLogoUrl,
+        modelId,
+        modelName,
+        year,
+        categoryId,
+        categoryName,
+        name,
+        description,
+        price,
+        imageUrl,
+        sku,
+        loading,
+        categories,
+        categoriesLoading,
+        getMakes,
+        getModels,
+        years,
+        canSubmit,
+        setName,
+        setDescription,
+        setPrice,
+        setImageUrl,
+        setSku,
+        handleStepChange,
+        handleMakeSelect,
+        handleModelSelect,
+        handleYearSelect,
+        handleCategorySelect,
+        handleSubmit,
     }
 }

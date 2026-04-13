@@ -35,7 +35,7 @@ export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
         return {count: parts.length, totalValue}
     }, [parts])
 
-    const handleDelete = (partId: string, partName: string) => {
+    const handleDelete = (partId: string, _partName: string) => {
         Alert.alert(ARABIC_TEXT.DELETE, ARABIC_TEXT.DELETE_CONFIRM, [
             {text: ARABIC_TEXT.CANCEL, style: 'cancel'},
             {
@@ -62,14 +62,14 @@ export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
             <View style={styles.statsRow}>
                 <View style={[styles.statCard, {backgroundColor: theme.colors.primaryContainer}]}>
                     <View style={[styles.statIcon, {backgroundColor: theme.colors.surface}]}>
-                        <Icon source="package-variant" size={18} color={theme.colors.primary} />
+                        <Icon source='package-variant' size={18} color={theme.colors.primary} />
                     </View>
                     <Text style={[styles.statValue, {color: theme.colors.primary}]}>{stats.count}</Text>
                     <Text style={[styles.statLabel, {color: theme.colors.primary}]}>{ARABIC_TEXT.TOTAL_PARTS}</Text>
                 </View>
                 <View style={[styles.statCard, {backgroundColor: theme.colors.accentContainer}]}>
                     <View style={[styles.statIcon, {backgroundColor: theme.colors.surface}]}>
-                        <Icon source="cash" size={18} color={theme.colors.tertiary} />
+                        <Icon source='cash' size={18} color={theme.colors.tertiary} />
                     </View>
                     <Text style={[styles.statValue, {color: theme.colors.tertiary}]}>${stats.totalValue.toFixed(0)}</Text>
                     <Text style={[styles.statLabel, {color: theme.colors.tertiary}]}>{ARABIC_TEXT.TOTAL_VALUE}</Text>
@@ -98,7 +98,7 @@ export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
                 ListEmptyComponent={<MyPartsListEmpty loading={loading && parts.length === 0} navigation={navigation} />}
             />
             <FAB
-                icon="plus"
+                icon='plus'
                 label={ARABIC_TEXT.ADD_PART}
                 style={[styles.fab, {backgroundColor: theme.colors.primary}]}
                 color={theme.colors.onPrimary}

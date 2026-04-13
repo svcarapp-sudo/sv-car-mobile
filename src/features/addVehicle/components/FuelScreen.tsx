@@ -68,9 +68,7 @@ export const FuelScreen = ({fuelTypes, value, onSelect, onNext}: FuelScreenProps
                                     style={[
                                         styles.iconCircle,
                                         {
-                                            backgroundColor: isSelected
-                                                ? theme.colors.accentMuted
-                                                : theme.colors.surfaceVariant,
+                                            backgroundColor: isSelected ? theme.colors.accentMuted : theme.colors.surfaceVariant,
                                         },
                                     ]}>
                                     <Icon
@@ -81,11 +79,7 @@ export const FuelScreen = ({fuelTypes, value, onSelect, onNext}: FuelScreenProps
                                 </View>
                                 <Text
                                     variant='titleSmall'
-                                    style={[
-                                        styles.fuelName,
-                                        {color: theme.colors.onSurface},
-                                        isSelected && {fontWeight: '700'},
-                                    ]}>
+                                    style={[styles.fuelName, {color: theme.colors.onSurface}, isSelected && {fontWeight: '700'}]}>
                                     {f.name}
                                 </Text>
                             </View>

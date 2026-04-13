@@ -29,9 +29,7 @@ export const CategoryGrid = ({
 }: CategoryGridProps) => {
     const theme = useAppTheme()
 
-    const displayList = categories
-        .slice()
-        .sort((a, b) => a.sortOrder - b.sortOrder)
+    const displayList = categories.slice().sort((a, b) => a.sortOrder - b.sortOrder)
 
     if (loading && categories.length === 0) {
         return (

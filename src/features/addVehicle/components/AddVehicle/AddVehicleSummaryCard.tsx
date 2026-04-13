@@ -52,27 +52,19 @@ export const AddVehicleSummaryCard = ({
             <View style={styles.content}>
                 {items.map((item, index) => (
                     <View key={item.step} style={styles.itemRow}>
-                        {index > 0 && (
-                            <Icon source="chevron-left" size={14} color={theme.colors.outline} />
-                        )}
+                        {index > 0 && <Icon source='chevron-left' size={14} color={theme.colors.outline} />}
                         <TouchableOpacity
                             onPress={() => onStepPress(item.step)}
                             activeOpacity={0.5}
                             style={[styles.chip, {backgroundColor: theme.colors.surfaceVariant}]}>
                             {item.logoUrl ? (
                                 <View style={styles.logoWrap}>
-                                    <Image
-                                        source={{uri: item.logoUrl}}
-                                        style={styles.logo}
-                                        resizeMode="contain"
-                                    />
+                                    <Image source={{uri: item.logoUrl}} style={styles.logo} resizeMode='contain' />
                                 </View>
                             ) : (
                                 <Icon source={item.icon} size={13} color={theme.colors.tertiary} />
                             )}
-                            <Text
-                                style={[styles.value, {color: theme.colors.onSurface}]}
-                                numberOfLines={1}>
+                            <Text style={[styles.value, {color: theme.colors.onSurface}]} numberOfLines={1}>
                                 {item.value}
                             </Text>
                         </TouchableOpacity>

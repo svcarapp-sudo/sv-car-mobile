@@ -21,7 +21,7 @@ export const PartsCategoryCard = ({name, description, icon, onPress}: PartsCateg
                     <View style={[styles.categoryIconBox, {backgroundColor: theme.colors.primaryContainer}]}>
                         <Icon source={icon || 'package-variant'} size={22} color={theme.colors.primary} />
                     </View>
-                    <Icon source="chevron-left" size={18} color={theme.colors.outline} />
+                    <Icon source='chevron-left' size={18} color={theme.colors.outline} />
                 </View>
                 <Text style={[styles.categoryName, {color: theme.colors.onSurface}]} numberOfLines={2}>
                     {name}

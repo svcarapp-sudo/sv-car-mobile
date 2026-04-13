@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-named-as-default -- expo-constants default export is the config object
 import ExpoConstants from 'expo-constants'
 
 export const APP_NAME = 'SV Car Mobile'

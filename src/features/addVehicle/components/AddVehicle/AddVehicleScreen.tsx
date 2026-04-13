@@ -38,12 +38,25 @@ export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => 
 
     const handleStepChange = (step: Step) => {
         if (step < currentStep) {
-            if (step < Step.Details) { setVin(''); setDisplayName('') }
+            if (step < Step.Details) {
+                setVin('')
+                setDisplayName('')
+            }
             if (step < Step.Fuel) setFuelType('')
             if (step < Step.Year) setYear('')
-            if (step < Step.Model) { setModel(''); setModelId(null) }
-            if (step < Step.Make) { setMake(''); setMakeId(null); setMakeLogoUrl(null) }
-            if (step < Step.Origin) { setOriginId(null); setOriginName('') }
+            if (step < Step.Model) {
+                setModel('')
+                setModelId(null)
+            }
+            if (step < Step.Make) {
+                setMake('')
+                setMakeId(null)
+                setMakeLogoUrl(null)
+            }
+            if (step < Step.Origin) {
+                setOriginId(null)
+                setOriginName('')
+            }
             setCurrentStep(step)
         }
     }
@@ -52,8 +65,12 @@ export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => 
         if (!makeId || !modelId || !year) return
         try {
             const data = {
-                makeId: Number(makeId), modelId: Number(modelId), year: Number(year),
-                fuelType: fuelType || null, vin: vin || null, displayName: displayName || null,
+                makeId: Number(makeId),
+                modelId: Number(modelId),
+                year: Number(year),
+                fuelType: fuelType || null,
+                vin: vin || null,
+                displayName: displayName || null,
             }
             if (editVehicleId) await updateVehicle(editVehicleId, data)
             else await createVehicle(data)

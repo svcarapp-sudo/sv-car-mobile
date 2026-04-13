@@ -59,7 +59,11 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
         } catch (err: unknown) {
             const status = err && typeof err === 'object' && 'status' in err ? (err as {status: number}).status : 0
             const msg =
-                status === 409 ? ARABIC_TEXT.EMAIL_IN_USE : err && typeof err === 'object' && 'message' in err ? String((err as {message: string}).message) : ARABIC_TEXT.ERROR
+                status === 409
+                    ? ARABIC_TEXT.EMAIL_IN_USE
+                    : err && typeof err === 'object' && 'message' in err
+                      ? String((err as {message: string}).message)
+                      : ARABIC_TEXT.ERROR
             setError(msg)
         } finally {
             setLoading(false)
@@ -113,12 +117,7 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
                         </HelperText>
                     ) : null}
 
-                    <Button
-                        mode='contained'
-                        onPress={handleRegister}
-                        loading={loading}
-                        disabled={loading}
-                        style={styles.button}>
+                    <Button mode='contained' onPress={handleRegister} loading={loading} disabled={loading} style={styles.button}>
                         {loading ? ARABIC_TEXT.LOADING : ARABIC_TEXT.REGISTER}
                     </Button>
 

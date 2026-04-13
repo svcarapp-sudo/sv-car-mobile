@@ -83,8 +83,8 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
     if (partsLoading && !part) {
         return (
             <View style={[styles.container, styles.centered, {backgroundColor: theme.colors.background}]}>
-                <ActivityIndicator size="large" />
-                <Text variant="bodyMedium" style={{color: theme.colors.onSurfaceVariant, marginTop: 16}}>
+                <ActivityIndicator size='large' />
+                <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant, marginTop: 16}}>
                     {ARABIC_TEXT.LOADING}
                 </Text>
             </View>
@@ -94,8 +94,8 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
     if (!part) {
         return (
             <View style={[styles.container, styles.centered, {backgroundColor: theme.colors.background}]}>
-                <Icon source="alert-circle-outline" size={48} color={theme.colors.error} />
-                <Text variant="bodyLarge" style={{color: theme.colors.error, marginTop: 12}}>
+                <Icon source='alert-circle-outline' size={48} color={theme.colors.error} />
+                <Text variant='bodyLarge' style={{color: theme.colors.error, marginTop: 12}}>
                     {ARABIC_TEXT.NOT_FOUND}
                 </Text>
             </View>
@@ -107,11 +107,8 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled">
-                <EditPartVehicleBanner
-                    vehicles={vehicles}
-                    categoryName={categoryInfo?.name}
-                />
+                keyboardShouldPersistTaps='handled'>
+                <EditPartVehicleBanner vehicles={vehicles} categoryName={categoryInfo?.name} />
                 <EditPartFormFields
                     name={name}
                     onNameChange={setName}

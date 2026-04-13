@@ -11,14 +11,37 @@ const toFlag = (code: string): string =>
     String.fromCodePoint(0x1f1e6 - 65 + code.charCodeAt(0), 0x1f1e6 - 65 + code.charCodeAt(1))
 
 const AR: Record<string, string> = {
-    SA: 'السعودية', AE: 'الإمارات', KW: 'الكويت', BH: 'البحرين',
-    QA: 'قطر', OM: 'عُمان', YE: 'اليمن', IQ: 'العراق',
-    JO: 'الأردن', LB: 'لبنان', SY: 'سوريا', PS: 'فلسطين',
-    EG: 'مصر', SD: 'السودان', LY: 'ليبيا', TN: 'تونس',
-    DZ: 'الجزائر', MA: 'المغرب', TR: 'تركيا', US: 'أمريكا',
-    GB: 'بريطانيا', FR: 'فرنسا', DE: 'ألمانيا', IN: 'الهند',
-    PK: 'باكستان', CN: 'الصين', JP: 'اليابان', RU: 'روسيا',
-    CA: 'كندا', AU: 'أستراليا', BR: 'البرازيل',
+    SA: 'السعودية',
+    AE: 'الإمارات',
+    KW: 'الكويت',
+    BH: 'البحرين',
+    QA: 'قطر',
+    OM: 'عُمان',
+    YE: 'اليمن',
+    IQ: 'العراق',
+    JO: 'الأردن',
+    LB: 'لبنان',
+    SY: 'سوريا',
+    PS: 'فلسطين',
+    EG: 'مصر',
+    SD: 'السودان',
+    LY: 'ليبيا',
+    TN: 'تونس',
+    DZ: 'الجزائر',
+    MA: 'المغرب',
+    TR: 'تركيا',
+    US: 'أمريكا',
+    GB: 'بريطانيا',
+    FR: 'فرنسا',
+    DE: 'ألمانيا',
+    IN: 'الهند',
+    PK: 'باكستان',
+    CN: 'الصين',
+    JP: 'اليابان',
+    RU: 'روسيا',
+    CA: 'كندا',
+    AU: 'أستراليا',
+    BR: 'البرازيل',
 }
 
 interface Country {
@@ -34,7 +57,10 @@ let _list: Country[] | null = null
 const list = (): Country[] => {
     if (_list) return _list
     const all = getCountries().map(c => ({
-        code: c, dial: '+' + getCountryCallingCode(c), flag: toFlag(c), label: AR[c] ?? c,
+        code: c,
+        dial: `+${getCountryCallingCode(c)}`,
+        flag: toFlag(c),
+        label: AR[c] ?? c,
     }))
     const pSet = new Set<string>(PRIORITY)
     const top = PRIORITY.map(c => all.find(i => i.code === c)!).filter(Boolean)
@@ -46,7 +72,12 @@ const list = (): Country[] => {
 const detect = (): CountryCode => {
     try {
         const r = getLocales()?.[0]?.regionCode?.toUpperCase()
-        if (r) { try { getCountryCallingCode(r as CountryCode); return r as CountryCode } catch {} }
+        if (r) {
+            try {
+                getCountryCallingCode(r as CountryCode)
+                return r as CountryCode
+            } catch {}
+        }
     } catch {}
     return 'SA'
 }
@@ -78,24 +109,37 @@ export const PhoneInput = ({onChange, initialValue = '', defaultCountry, disable
     const [country, setCountry] = useState<Country>(initCountry)
     const [pickerOpen, setPickerOpen] = useState(false)
 
-    const notify = useCallback((nat: string, c: Country) => {
-        const full = c.dial + nat.replace(/[^\d]/g, '')
-        let valid = false
-        if (nat.trim()) { try { valid = isValidPhoneNumber(full) } catch {} }
-        onChange({nationalNumber: nat, fullNumber: full, dialCode: c.dial, countryCode: c.code, isValid: valid})
-    }, [onChange])
+    const notify = useCallback(
+        (nat: string, c: Country) => {
+            const full = c.dial + nat.replace(/[^\d]/g, '')
+            let valid = false
+            if (nat.trim()) {
+                try {
+                    valid = isValidPhoneNumber(full)
+                } catch {}
+            }
+            onChange({nationalNumber: nat, fullNumber: full, dialCode: c.dial, countryCode: c.code, isValid: valid})
+        },
+        [onChange]
+    )
 
-    const onType = useCallback((text: string) => {
-        const d = text.replace(/[^\d]/g, '')
-        setDigits(d)
-        notify(d, country)
-    }, [country, notify])
+    const onType = useCallback(
+        (text: string) => {
+            const d = text.replace(/[^\d]/g, '')
+            setDigits(d)
+            notify(d, country)
+        },
+        [country, notify]
+    )
 
-    const pickCountry = useCallback((c: Country) => {
-        setCountry(c)
-        setPickerOpen(false)
-        notify(digits, c)
-    }, [digits, notify])
+    const pickCountry = useCallback(
+        (c: Country) => {
+            setCountry(c)
+            setPickerOpen(false)
+            notify(digits, c)
+        },
+        [digits, notify]
+    )
 
     return (
         <View style={styles.container}>

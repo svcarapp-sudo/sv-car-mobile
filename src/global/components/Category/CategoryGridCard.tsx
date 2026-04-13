@@ -14,10 +14,7 @@ export const CategoryGridCard = ({category, isSelected, onPress}: CategoryGridCa
     const theme = useAppTheme()
 
     return (
-        <TouchableOpacity
-            onPress={() => onPress(category)}
-            activeOpacity={0.7}
-            style={styles.cardWrapper}>
+        <TouchableOpacity onPress={() => onPress(category)} activeOpacity={0.7} style={styles.cardWrapper}>
             <Card
                 style={[
                     styles.card,
@@ -33,9 +30,7 @@ export const CategoryGridCard = ({category, isSelected, onPress}: CategoryGridCa
                             style={[
                                 styles.iconContainer,
                                 {
-                                    backgroundColor: isSelected
-                                        ? theme.colors.primary
-                                        : theme.colors.primaryContainer,
+                                    backgroundColor: isSelected ? theme.colors.primary : theme.colors.primaryContainer,
                                 },
                             ]}>
                             <IconButton

@@ -23,36 +23,33 @@ export const useParts = (initialCategory?: PartCategory | null) => {
     // Track current fetch to avoid race conditions
     const fetchIdRef = useRef(0)
 
-    const fetchParts = useCallback(
-        async (category: PartCategory | null | undefined, searchQuery: string) => {
-            const fetchId = ++fetchIdRef.current
-            setLoading(true)
-            setError(null)
-            setPage(0)
-            setHasMore(false)
-            try {
-                const response = await partsListService.getParts({
-                    category: category || undefined,
-                    search: searchQuery || undefined,
-                    page: 0,
-                    limit: PAGE_SIZE,
-                })
-                if (fetchId !== fetchIdRef.current) return
-                setParts(response.parts)
-                setTotal(response.total)
-                setHasMore(response.page + 1 < response.totalPages)
-            } catch (err) {
-                if (fetchId !== fetchIdRef.current) return
-                setError((err as Error).message || 'Failed to fetch parts')
-                setParts([])
-            } finally {
-                if (fetchId === fetchIdRef.current) {
-                    setLoading(false)
-                }
+    const fetchParts = useCallback(async (category: PartCategory | null | undefined, searchQuery: string) => {
+        const fetchId = ++fetchIdRef.current
+        setLoading(true)
+        setError(null)
+        setPage(0)
+        setHasMore(false)
+        try {
+            const response = await partsListService.getParts({
+                category: category || undefined,
+                search: searchQuery || undefined,
+                page: 0,
+                limit: PAGE_SIZE,
+            })
+            if (fetchId !== fetchIdRef.current) return
+            setParts(response.parts)
+            setTotal(response.total)
+            setHasMore(response.page + 1 < response.totalPages)
+        } catch (err) {
+            if (fetchId !== fetchIdRef.current) return
+            setError((err as Error).message || 'Failed to fetch parts')
+            setParts([])
+        } finally {
+            if (fetchId === fetchIdRef.current) {
+                setLoading(false)
             }
-        },
-        [],
-    )
+        }
+    }, [])
 
     // Skip the first search effect — the category effect already fetches on mount
     const searchChangedRef = useRef(false)

@@ -23,15 +23,7 @@ interface ModelScreenProps {
     onNext: () => void
 }
 
-export const ModelScreen = ({
-    makeId,
-    makeName,
-    getModels,
-    value: _value,
-    valueId,
-    onSelect,
-    onNext,
-}: ModelScreenProps) => {
+export const ModelScreen = ({makeId, makeName, getModels, value: _value, valueId, onSelect, onNext}: ModelScreenProps) => {
     const theme = useAppTheme()
     const [models, setModels] = useState<ModelApi[]>([])
     const [loading, setLoading] = useState(false)
@@ -91,9 +83,7 @@ export const ModelScreen = ({
             <FlatList
                 data={models}
                 keyExtractor={item => item.id}
-                renderItem={({item}) => (
-                    <ModelCard item={item} isSelected={valueId === item.id} onPress={handleSelect} />
-                )}
+                renderItem={({item}) => <ModelCard item={item} isSelected={valueId === item.id} onPress={handleSelect} />}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
             />

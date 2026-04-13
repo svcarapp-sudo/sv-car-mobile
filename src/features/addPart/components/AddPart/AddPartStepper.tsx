@@ -37,9 +37,7 @@ export const AddPartStepper = ({currentStep, onStepPress}: AddPartStepperProps) 
                     const stepVal = index as Step
 
                     const Wrapper = isClickable ? TouchableOpacity : View
-                    const wrapperProps = isClickable
-                        ? {onPress: () => onStepPress?.(stepVal), activeOpacity: 0.6}
-                        : {}
+                    const wrapperProps = isClickable ? {onPress: () => onStepPress?.(stepVal), activeOpacity: 0.6} : {}
 
                     return (
                         <Wrapper key={step.label} style={styles.stepItem} {...wrapperProps}>

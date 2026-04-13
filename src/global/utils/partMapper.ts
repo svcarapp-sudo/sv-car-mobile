@@ -28,10 +28,7 @@ export interface PartModelResponse {
 }
 
 /** Maps a backend PartResponse to the mobile Part type. */
-export function mapPartModelToPart(
-    model: PartModelResponse,
-    categories?: Array<{id: number; slug: string}>,
-): Part {
+export function mapPartModelToPart(model: PartModelResponse, categories?: {id: number; slug: string}[]): Part {
     let categorySlug: PartCategory = 'other'
     if (model.categoryId && categories) {
         const category = categories.find(c => c.id === model.categoryId)

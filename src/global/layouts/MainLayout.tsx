@@ -54,8 +54,7 @@ export const MainLayout = ({children, onLogout}: MainLayoutProps) => {
             PanResponder.create({
                 onStartShouldSetPanResponder: () => isDrawerOpen,
                 // RTL: drag right (dx > 0) to close; LTR: drag left (dx < 0) to close
-                onMoveShouldSetPanResponder: (_, g) =>
-                    isDrawerOpen && (isRTL ? g.dx > 5 : g.dx < -5),
+                onMoveShouldSetPanResponder: (_, g) => isDrawerOpen && (isRTL ? g.dx > 5 : g.dx < -5),
 
                 onPanResponderMove: (_, g) => {
                     if (isRTL) {

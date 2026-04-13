@@ -1,7 +1,8 @@
 import React from 'react'
 import {StyleSheet, View} from 'react-native'
-import {Button, Icon, Text} from 'react-native-paper'
+import {Button, Text} from 'react-native-paper'
 
+import {IllustrationSellerProfile} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 
@@ -25,9 +26,9 @@ export const SellerProfileEmpty = ({onCreatePress}: SellerProfileEmptyProps) => 
                 {ARABIC.SELLER_PROFILE}
             </Text>
             <View style={[styles.emptyCard, {backgroundColor: theme.colors.surface}]}>
+                <IllustrationSellerProfile size={170} />
                 <View style={styles.emptyContent}>
-                    <Icon source='store-plus-outline' size={32} color={theme.colors.onSurfaceVariant} />
-                    <Text variant='bodyMedium' style={[styles.emptyTitle, {color: theme.colors.onSurface}]}>
+                    <Text variant='titleMedium' style={[styles.emptyTitle, {color: theme.colors.onSurface}]}>
                         {ARABIC.NO_PROFILE}
                     </Text>
                     <Text variant='bodySmall' style={{color: theme.colors.onSurfaceVariant, textAlign: 'center'}}>
@@ -60,8 +61,8 @@ const styles = StyleSheet.create({
         shadowRadius: 16,
         elevation: 6,
     },
-    emptyContent: {alignItems: 'center', gap: 8, marginBottom: 20},
-    emptyTitle: {fontWeight: '600', marginTop: 4},
+    emptyContent: {alignItems: 'center', gap: 6, marginTop: 12, marginBottom: 20},
+    emptyTitle: {fontWeight: '700'},
     createButton: {borderRadius: 12, alignSelf: 'stretch'},
     createButtonContent: {paddingVertical: 4},
 })

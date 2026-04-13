@@ -2,6 +2,7 @@ import React from 'react'
 import {StyleSheet, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
+import {IllustrationSubscription} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 import type {Plan} from '@/global/types'
@@ -79,8 +80,8 @@ export const SubscriptionCard = ({plan}: SubscriptionCardProps) => {
                 </View>
             ) : (
                 <View style={[styles.emptyCard, {backgroundColor: theme.colors.surface}]}>
-                    <Icon source='information-outline' size={24} color={theme.colors.onSurfaceVariant} />
-                    <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant, flex: 1}}>
+                    <IllustrationSubscription size={130} />
+                    <Text variant='bodyMedium' style={[styles.emptyText, {color: theme.colors.onSurfaceVariant}]}>
                         {ARABIC.NO_SUBSCRIPTION}
                     </Text>
                 </View>
@@ -110,5 +111,6 @@ const styles = StyleSheet.create({
     detail: {flex: 1, alignItems: 'center', paddingVertical: 14},
     detailDivider: {width: 1, height: 30},
     detailValue: {fontWeight: '700', marginTop: 4},
-    emptyCard: {flexDirection: 'row', alignItems: 'center', padding: 20, borderRadius: 12, gap: 12, ...cardShadow},
+    emptyCard: {alignItems: 'center', padding: 24, borderRadius: 16, gap: 12, ...cardShadow},
+    emptyText: {textAlign: 'center', marginTop: 4},
 })

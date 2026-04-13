@@ -11,7 +11,7 @@ type MakeModelCache = Record<number, {name: string; logoUrl?: string | null}> & 
 
 interface UseCatalogOptions {
     /** Pass a parts array to auto-resolve make/model names for display. */
-    parts?: Array<{makeId?: number; modelId?: number}>
+    parts?: {makeId?: number; modelId?: number}[]
 }
 
 export const useCatalog = (options?: UseCatalogOptions) => {
@@ -34,7 +34,7 @@ export const useCatalog = (options?: UseCatalogOptions) => {
 
     const getBySlug = useCallback(
         (slug: string): PartCategoryApi | undefined => categories.find(c => c.slug === slug),
-        [categories],
+        [categories]
     )
 
     // --- On-demand fetchers (go through queryClient cache) ---
@@ -49,7 +49,7 @@ export const useCatalog = (options?: UseCatalogOptions) => {
                 return []
             }
         },
-        [qc],
+        [qc]
     )
 
     const getModels = useCallback(
@@ -63,7 +63,7 @@ export const useCatalog = (options?: UseCatalogOptions) => {
                 return []
             }
         },
-        [qc],
+        [qc]
     )
 
     // --- Static lists ---

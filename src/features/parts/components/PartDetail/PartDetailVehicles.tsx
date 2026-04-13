@@ -20,14 +20,14 @@ export const PartDetailVehicles = ({vehicles}: PartDetailVehiclesProps) => {
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.surfaceVariant}]}>
             <View style={styles.header}>
-                <Icon source="car-multiple" size={18} color={theme.colors.primary} />
+                <Icon source='car-multiple' size={18} color={theme.colors.primary} />
                 <Text style={[styles.title, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.TITLE}</Text>
             </View>
             {vehicles.map((v, i) => {
                 const yearLabel = v.yearFrom === v.yearTo ? String(v.yearFrom) : `${v.yearFrom}-${v.yearTo}`
                 return (
                     <View key={i} style={styles.row}>
-                        <Icon source="check-circle-outline" size={16} color={theme.colors.primary} />
+                        <Icon source='check-circle-outline' size={16} color={theme.colors.primary} />
                         <Text style={[styles.vehicleText, {color: theme.colors.onSurfaceVariant}]}>
                             {v.make} {v.model} {yearLabel}
                         </Text>

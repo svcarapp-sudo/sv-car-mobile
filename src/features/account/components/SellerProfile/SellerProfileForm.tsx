@@ -69,19 +69,59 @@ export const SellerProfileForm = ({
                     label={ARABIC.SELECT_TYPE}
                 />
 
-                <TextInput label={ARABIC.PHONE} value={form.phone} onChangeText={phone => onFormChange(f => ({...f, phone}))} mode='outlined' keyboardType='phone-pad' textContentType='telephoneNumber' style={styles.input} left={<TextInput.Icon icon='phone-outline' />} />
+                <TextInput
+                    label={ARABIC.PHONE}
+                    value={form.phone}
+                    onChangeText={phone => onFormChange(f => ({...f, phone}))}
+                    mode='outlined'
+                    keyboardType='phone-pad'
+                    textContentType='telephoneNumber'
+                    style={styles.input}
+                    left={<TextInput.Icon icon='phone-outline' />}
+                />
 
                 {fields?.showStoreName && (
-                    <TextInput label={fields.storeNameLabel} value={form.storeName} onChangeText={storeName => onFormChange(f => ({...f, storeName}))} mode='outlined' style={styles.input} left={<TextInput.Icon icon='store-outline' />} />
+                    <TextInput
+                        label={fields.storeNameLabel}
+                        value={form.storeName}
+                        onChangeText={storeName => onFormChange(f => ({...f, storeName}))}
+                        mode='outlined'
+                        style={styles.input}
+                        left={<TextInput.Icon icon='store-outline' />}
+                    />
                 )}
                 {fields?.showCity && (
-                    <TextInput label={ARABIC.CITY} value={form.city} onChangeText={city => onFormChange(f => ({...f, city}))} mode='outlined' style={styles.input} left={<TextInput.Icon icon='map-marker-outline' />} />
+                    <TextInput
+                        label={ARABIC.CITY}
+                        value={form.city}
+                        onChangeText={city => onFormChange(f => ({...f, city}))}
+                        mode='outlined'
+                        style={styles.input}
+                        left={<TextInput.Icon icon='map-marker-outline' />}
+                    />
                 )}
                 {fields?.showWorkingHours && (
-                    <TextInput label={ARABIC.WORKING_HOURS} value={form.workingHours} onChangeText={workingHours => onFormChange(f => ({...f, workingHours}))} mode='outlined' style={styles.input} left={<TextInput.Icon icon='clock-outline' />} placeholder='مثال: 9 ص - 9 م' />
+                    <TextInput
+                        label={ARABIC.WORKING_HOURS}
+                        value={form.workingHours}
+                        onChangeText={workingHours => onFormChange(f => ({...f, workingHours}))}
+                        mode='outlined'
+                        style={styles.input}
+                        left={<TextInput.Icon icon='clock-outline' />}
+                        placeholder='مثال: 9 ص - 9 م'
+                    />
                 )}
                 {fields?.showDescription && (
-                    <TextInput label={ARABIC.DESCRIPTION} value={form.description} onChangeText={description => onFormChange(f => ({...f, description}))} mode='outlined' multiline numberOfLines={3} style={styles.input} left={<TextInput.Icon icon='text-box-outline' />} />
+                    <TextInput
+                        label={ARABIC.DESCRIPTION}
+                        value={form.description}
+                        onChangeText={description => onFormChange(f => ({...f, description}))}
+                        mode='outlined'
+                        multiline
+                        numberOfLines={3}
+                        style={styles.input}
+                        left={<TextInput.Icon icon='text-box-outline' />}
+                    />
                 )}
 
                 {error && (
@@ -94,7 +134,13 @@ export const SellerProfileForm = ({
                     <Button mode='outlined' onPress={onCancel} disabled={saving} style={styles.actionButton}>
                         {ARABIC.CANCEL}
                     </Button>
-                    <Button mode='contained' onPress={onSave} loading={saving} disabled={saving || !form.sellerTypeId || !form.phone.trim()} style={styles.actionButton} icon='content-save-outline'>
+                    <Button
+                        mode='contained'
+                        onPress={onSave}
+                        loading={saving}
+                        disabled={saving || !form.sellerTypeId || !form.phone.trim()}
+                        style={styles.actionButton}
+                        icon='content-save-outline'>
                         {saving ? ARABIC.SAVING : ARABIC.SAVE}
                     </Button>
                 </View>

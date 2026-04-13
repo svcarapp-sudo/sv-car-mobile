@@ -20,11 +20,7 @@ export const ModelCard = ({item, isSelected, onPress}: ModelCardProps) => {
         <TouchableOpacity
             onPress={() => onPress(item)}
             activeOpacity={0.7}
-            style={[
-                styles.modelCard,
-                {backgroundColor: theme.colors.surface},
-                isSelected && styles.modelCardSelected,
-            ]}>
+            style={[styles.modelCard, {backgroundColor: theme.colors.surface}, isSelected && styles.modelCardSelected]}>
             {isSelected && <View style={styles.selectedAccent} />}
             <View style={styles.modelContent}>
                 <View
@@ -42,11 +38,7 @@ export const ModelCard = ({item, isSelected, onPress}: ModelCardProps) => {
                 </View>
                 <Text
                     variant='titleMedium'
-                    style={[
-                        styles.modelName,
-                        {color: theme.colors.onSurface},
-                        isSelected && {fontWeight: '700'},
-                    ]}>
+                    style={[styles.modelName, {color: theme.colors.onSurface}, isSelected && {fontWeight: '700'}]}>
                     {item.name}
                 </Text>
             </View>

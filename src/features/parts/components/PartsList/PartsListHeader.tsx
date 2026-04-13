@@ -29,15 +29,14 @@ export const PartsListHeader = ({categoryName, partsCount, search, onSearchChang
                     {title}
                 </Text>
                 <View style={[styles.countBadge, {backgroundColor: theme.colors.primaryContainer}]}>
-                    <Text style={[styles.countText, {color: theme.colors.primary}]}>
-                        {ARABIC_TEXT.PARTS_COUNT(partsCount)}
-                    </Text>
+                    <Text style={[styles.countText, {color: theme.colors.primary}]}>{ARABIC_TEXT.PARTS_COUNT(partsCount)}</Text>
                 </View>
             </View>
 
             {/* Search bar */}
-            <View style={[styles.searchBar, {backgroundColor: theme.colors.background, borderColor: theme.colors.outlineVariant}]}>
-                <Icon source="magnify" size={18} color={theme.colors.onSurfaceVariant} />
+            <View
+                style={[styles.searchBar, {backgroundColor: theme.colors.background, borderColor: theme.colors.outlineVariant}]}>
+                <Icon source='magnify' size={18} color={theme.colors.onSurfaceVariant} />
                 <TextInput
                     style={[styles.searchInput, {color: theme.colors.onSurface}]}
                     placeholder={ARABIC_TEXT.SEARCH_PLACEHOLDER}
@@ -46,9 +45,7 @@ export const PartsListHeader = ({categoryName, partsCount, search, onSearchChang
                     onChangeText={onSearchChange}
                     autoCorrect={false}
                 />
-                {search.length > 0 && (
-                    <Icon source="close-circle" size={16} color={theme.colors.outline} />
-                )}
+                {search.length > 0 && <Icon source='close-circle' size={16} color={theme.colors.outline} />}
             </View>
         </View>
     )

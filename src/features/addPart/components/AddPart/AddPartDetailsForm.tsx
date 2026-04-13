@@ -28,9 +28,22 @@ interface AddPartDetailsFormProps {
 }
 
 export const AddPartDetailsForm = ({
-    name, description, price, imageUrl, sku, loading,
-    onNameChange, onDescriptionChange, onPriceChange, onImageUrlChange, onSkuChange,
-    onSubmit, onCancel, canSubmit, submitLabel, submitLoadingLabel,
+    name,
+    description,
+    price,
+    imageUrl,
+    sku,
+    loading,
+    onNameChange,
+    onDescriptionChange,
+    onPriceChange,
+    onImageUrlChange,
+    onSkuChange,
+    onSubmit,
+    onCancel,
+    canSubmit,
+    submitLabel,
+    submitLoadingLabel,
 }: AddPartDetailsFormProps) => {
     const theme = useAppTheme()
 
@@ -44,9 +57,7 @@ export const AddPartDetailsForm = ({
                 <View style={[styles.sectionIcon, {backgroundColor: theme.colors.primaryContainer}]}>
                     <Icon source='text-box-outline' size={16} color={theme.colors.primary} />
                 </View>
-                <Text style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
-                    {ARABIC_TEXT.SECTION_TITLE}
-                </Text>
+                <Text style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.SECTION_TITLE}</Text>
             </View>
 
             <AddPartFields

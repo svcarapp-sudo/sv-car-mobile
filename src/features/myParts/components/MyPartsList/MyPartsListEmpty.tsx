@@ -1,5 +1,6 @@
 import {StyleSheet, View} from 'react-native'
-import {Text, Button, Icon, ActivityIndicator} from 'react-native-paper'
+import {Text, Button, ActivityIndicator} from 'react-native-paper'
+import {IllustrationEmptyParts} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import type {NavigationProp} from '@react-navigation/native'
 import type {RootStackParamList} from '@/global/navigation/types'
@@ -22,8 +23,8 @@ export const MyPartsListEmpty = ({loading, navigation}: MyPartsListEmptyProps) =
     if (loading) {
         return (
             <View style={styles.container}>
-                <ActivityIndicator size="large" color={theme.colors.primary} />
-                <Text variant="bodyMedium" style={[styles.loadingText, {color: theme.colors.onSurfaceVariant}]}>
+                <ActivityIndicator size='large' color={theme.colors.primary} />
+                <Text variant='bodyMedium' style={[styles.loadingText, {color: theme.colors.onSurfaceVariant}]}>
                     {ARABIC_TEXT.LOADING}
                 </Text>
             </View>
@@ -32,23 +33,19 @@ export const MyPartsListEmpty = ({loading, navigation}: MyPartsListEmptyProps) =
 
     return (
         <View style={styles.container}>
-            <View style={[styles.iconOuter, {backgroundColor: theme.colors.primaryContainer}]}>
-                <View style={[styles.iconInner, {borderColor: theme.colors.primary}]}>
-                    <Icon source="package-variant-plus" size={36} color={theme.colors.primary} />
-                </View>
-            </View>
+            <IllustrationEmptyParts size={190} />
 
-            <Text variant="titleLarge" style={[styles.title, {color: theme.colors.onSurface}]}>
+            <Text variant='titleLarge' style={[styles.title, {color: theme.colors.onSurface}]}>
                 {ARABIC_TEXT.NO_PARTS}
             </Text>
 
-            <Text variant="bodyMedium" style={[styles.description, {color: theme.colors.onSurfaceVariant}]}>
+            <Text variant='bodyMedium' style={[styles.description, {color: theme.colors.onSurfaceVariant}]}>
                 {ARABIC_TEXT.NO_PARTS_DESC}
             </Text>
 
             <Button
-                mode="contained"
-                icon="plus"
+                mode='contained'
+                icon='plus'
                 onPress={() => navigation?.navigate('AddPart')}
                 style={styles.addButton}
                 contentStyle={styles.addButtonContent}>
@@ -60,9 +57,7 @@ export const MyPartsListEmpty = ({loading, navigation}: MyPartsListEmptyProps) =
 
 const styles = StyleSheet.create({
     container: {flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 40, minHeight: 450},
-    iconOuter: {width: 96, height: 96, borderRadius: 48, justifyContent: 'center', alignItems: 'center', marginBottom: 24},
-    iconInner: {width: 68, height: 68, borderRadius: 34, borderWidth: 2, justifyContent: 'center', alignItems: 'center', opacity: 0.7},
-    title: {fontWeight: '700', textAlign: 'center', marginBottom: 8},
+    title: {fontWeight: '700', textAlign: 'center', marginBottom: 8, marginTop: 12},
     description: {textAlign: 'center', lineHeight: 24, marginBottom: 32, opacity: 0.8},
     loadingText: {marginTop: 16},
     addButton: {borderRadius: 12},

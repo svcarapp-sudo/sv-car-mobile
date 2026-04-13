@@ -29,12 +29,19 @@ export const PartDetailHero = ({part, categoryInfo}: PartDetailHeroProps) => {
 
             <View style={styles.heroInfo}>
                 <Text style={[styles.partName, {color: theme.colors.onSurface}]}>{part.name}</Text>
-                {part.brand && (
-                    <Text style={[styles.partBrand, {color: theme.colors.onSurfaceVariant}]}>{part.brand}</Text>
-                )}
+                {part.brand && <Text style={[styles.partBrand, {color: theme.colors.onSurfaceVariant}]}>{part.brand}</Text>}
                 <View style={styles.metaRow}>
-                    <View style={[styles.stockBadge, {backgroundColor: part.inStock ? theme.colors.successContainer : theme.colors.errorContainer}]}>
-                        <View style={[styles.stockDot, {backgroundColor: part.inStock ? theme.colors.successBright : theme.colors.error}]} />
+                    <View
+                        style={[
+                            styles.stockBadge,
+                            {backgroundColor: part.inStock ? theme.colors.successContainer : theme.colors.errorContainer},
+                        ]}>
+                        <View
+                            style={[
+                                styles.stockDot,
+                                {backgroundColor: part.inStock ? theme.colors.successBright : theme.colors.error},
+                            ]}
+                        />
                         <Text style={[styles.stockLabel, {color: part.inStock ? theme.colors.success : theme.colors.errorDark}]}>
                             {part.inStock ? ARABIC_TEXT.IN_STOCK : ARABIC_TEXT.OUT_OF_STOCK}
                         </Text>
@@ -42,9 +49,7 @@ export const PartDetailHero = ({part, categoryInfo}: PartDetailHeroProps) => {
                     {categoryInfo && (
                         <View style={[styles.categoryPill, {backgroundColor: theme.colors.primaryContainer}]}>
                             <Icon source={categoryInfo.icon || 'tag'} size={13} color={theme.colors.primary} />
-                            <Text style={[styles.categoryPillText, {color: theme.colors.primary}]}>
-                                {categoryInfo.name}
-                            </Text>
+                            <Text style={[styles.categoryPillText, {color: theme.colors.primary}]}>{categoryInfo.name}</Text>
                         </View>
                     )}
                 </View>

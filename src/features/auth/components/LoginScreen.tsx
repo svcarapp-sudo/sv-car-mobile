@@ -58,7 +58,10 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
             login(user, token)
             navigation.replace('Main')
         } catch (err: unknown) {
-            const msg = err && typeof err === 'object' && 'message' in err ? String((err as {message: string}).message) : ARABIC_TEXT.ERROR
+            const msg =
+                err && typeof err === 'object' && 'message' in err
+                    ? String((err as {message: string}).message)
+                    : ARABIC_TEXT.ERROR
             setError(msg)
         } finally {
             setLoading(false)
@@ -111,12 +114,7 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
                     {ARABIC_TEXT.FILL_TEST_CREDENTIALS}
                 </Button>
 
-                <Button
-                    mode='contained'
-                    onPress={handleLogin}
-                    loading={loading}
-                    disabled={loading}
-                    style={styles.button}>
+                <Button mode='contained' onPress={handleLogin} loading={loading} disabled={loading} style={styles.button}>
                     {loading ? ARABIC_TEXT.LOADING : ARABIC_TEXT.LOGIN}
                 </Button>
 

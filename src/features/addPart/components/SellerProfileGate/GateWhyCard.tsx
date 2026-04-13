@@ -27,7 +27,8 @@ export const GateWhyCard = () => {
     const theme = useAppTheme()
 
     return (
-        <View style={[styles.whyCard, {backgroundColor: theme.colors.elevation.level1, borderColor: theme.colors.outlineVariant}]}>
+        <View
+            style={[styles.whyCard, {backgroundColor: theme.colors.elevation.level1, borderColor: theme.colors.outlineVariant}]}>
             <Text variant='labelLarge' style={[styles.whyTitle, {color: theme.colors.onSurface}]}>
                 {ARABIC.WHY_TITLE}
             </Text>

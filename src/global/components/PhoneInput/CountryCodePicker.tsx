@@ -61,10 +61,17 @@ export const CountryCodePicker = ({visible, selectedCode, countries, onSelect, o
                             <TouchableOpacity
                                 activeOpacity={0.6}
                                 onPress={() => handleSelect(item)}
-                                style={[styles.row, item.code === selectedCode && {backgroundColor: theme.colors.primaryContainer}]}>
+                                style={[
+                                    styles.row,
+                                    item.code === selectedCode && {backgroundColor: theme.colors.primaryContainer},
+                                ]}>
                                 <Text style={styles.rowFlag}>{item.flag}</Text>
-                                <Text variant='bodyMedium' style={[styles.rowLabel, {color: theme.colors.onSurface}]}>{item.label}</Text>
-                                <Text variant='bodySmall' style={{color: theme.colors.onSurfaceVariant}}>{item.dial}</Text>
+                                <Text variant='bodyMedium' style={[styles.rowLabel, {color: theme.colors.onSurface}]}>
+                                    {item.label}
+                                </Text>
+                                <Text variant='bodySmall' style={{color: theme.colors.onSurfaceVariant}}>
+                                    {item.dial}
+                                </Text>
                             </TouchableOpacity>
                         )}
                         keyboardShouldPersistTaps='handled'

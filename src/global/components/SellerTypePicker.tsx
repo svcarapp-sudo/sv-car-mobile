@@ -107,8 +107,16 @@ export const SellerTypePicker = ({types, selectedId, onSelect, label}: SellerTyp
                                 {isSelected && <Icon source='check' size={12} color={theme.colors.onPrimary} />}
                             </View>
 
-                            <View style={[styles.iconWrap, {backgroundColor: isSelected ? theme.colors.primary : theme.colors.surfaceVariant}]}>
-                                <Icon source={getIcon(t.slug)} size={24} color={isSelected ? theme.colors.onPrimary : theme.colors.onSurfaceVariant} />
+                            <View
+                                style={[
+                                    styles.iconWrap,
+                                    {backgroundColor: isSelected ? theme.colors.primary : theme.colors.surfaceVariant},
+                                ]}>
+                                <Icon
+                                    source={getIcon(t.slug)}
+                                    size={24}
+                                    color={isSelected ? theme.colors.onPrimary : theme.colors.onSurfaceVariant}
+                                />
                             </View>
                             <Text
                                 variant='titleSmall'

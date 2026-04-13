@@ -45,7 +45,7 @@ export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({nav
                     onPress={() => navigation?.navigate('AddVehicle')}
                     activeOpacity={0.7}
                     style={[styles.changeVehicleBtn, {borderColor: theme.colors.outline}]}>
-                    <Icon source="car-outline" size={16} color={theme.colors.primary} />
+                    <Icon source='car-outline' size={16} color={theme.colors.primary} />
                     <Text style={[styles.changeVehicleText, {color: theme.colors.primary}]}>{ARABIC_TEXT.CHANGE_VEHICLE}</Text>
                 </TouchableOpacity>
             </View>
@@ -59,7 +59,7 @@ export const PartsCategoriesScreen: React.FC<PartsCategoriesScreenProps> = ({nav
 
             {loading && categoriesList.length === 0 ? (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="small" color={theme.colors.primary} />
+                    <ActivityIndicator size='small' color={theme.colors.primary} />
                 </View>
             ) : (
                 <View style={styles.categoriesGrid}>

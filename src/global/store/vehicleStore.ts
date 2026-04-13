@@ -32,9 +32,7 @@ export const useVehicleStore = create<VehicleStore>()(
                     : {
                           ...vehicleData,
                           id: `vehicle_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                          displayName:
-                              vehicleData.displayName ||
-                              `${vehicleData.make} ${vehicleData.model} ${vehicleData.year}`,
+                          displayName: vehicleData.displayName || `${vehicleData.make} ${vehicleData.model} ${vehicleData.year}`,
                           createdAt: Date.now(),
                       }
                 set({vehicle: newVehicle})

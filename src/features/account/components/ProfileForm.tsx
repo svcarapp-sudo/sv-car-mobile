@@ -42,12 +42,14 @@ export const ProfileForm = ({form, onFormChange, onSave, onCancel, saving, hasCh
     const theme = useAppTheme()
     const [editing, setEditing] = useState(false)
 
-    const handlePhoneChange = useCallback(
-        (v: PhoneInputValue) => onFormChange({phone: v.fullNumber}),
-        [onFormChange],
-    )
-    const handleCancel = useCallback(() => { onCancel(); setEditing(false) }, [onCancel])
-    const handleSave = useCallback(async () => { if (await onSave()) setEditing(false) }, [onSave])
+    const handlePhoneChange = useCallback((v: PhoneInputValue) => onFormChange({phone: v.fullNumber}), [onFormChange])
+    const handleCancel = useCallback(() => {
+        onCancel()
+        setEditing(false)
+    }, [onCancel])
+    const handleSave = useCallback(async () => {
+        if (await onSave()) setEditing(false)
+    }, [onSave])
 
     return (
         <View style={styles.section}>
@@ -65,16 +67,58 @@ export const ProfileForm = ({form, onFormChange, onSave, onCancel, saving, hasCh
             <View style={[styles.card, {backgroundColor: theme.colors.surface}]}>
                 {editing ? (
                     <>
-                        <TextInput label={ARABIC.NAME} value={form.name} onChangeText={name => onFormChange({name})} mode='outlined' style={styles.input} left={<TextInput.Icon icon='account-outline' />} />
-                        <TextInput label={ARABIC.EMAIL} value={form.email} onChangeText={email => onFormChange({email})} mode='outlined' keyboardType='email-address' autoCapitalize='none' style={styles.input} left={<TextInput.Icon icon='email-outline' />} />
+                        <TextInput
+                            label={ARABIC.NAME}
+                            value={form.name}
+                            onChangeText={name => onFormChange({name})}
+                            mode='outlined'
+                            style={styles.input}
+                            left={<TextInput.Icon icon='account-outline' />}
+                        />
+                        <TextInput
+                            label={ARABIC.EMAIL}
+                            value={form.email}
+                            onChangeText={email => onFormChange({email})}
+                            mode='outlined'
+                            keyboardType='email-address'
+                            autoCapitalize='none'
+                            style={styles.input}
+                            left={<TextInput.Icon icon='email-outline' />}
+                        />
                         <View style={styles.phoneContainer}>
                             <PhoneInput initialValue={form.phone.replace(/[^\d]/g, '')} onChange={handlePhoneChange} />
                         </View>
-                        <TextInput label={ARABIC.CITY} value={form.city} onChangeText={city => onFormChange({city})} mode='outlined' style={styles.input} left={<TextInput.Icon icon='map-marker-outline' />} />
-                        <TextInput label={ARABIC.BIO} value={form.bio} onChangeText={bio => onFormChange({bio})} mode='outlined' multiline numberOfLines={3} style={styles.input} left={<TextInput.Icon icon='text-box-outline' />} />
+                        <TextInput
+                            label={ARABIC.CITY}
+                            value={form.city}
+                            onChangeText={city => onFormChange({city})}
+                            mode='outlined'
+                            style={styles.input}
+                            left={<TextInput.Icon icon='map-marker-outline' />}
+                        />
+                        <TextInput
+                            label={ARABIC.BIO}
+                            value={form.bio}
+                            onChangeText={bio => onFormChange({bio})}
+                            mode='outlined'
+                            multiline
+                            numberOfLines={3}
+                            style={styles.input}
+                            left={<TextInput.Icon icon='text-box-outline' />}
+                        />
                         <View style={styles.actions}>
-                            <Button mode='outlined' onPress={handleCancel} disabled={saving} style={styles.actionButton}>{ARABIC.CANCEL}</Button>
-                            <Button mode='contained' onPress={handleSave} loading={saving} disabled={saving || !hasChanges || !form.name.trim()} style={styles.actionButton} icon='content-save-outline'>{saving ? ARABIC.SAVING : ARABIC.SAVE}</Button>
+                            <Button mode='outlined' onPress={handleCancel} disabled={saving} style={styles.actionButton}>
+                                {ARABIC.CANCEL}
+                            </Button>
+                            <Button
+                                mode='contained'
+                                onPress={handleSave}
+                                loading={saving}
+                                disabled={saving || !hasChanges || !form.name.trim()}
+                                style={styles.actionButton}
+                                icon='content-save-outline'>
+                                {saving ? ARABIC.SAVING : ARABIC.SAVE}
+                            </Button>
                         </View>
                     </>
                 ) : (
@@ -97,8 +141,12 @@ const InfoRow = ({icon, label, value, theme}: InfoRowProps) => (
     <View style={styles.infoRow}>
         <Icon source={icon} size={18} color={theme.colors.onSurfaceVariant} />
         <View style={styles.infoContent}>
-            <Text variant='labelSmall' style={{color: theme.colors.onSurfaceVariant}}>{label}</Text>
-            <Text variant='bodyMedium' style={{color: theme.colors.onSurface}}>{value || ARABIC.EMPTY}</Text>
+            <Text variant='labelSmall' style={{color: theme.colors.onSurfaceVariant}}>
+                {label}
+            </Text>
+            <Text variant='bodyMedium' style={{color: theme.colors.onSurface}}>
+                {value || ARABIC.EMPTY}
+            </Text>
         </View>
     </View>
 )
@@ -107,7 +155,15 @@ const styles = StyleSheet.create({
     section: {padding: 20},
     sectionTitle: {fontWeight: '600'},
     sectionHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12},
-    card: {borderRadius: 16, padding: 16, shadowColor: themeColors.shadow, shadowOffset: {width: 0, height: 6}, shadowOpacity: 0.12, shadowRadius: 16, elevation: 6},
+    card: {
+        borderRadius: 16,
+        padding: 16,
+        shadowColor: themeColors.shadow,
+        shadowOffset: {width: 0, height: 6},
+        shadowOpacity: 0.12,
+        shadowRadius: 16,
+        elevation: 6,
+    },
     input: {marginBottom: 12},
     phoneContainer: {marginBottom: 12},
     actions: {flexDirection: 'row', gap: 12, marginTop: 8},

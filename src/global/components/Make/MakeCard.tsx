@@ -17,30 +17,21 @@ export const MakeCard = ({item, isSelected, onPress}: MakeCardProps) => {
 
     return (
         <TouchableOpacity onPress={() => onPress(item)} activeOpacity={0.7} style={styles.gridItem}>
-            <View
-                style={[
-                    styles.card,
-                    {backgroundColor: theme.colors.surface},
-                    isSelected && styles.cardSelected,
-                ]}>
+            <View style={[styles.card, {backgroundColor: theme.colors.surface}, isSelected && styles.cardSelected]}>
                 {isSelected && (
                     <View style={styles.selectedBadge}>
                         <View style={styles.selectedBadgeCircle}>
-                            <Icon source="check" size={9} color={theme.colors.onPrimary} />
+                            <Icon source='check' size={9} color={theme.colors.onPrimary} />
                         </View>
                     </View>
                 )}
                 <View style={[styles.logoContainer, isSelected && styles.logoContainerSelected]}>
-                    {logoUrl ? <Image source={{uri: logoUrl}} style={styles.logo} resizeMode="contain" /> : null}
+                    {logoUrl ? <Image source={{uri: logoUrl}} style={styles.logo} resizeMode='contain' /> : null}
                 </View>
                 <Text
-                    variant="labelMedium"
+                    variant='labelMedium'
                     numberOfLines={1}
-                    style={[
-                        styles.brandName,
-                        {color: theme.colors.onSurface},
-                        isSelected && {fontWeight: '700'},
-                    ]}>
+                    style={[styles.brandName, {color: theme.colors.onSurface}, isSelected && {fontWeight: '700'}]}>
                     {item.name}
                 </Text>
             </View>

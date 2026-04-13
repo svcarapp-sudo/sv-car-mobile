@@ -54,7 +54,7 @@ export const useVehicleApi = () => {
         }
     }, [])
 
-    const updateVehicle = useCallback(async (id: string, data:UpdateVehicleRequest) => {
+    const updateVehicle = useCallback(async (id: string, data: UpdateVehicleRequest) => {
         setLoading(true)
         setError(null)
 

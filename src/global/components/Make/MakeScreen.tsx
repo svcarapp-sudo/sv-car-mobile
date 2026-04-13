@@ -21,21 +21,13 @@ interface MakeScreenProps {
     onNext: () => void
 }
 
-export const MakeScreen = ({
-    originId,
-    getMakes,
-    value: _value,
-    valueId,
-    onSelect,
-    onNext,
-}: MakeScreenProps) => {
+export const MakeScreen = ({originId, getMakes, value: _value, valueId, onSelect, onNext}: MakeScreenProps) => {
     const theme = useAppTheme()
     const [makes, setMakes] = useState<MakeApi[]>([])
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         let cancelled = false
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: show loading while fetching
         setLoading(true)
         getMakes(originId ?? undefined)
             .then((list: MakeApi[]) => {
@@ -76,8 +68,8 @@ export const MakeScreen = ({
     if (loading && makes.length === 0) {
         return (
             <View style={styles.centered}>
-                <ActivityIndicator size="large" color={theme.colors.tertiary} />
-                <Text variant="bodyMedium" style={{color: theme.colors.onSurfaceVariant, marginTop: 16}}>
+                <ActivityIndicator size='large' color={theme.colors.tertiary} />
+                <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant, marginTop: 16}}>
                     {ARABIC_TEXT.LOADING}
                 </Text>
             </View>
@@ -91,7 +83,7 @@ export const MakeScreen = ({
                 keyExtractor={item => item.title}
                 ListHeaderComponent={
                     <View style={styles.headerContainer}>
-                        <Text variant="headlineSmall" style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
+                        <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
                             {ARABIC_TEXT.SELECT_MAKE}
                         </Text>
                     </View>
@@ -100,18 +92,14 @@ export const MakeScreen = ({
                     <View style={styles.sectionContainer}>
                         <View style={styles.sectionHeader}>
                             <View style={styles.sectionDot} />
-                            <Text variant="titleSmall" style={[styles.sectionTitle, {color: theme.colors.onSurfaceVariant}]}>
+                            <Text variant='titleSmall' style={[styles.sectionTitle, {color: theme.colors.onSurfaceVariant}]}>
                                 {section.title}
                             </Text>
                         </View>
                         <View style={styles.gridRow}>
                             {section.data.map(item => (
                                 <View key={item.id} style={styles.gridItemContainer}>
-                                    <MakeCard
-                                        item={item}
-                                        isSelected={valueId === item.id}
-                                        onPress={handleSelect}
-                                    />
+                                    <MakeCard item={item} isSelected={valueId === item.id} onPress={handleSelect} />
                                 </View>
                             ))}
                         </View>

@@ -12,7 +12,7 @@ export const PartCardImage = ({imageUrl, categoryIcon}: PartCardImageProps) => {
     const theme = useAppTheme()
 
     if (imageUrl) {
-        return <Image source={{uri: imageUrl}} style={styles.image} resizeMode="cover" />
+        return <Image source={{uri: imageUrl}} style={styles.image} resizeMode='cover' />
     }
 
     return (

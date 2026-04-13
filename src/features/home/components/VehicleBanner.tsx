@@ -16,16 +16,19 @@ export const VehicleBanner = ({onAddVehicle}: VehicleBannerProps) => {
     const theme = useAppTheme()
 
     return (
-        <TouchableOpacity activeOpacity={0.8} onPress={onAddVehicle} style={[styles.card, {backgroundColor: theme.colors.primary}]}>
+        <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={onAddVehicle}
+            style={[styles.card, {backgroundColor: theme.colors.primary}]}>
             <View style={styles.iconBox}>
-                <Icon source="car-outline" size={28} color={theme.colors.tertiary} />
+                <Icon source='car-outline' size={28} color={theme.colors.tertiary} />
             </View>
             <View style={styles.textColumn}>
                 <Text style={styles.title}>{ARABIC_TEXT.ADD_VEHICLE}</Text>
                 <Text style={styles.subtitle}>{ARABIC_TEXT.ADD_VEHICLE_DESC}</Text>
             </View>
             <View style={[styles.arrow, {backgroundColor: theme.colors.tertiary}]}>
-                <Icon source="plus" size={18} color={theme.colors.onTertiary} />
+                <Icon source='plus' size={18} color={theme.colors.onTertiary} />
             </View>
         </TouchableOpacity>
     )

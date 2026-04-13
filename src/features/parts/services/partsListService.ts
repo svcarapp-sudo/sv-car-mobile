@@ -2,14 +2,7 @@ import {apiClient} from '@/global/services/ApiClient'
 import {getCategoriesForMapping} from '@/global/services/catalogService'
 import {mapPartModelToPart, type PartModelResponse} from '@/global/utils/partMapper'
 import {useVehicleStore} from '@/global/store'
-import type {
-    GetPartsRequest,
-    PartsListResponse,
-    CreatePartRequest,
-    UpdatePartRequest,
-    Part,
-    PartCategory,
-} from '@/global/types'
+import type {GetPartsRequest, PartsListResponse, CreatePartRequest, UpdatePartRequest, Part, PartCategory} from '@/global/types'
 
 class PartsListService {
     private readonly basePath = '/api/parts'

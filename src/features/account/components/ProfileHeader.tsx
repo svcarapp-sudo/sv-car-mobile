@@ -34,9 +34,7 @@ export const ProfileHeader = ({name, email, plan}: ProfileHeaderProps) => {
                 {plan && (
                     <View style={[styles.planBadge, {backgroundColor: theme.colors.tertiaryContainer}]}>
                         <Icon source='crown-outline' size={12} color={themeColors.onTertiaryContainer} />
-                        <Text
-                            variant='labelSmall'
-                            style={[styles.planBadgeText, {color: themeColors.onTertiaryContainer}]}>
+                        <Text variant='labelSmall' style={[styles.planBadgeText, {color: themeColors.onTertiaryContainer}]}>
                             {plan.name}
                         </Text>
                     </View>

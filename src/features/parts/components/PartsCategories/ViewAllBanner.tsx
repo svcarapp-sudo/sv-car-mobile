@@ -21,14 +21,14 @@ export const ViewAllBanner = ({onPress}: ViewAllBannerProps) => {
             <View style={[styles.viewAllBanner, {backgroundColor: theme.colors.primary}]}>
                 <View style={styles.viewAllContent}>
                     <View style={[styles.viewAllIcon, {backgroundColor: theme.colors.onDarkContainer}]}>
-                        <Icon source="view-grid-outline" size={22} color={theme.colors.onPrimary} />
+                        <Icon source='view-grid-outline' size={22} color={theme.colors.onPrimary} />
                     </View>
                     <View style={styles.viewAllText}>
                         <Text style={styles.viewAllTitle}>{ARABIC_TEXT.VIEW_ALL}</Text>
                         <Text style={styles.viewAllDesc}>{ARABIC_TEXT.VIEW_ALL_DESC}</Text>
                     </View>
                 </View>
-                <Icon source="chevron-left" size={22} color={theme.colors.onDarkLow} />
+                <Icon source='chevron-left' size={22} color={theme.colors.onDarkLow} />
             </View>
         </TouchableOpacity>
     )

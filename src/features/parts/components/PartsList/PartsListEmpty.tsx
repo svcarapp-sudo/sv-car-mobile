@@ -1,7 +1,8 @@
 import React, {useEffect, useRef} from 'react'
 import {Animated, StyleSheet, View} from 'react-native'
-import {ActivityIndicator, Button, Icon, Text} from 'react-native-paper'
+import {ActivityIndicator, Button, Text} from 'react-native-paper'
 
+import {IllustrationEmptyParts} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 import type {NavigationProp} from '@react-navigation/native'
@@ -47,11 +48,7 @@ export const PartsListEmpty = ({loading, categoryName, navigation}: PartsListEmp
     return (
         <Animated.View style={[styles.container, {opacity: fadeIn}]}>
             <View style={[styles.card, {backgroundColor: theme.colors.surface}]}>
-                <View style={[styles.iconRing, {borderColor: theme.colors.primaryContainer}]}>
-                    <View style={[styles.iconCore, {backgroundColor: theme.colors.primaryContainer}]}>
-                        <Icon source='package-variant-closed-remove' size={36} color={theme.colors.primary} />
-                    </View>
-                </View>
+                <IllustrationEmptyParts size={170} />
 
                 <Text style={[styles.title, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.NO_PARTS_FOUND}</Text>
                 <Text style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>
@@ -95,27 +92,12 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
         elevation: 3,
     },
-    iconRing: {
-        width: 88,
-        height: 88,
-        borderRadius: 44,
-        borderWidth: 3,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 24,
-    },
-    iconCore: {
-        width: 68,
-        height: 68,
-        borderRadius: 34,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     title: {
         fontSize: 18,
         fontWeight: '700',
         letterSpacing: -0.2,
         textAlign: 'center',
+        marginTop: 12,
         marginBottom: 8,
     },
     subtitle: {

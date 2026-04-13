@@ -18,7 +18,15 @@ const ARABIC_TEXT = {
     LOADING: '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0641\u0626\u0627\u062a...',
 }
 
-const SectionHeader = ({theme, showViewAll, onViewAll}: {theme: ReturnType<typeof useAppTheme>; showViewAll?: boolean; onViewAll?: () => void}) => (
+const SectionHeader = ({
+    theme,
+    showViewAll,
+    onViewAll,
+}: {
+    theme: ReturnType<typeof useAppTheme>
+    showViewAll?: boolean
+    onViewAll?: () => void
+}) => (
     <View style={styles.header}>
         <View style={styles.titleRow}>
             <Text variant='titleMedium' style={[styles.title, {color: theme.colors.onSurface}]}>
@@ -43,7 +51,12 @@ const SectionHeader = ({theme, showViewAll, onViewAll}: {theme: ReturnType<typeo
 
 export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) => {
     const theme = useAppTheme()
-    const {categories: apiCategories, categoriesLoading: loading, categoriesError: error, refreshCategories: refresh} = useCatalog()
+    const {
+        categories: apiCategories,
+        categoriesLoading: loading,
+        categoriesError: error,
+        refreshCategories: refresh,
+    } = useCatalog()
     const categories = (apiCategories ?? []).slice().sort((a, b) => a.sortOrder - b.sortOrder)
 
     if (categories.length === 0 && !loading && error) {

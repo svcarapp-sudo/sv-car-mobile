@@ -21,7 +21,7 @@ export const EditPartVehicleBanner = ({vehicles, categoryName}: EditPartVehicleB
     return (
         <View style={[styles.banner, {backgroundColor: theme.colors.surfaceVariant}]}>
             <View style={styles.header}>
-                <Icon source="car-multiple" size={18} color={theme.colors.primary} />
+                <Icon source='car-multiple' size={18} color={theme.colors.primary} />
                 <Text style={[styles.title, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.VEHICLES}</Text>
                 {categoryName && (
                     <View style={[styles.catBadge, {backgroundColor: theme.colors.primaryContainer}]}>
@@ -33,7 +33,7 @@ export const EditPartVehicleBanner = ({vehicles, categoryName}: EditPartVehicleB
                 const yearLabel = v.yearFrom === v.yearTo ? String(v.yearFrom) : `${v.yearFrom}-${v.yearTo}`
                 return (
                     <View key={i} style={styles.vehicleRow}>
-                        <Icon source="check-circle" size={14} color={theme.colors.success} />
+                        <Icon source='check-circle' size={14} color={theme.colors.success} />
                         <Text style={[styles.vehicleText, {color: theme.colors.onSurfaceVariant}]}>
                             {v.make} {v.model} {yearLabel}
                         </Text>

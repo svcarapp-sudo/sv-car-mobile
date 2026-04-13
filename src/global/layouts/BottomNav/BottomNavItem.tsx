@@ -15,15 +15,8 @@ export const BottomNavItem = ({icon, activeIcon, label, active, onPress}: Bottom
     const theme = useAppTheme()
 
     return (
-        <TouchableOpacity
-            style={styles.navItem}
-            onPress={onPress}
-            activeOpacity={0.7}>
-            <View
-                style={[
-                    styles.iconPill,
-                    active && [styles.iconPillActive, {backgroundColor: theme.colors.primaryContainer}],
-                ]}>
+        <TouchableOpacity style={styles.navItem} onPress={onPress} activeOpacity={0.7}>
+            <View style={[styles.iconPill, active && [styles.iconPillActive, {backgroundColor: theme.colors.primaryContainer}]]}>
                 <Icon
                     source={active ? activeIcon : icon}
                     size={22}

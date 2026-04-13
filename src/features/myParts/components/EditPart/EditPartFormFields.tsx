@@ -55,9 +55,9 @@ export const EditPartFormFields = ({
                 value={name}
                 onChangeText={onNameChange}
                 placeholder={ARABIC_TEXT.PART_NAME_PLACEHOLDER}
-                mode="outlined"
+                mode='outlined'
                 style={styles.input}
-                left={<TextInput.Icon icon="tag-outline" />}
+                left={<TextInput.Icon icon='tag-outline' />}
             />
 
             <TextInput
@@ -65,11 +65,11 @@ export const EditPartFormFields = ({
                 value={description}
                 onChangeText={onDescriptionChange}
                 placeholder={ARABIC_TEXT.DESCRIPTION_PLACEHOLDER}
-                mode="outlined"
+                mode='outlined'
                 multiline
                 numberOfLines={3}
                 style={styles.input}
-                left={<TextInput.Icon icon="text" />}
+                left={<TextInput.Icon icon='text' />}
             />
 
             <TextInput
@@ -77,10 +77,10 @@ export const EditPartFormFields = ({
                 value={price}
                 onChangeText={onPriceChange}
                 placeholder={ARABIC_TEXT.PRICE_PLACEHOLDER}
-                mode="outlined"
-                keyboardType="decimal-pad"
+                mode='outlined'
+                keyboardType='decimal-pad'
                 style={styles.input}
-                left={<TextInput.Icon icon="cash" />}
+                left={<TextInput.Icon icon='cash' />}
             />
 
             <TextInput
@@ -88,11 +88,11 @@ export const EditPartFormFields = ({
                 value={imageUrl}
                 onChangeText={onImageUrlChange}
                 placeholder={ARABIC_TEXT.IMAGE_URL_PLACEHOLDER}
-                mode="outlined"
-                keyboardType="url"
-                autoCapitalize="none"
+                mode='outlined'
+                keyboardType='url'
+                autoCapitalize='none'
                 style={styles.input}
-                left={<TextInput.Icon icon="image-outline" />}
+                left={<TextInput.Icon icon='image-outline' />}
             />
 
             <TextInput
@@ -100,18 +100,18 @@ export const EditPartFormFields = ({
                 value={sku}
                 onChangeText={onSkuChange}
                 placeholder={ARABIC_TEXT.SKU_PLACEHOLDER}
-                mode="outlined"
-                autoCapitalize="characters"
+                mode='outlined'
+                autoCapitalize='characters'
                 style={styles.input}
-                left={<TextInput.Icon icon="barcode" />}
+                left={<TextInput.Icon icon='barcode' />}
             />
 
             <View style={styles.buttons}>
-                <Button mode="outlined" onPress={onCancel} style={styles.btn} disabled={saving}>
+                <Button mode='outlined' onPress={onCancel} style={styles.btn} disabled={saving}>
                     {ARABIC_TEXT.CANCEL}
                 </Button>
                 <Button
-                    mode="contained"
+                    mode='contained'
                     onPress={onSave}
                     style={styles.btn}
                     contentStyle={styles.saveBtnContent}

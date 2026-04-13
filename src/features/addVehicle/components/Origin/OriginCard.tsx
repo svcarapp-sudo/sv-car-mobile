@@ -18,11 +18,7 @@ export const OriginCard = ({item, isSelected, onPress}: OriginCardProps) => {
         <TouchableOpacity
             onPress={() => onPress(item)}
             activeOpacity={0.7}
-            style={[
-                styles.originCard,
-                {backgroundColor: theme.colors.surface},
-                isSelected && styles.originCardSelected,
-            ]}>
+            style={[styles.originCard, {backgroundColor: theme.colors.surface}, isSelected && styles.originCardSelected]}>
             {isSelected && <View style={styles.selectedAccent} />}
             <View style={styles.originContent}>
                 <View
@@ -36,11 +32,7 @@ export const OriginCard = ({item, isSelected, onPress}: OriginCardProps) => {
                 </View>
                 <Text
                     variant='titleMedium'
-                    style={[
-                        styles.originName,
-                        {color: theme.colors.onSurface},
-                        isSelected && {fontWeight: '700'},
-                    ]}>
+                    style={[styles.originName, {color: theme.colors.onSurface}, isSelected && {fontWeight: '700'}]}>
                     {item.name}
                 </Text>
             </View>

@@ -44,9 +44,7 @@ export const OriginScreen = ({origins, loading, value, onSelect, onNext}: Origin
             <FlatList
                 data={origins}
                 keyExtractor={item => String(item.id)}
-                renderItem={({item}) => (
-                    <OriginCard item={item} isSelected={value === item.id} onPress={handleSelect} />
-                )}
+                renderItem={({item}) => <OriginCard item={item} isSelected={value === item.id} onPress={handleSelect} />}
                 ListHeaderComponent={
                     <View style={styles.headerContainer}>
                         <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
