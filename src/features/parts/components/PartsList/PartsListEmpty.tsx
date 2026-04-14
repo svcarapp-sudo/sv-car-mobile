@@ -48,7 +48,7 @@ export const PartsListEmpty = ({loading, categoryName, navigation}: PartsListEmp
     return (
         <Animated.View style={[styles.container, {opacity: fadeIn}]}>
             <View style={[styles.card, {backgroundColor: theme.colors.surface}]}>
-                <IllustrationEmptyParts size={170} />
+                <IllustrationEmptyParts size={200} />
 
                 <Text style={[styles.title, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.NO_PARTS_FOUND}</Text>
                 <Text style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>

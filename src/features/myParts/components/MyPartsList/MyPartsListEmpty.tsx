@@ -33,7 +33,7 @@ export const MyPartsListEmpty = ({loading, navigation}: MyPartsListEmptyProps) =
 
     return (
         <View style={styles.container}>
-            <IllustrationEmptyParts size={190} />
+            <IllustrationEmptyParts size={220} />
 
             <Text variant='titleLarge' style={[styles.title, {color: theme.colors.onSurface}]}>
                 {ARABIC_TEXT.NO_PARTS}
