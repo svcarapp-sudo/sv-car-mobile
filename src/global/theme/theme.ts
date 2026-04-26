@@ -141,6 +141,37 @@ export const themeColors = {
 } as const
 
 /**
+ * Premium card shadow scale — soft, navy-tinted, modern.
+ * Use a single tier per surface; do NOT redefine shadow props inline.
+ *  - sm: subtle lift for grid tiles / small interactive surfaces
+ *  - md: standard card depth (vehicle summary, content cards)
+ *  - lg: hero / floating surfaces (empty state, modals)
+ */
+export const shadows = {
+    sm: {
+        shadowColor: customColors.shadow,
+        shadowOffset: {width: 0, height: 4},
+        shadowOpacity: 0.06,
+        shadowRadius: 14,
+        elevation: 2,
+    },
+    md: {
+        shadowColor: customColors.shadow,
+        shadowOffset: {width: 0, height: 8},
+        shadowOpacity: 0.08,
+        shadowRadius: 22,
+        elevation: 4,
+    },
+    lg: {
+        shadowColor: customColors.shadow,
+        shadowOffset: {width: 0, height: 16},
+        shadowOpacity: 0.1,
+        shadowRadius: 32,
+        elevation: 8,
+    },
+} as const
+
+/**
  * Extended theme type with custom color tokens.
  */
 export type AppTheme = MD3Theme & {

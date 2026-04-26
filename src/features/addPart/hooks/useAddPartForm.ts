@@ -1,20 +1,19 @@
-import {useState, useCallback} from 'react'
-import {Alert} from 'react-native'
+import {useCallback, useState} from 'react'
 import type {NavigationProp} from '@react-navigation/native'
 
-import {useAddPart} from './useAddPart'
 import {useCatalog} from '@/global/hooks'
 import {Step} from '../components/addPart/AddPartStepper'
 import type {RootStackParamList} from '@/global/navigation/types'
+import {useAddPart} from './useAddPart'
 
 const ARABIC_TEXT = {
     ERROR: 'فشل إضافة القطعة',
-    SUCCESS: 'تمت الإضافة بنجاح',
     SUCCESS_MSG: 'تم إضافة القطعة بنجاح',
     REQUIRED_FIELD: 'يرجى تعبئة اسم القطعة والسعر',
     INVALID_PRICE: 'يرجى إدخال سعر صحيح',
-    OK: 'موافق',
 }
+
+export type AddPartToast = {message: string; kind: 'success' | 'error'} | null
 
 export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) => {
     const {createPart, loading} = useAddPart()
@@ -35,6 +34,9 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
     const [price, setPrice] = useState('')
     const [imageUrl, setImageUrl] = useState('')
     const [sku, setSku] = useState('')
+    const [toast, setToast] = useState<AddPartToast>(null)
+
+    const clearToast = useCallback(() => setToast(null), [])
 
     const resetFrom = (step: Step) => {
         if (step <= Step.Details) {
@@ -71,52 +73,40 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
         if (currentStep < Step.Details) setCurrentStep(prev => prev + 1)
     }
 
-    const handleMakeSelect = useCallback(
-        (n: string, id: string, logoUrl?: string | null) => {
-            setMakeId(Number(id))
-            setMakeName(n)
-            setMakeLogoUrl(logoUrl ?? null)
-            setModelId(null)
-            setModelName('')
-            advanceStep()
-        },
-        [currentStep]
-    )
+    const handleMakeSelect = useCallback((n: string, id: string, logoUrl?: string | null) => {
+        setMakeId(Number(id))
+        setMakeName(n)
+        setMakeLogoUrl(logoUrl ?? null)
+        setModelId(null)
+        setModelName('')
+        advanceStep()
+    }, [])
 
-    const handleModelSelect = useCallback(
-        (n: string, id: string) => {
-            setModelId(Number(id))
-            setModelName(n)
-            advanceStep()
-        },
-        [currentStep]
-    )
+    const handleModelSelect = useCallback((n: string, id: string) => {
+        setModelId(Number(id))
+        setModelName(n)
+        advanceStep()
+    }, [])
 
-    const handleYearSelect = useCallback(
-        (yearStr: string) => {
-            setYear(Number(yearStr))
-            advanceStep()
-        },
-        [currentStep]
-    )
+    const handleYearSelect = useCallback((yearStr: string) => {
+        setYear(Number(yearStr))
+        advanceStep()
+    }, [])
 
-    const handleCategorySelect = useCallback(
-        (id: number, n: string) => {
-            setCategoryId(id)
-            setCategoryName(n)
-            advanceStep()
-        },
-        [currentStep]
-    )
+    const handleCategorySelect = useCallback((id: number, n: string) => {
+        setCategoryId(id)
+        setCategoryName(n)
+        advanceStep()
+    }, [])
 
     const handleSubmit = useCallback(async () => {
         if (!makeId || !modelId || !year || !categoryId || !name.trim() || !price.trim()) {
-            Alert.alert(ARABIC_TEXT.ERROR, ARABIC_TEXT.REQUIRED_FIELD)
+            setToast({message: ARABIC_TEXT.REQUIRED_FIELD, kind: 'error'})
             return
         }
         const priceNum = parseFloat(price)
         if (isNaN(priceNum) || priceNum < 0) {
-            Alert.alert(ARABIC_TEXT.ERROR, ARABIC_TEXT.INVALID_PRICE)
+            setToast({message: ARABIC_TEXT.INVALID_PRICE, kind: 'error'})
             return
         }
         try {
@@ -129,11 +119,10 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
                 imageUrl: imageUrl.trim() || undefined,
                 sku: sku.trim() || undefined,
             })
-            Alert.alert(ARABIC_TEXT.SUCCESS, ARABIC_TEXT.SUCCESS_MSG, [
-                {text: ARABIC_TEXT.OK, onPress: () => navigation?.navigate('MyParts')},
-            ])
+            setToast({message: ARABIC_TEXT.SUCCESS_MSG, kind: 'success'})
+            setTimeout(() => navigation?.navigate('MyParts'), 1400)
         } catch (err) {
-            Alert.alert(ARABIC_TEXT.ERROR, err instanceof Error ? err.message : ARABIC_TEXT.ERROR)
+            setToast({message: err instanceof Error ? err.message : ARABIC_TEXT.ERROR, kind: 'error'})
         }
     }, [makeId, modelId, year, categoryId, name, description, price, imageUrl, sku, createPart, navigation])
 
@@ -162,6 +151,8 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
         getModels,
         years,
         canSubmit,
+        toast,
+        clearToast,
         setName,
         setDescription,
         setPrice,

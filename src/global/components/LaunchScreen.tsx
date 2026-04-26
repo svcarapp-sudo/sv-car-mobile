@@ -18,6 +18,7 @@ interface LaunchScreenProps {
 export const LaunchScreen = ({navigation}: LaunchScreenProps) => {
     const theme = useAppTheme()
     const isAuthenticated = useAuthStore(s => s.isAuthenticated)
+    const hasSeenOnboarding = useAuthStore(s => s.hasSeenOnboarding)
 
     // Animation values
     const fadeAnim = useMemo(() => new Animated.Value(0), [])
@@ -60,6 +61,8 @@ export const LaunchScreen = ({navigation}: LaunchScreenProps) => {
         const timer = setTimeout(() => {
             if (isAuthenticated) {
                 navigation.replace('Main')
+            } else if (!hasSeenOnboarding) {
+                navigation.replace('Onboarding')
             } else {
                 navigation.replace('Login')
             }

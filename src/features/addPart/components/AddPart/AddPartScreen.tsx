@@ -1,12 +1,13 @@
 import {StyleSheet, View} from 'react-native'
+import {Snackbar} from 'react-native-paper'
 import type {NavigationProp} from '@react-navigation/native'
 
 import {useAddPartForm} from '../../hooks/useAddPartForm'
 import {useAppTheme} from '@/global/hooks'
-import {AddPartStepper, Step} from './AddPartStepper'
-import {AddPartSummaryCard} from './AddPartSummaryCard'
-import {AddPartStepRenderer} from './AddPartStepRenderer'
 import {SellerProfileGate} from '../sellerProfileGate'
+import {AddPartStepper, Step} from './AddPartStepper'
+import {AddPartStepRenderer} from './AddPartStepRenderer'
+import {AddPartSummaryCard} from './AddPartSummaryCard'
 import type {RootStackParamList} from '@/global/navigation/types'
 
 interface AddPartScreenProps {
@@ -16,6 +17,8 @@ interface AddPartScreenProps {
 export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
     const theme = useAppTheme()
     const form = useAddPartForm(navigation)
+
+    const snackbarBg = form.toast?.kind === 'success' ? theme.colors.success : theme.colors.error
 
     return (
         <SellerProfileGate>
@@ -66,20 +69,20 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
                         />
                     </View>
                 </View>
+                <Snackbar
+                    visible={!!form.toast}
+                    onDismiss={form.clearToast}
+                    duration={form.toast?.kind === 'success' ? 1300 : 3000}
+                    style={{backgroundColor: snackbarBg}}>
+                    {form.toast?.message ?? ''}
+                </Snackbar>
             </View>
         </SellerProfileGate>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    mainContent: {
-        flex: 1,
-        padding: 16,
-    },
-    stepContent: {
-        flex: 1,
-    },
+    container: {flex: 1},
+    mainContent: {flex: 1, padding: 16},
+    stepContent: {flex: 1},
 })

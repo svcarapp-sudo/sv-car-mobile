@@ -3,6 +3,7 @@ import {useNavigation, NavigationContainer} from '@react-navigation/native'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack'
 
+import {OnboardingScreen} from '@/features/onboarding'
 import {LoginScreen, RegisterScreen} from '@/features/auth'
 import {PartsCategoriesScreen, PartsListScreen, PartDetailScreen} from '@/features/parts'
 import {HomeScreen} from '@/features/home'
@@ -118,6 +119,7 @@ export const AppNavigator = () => {
         <NavigationContainer ref={navigationRef}>
             <Stack.Navigator screenOptions={{headerShown: false}}>
                 <Stack.Screen name='Launch' component={LaunchScreen} />
+                <Stack.Screen name='Onboarding' component={OnboardingScreen} />
                 <Stack.Screen name='Login' component={LoginScreen} />
                 <Stack.Screen name='Register' component={RegisterScreen} />
                 <Stack.Screen name='Main' component={MainFlow} />

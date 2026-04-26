@@ -8,6 +8,7 @@ interface AuthState {
     user: User | null
     token: string | null
     isAuthenticated: boolean
+    hasSeenOnboarding: boolean
 }
 
 interface AuthActions {
@@ -15,6 +16,7 @@ interface AuthActions {
     logout: () => void
     updateUser: (user: Partial<User>) => void
     setToken: (token: string) => void
+    completeOnboarding: () => void
 }
 
 type AuthStore = AuthState & AuthActions
@@ -23,6 +25,7 @@ const initialState: AuthState = {
     user: null,
     token: null,
     isAuthenticated: false,
+    hasSeenOnboarding: false,
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -33,6 +36,7 @@ export const useAuthStore = create<AuthStore>()(
             logout: () => set(initialState),
             updateUser: userData => set(state => ({user: state.user ? {...state.user, ...userData} : null})),
             setToken: token => set({token}),
+            completeOnboarding: () => set({hasSeenOnboarding: true}),
         }),
         {
             name: 'auth-storage',

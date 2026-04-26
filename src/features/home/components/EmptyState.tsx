@@ -3,7 +3,7 @@ import {Animated, StyleSheet, View} from 'react-native'
 import {Button, Icon, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
-import {themeColors} from '@/global/theme'
+import {shadows} from '@/global/theme'
 
 interface EmptyStateProps {
     onAddVehicle: () => void
@@ -101,11 +101,7 @@ const styles = StyleSheet.create({
         padding: 36,
         alignItems: 'center',
         overflow: 'hidden',
-        shadowColor: themeColors.shadow,
-        shadowOffset: {width: 0, height: 6},
-        shadowOpacity: 0.1,
-        shadowRadius: 16,
-        elevation: 4,
+        ...shadows.lg,
     },
     iconOuter: {
         marginBottom: 28,

@@ -26,17 +26,24 @@ export const AddPartFormActions = ({
 }: AddPartFormActionsProps) => {
     return (
         <View style={styles.buttons}>
-            {onCancel ? (
-                <Button mode='outlined' onPress={onCancel} style={styles.cancelBtn} disabled={loading}>
+            {onCancel && (
+                <Button
+                    mode='outlined'
+                    onPress={onCancel}
+                    style={styles.cancelBtn}
+                    contentStyle={styles.btnContent}
+                    labelStyle={styles.cancelLabel}
+                    disabled={loading}>
                     {ARABIC_TEXT.CANCEL}
                 </Button>
-            ) : null}
+            )}
             <Button
                 mode='contained'
                 onPress={onSubmit}
                 style={[styles.submitBtn, !onCancel && styles.fullWidth]}
-                contentStyle={styles.submitContent}
-                icon='plus'
+                contentStyle={styles.btnContent}
+                labelStyle={styles.submitLabel}
+                icon='check-circle-outline'
                 loading={loading}
                 disabled={loading || !canSubmit}>
                 {loading ? submitLoadingLabel : submitLabel}
@@ -48,21 +55,29 @@ export const AddPartFormActions = ({
 const styles = StyleSheet.create({
     buttons: {
         flexDirection: 'row',
-        gap: 12,
-        marginTop: 4,
+        gap: 10,
+        marginTop: 8,
     },
     cancelBtn: {
         flex: 1,
-        borderRadius: 12,
+        borderRadius: 14,
     },
     submitBtn: {
-        flex: 1,
-        borderRadius: 12,
+        flex: 2,
+        borderRadius: 14,
     },
     fullWidth: {
         flex: 1,
     },
-    submitContent: {
-        paddingVertical: 4,
+    btnContent: {
+        paddingVertical: 8,
+    },
+    cancelLabel: {
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    submitLabel: {
+        fontSize: 15,
+        fontWeight: '700',
     },
 })

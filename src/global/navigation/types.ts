@@ -2,6 +2,7 @@ import type {PartCategory} from '@/global/types'
 
 export type RootStackParamList = {
     Launch: undefined
+    Onboarding: undefined
     Login: undefined
     Register: undefined
     Main:

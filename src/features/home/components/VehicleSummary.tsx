@@ -3,7 +3,7 @@ import {Image, StyleSheet, TouchableOpacity, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
-import {themeColors} from '@/global/theme'
+import {shadows} from '@/global/theme'
 import type {Vehicle} from '@/global/types'
 
 const ARABIC_TEXT = {
@@ -81,11 +81,7 @@ const styles = StyleSheet.create({
     wrapper: {marginBottom: 16},
     card: {
         borderRadius: 16,
-        shadowColor: themeColors.shadow,
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-        elevation: 3,
+        ...shadows.md,
     },
     content: {flexDirection: 'row', alignItems: 'center', padding: 14},
     logoBox: {width: 52, height: 52, borderRadius: 14, justifyContent: 'center', alignItems: 'center', marginEnd: 12},

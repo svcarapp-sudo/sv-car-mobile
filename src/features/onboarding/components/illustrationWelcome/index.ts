@@ -1,0 +1,1 @@
+export {IllustrationWelcome} from './IllustrationWelcome'

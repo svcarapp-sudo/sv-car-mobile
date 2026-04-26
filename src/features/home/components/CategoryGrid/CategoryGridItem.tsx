@@ -2,7 +2,7 @@ import {StyleSheet, TouchableOpacity, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
-import {themeColors} from '@/global/theme'
+import {shadows} from '@/global/theme'
 import type {PartCategoryApi} from '@/global/types'
 
 interface CategoryGridItemProps {
@@ -41,11 +41,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 12,
         borderRadius: 14,
-        shadowColor: themeColors.shadow,
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 0.06,
-        shadowRadius: 6,
-        elevation: 1.5,
+        ...shadows.sm,
     },
     iconBox: {
         width: 36,

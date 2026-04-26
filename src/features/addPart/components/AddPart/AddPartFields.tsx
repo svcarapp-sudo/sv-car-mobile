@@ -1,19 +1,22 @@
-import {StyleSheet, View} from 'react-native'
-import {TextInput} from 'react-native-paper'
-import {useAppTheme} from '@/global/hooks'
-import {themeColors} from '@/global/theme'
+import {Image, StyleSheet, View} from 'react-native'
+import {HelperText, TextInput} from 'react-native-paper'
 
-const ARABIC_TEXT = {
-    PART_NAME: 'اسم القطعة',
-    PART_NAME_PLACEHOLDER: 'مثال: فرامل أمامية',
-    DESCRIPTION: 'الوصف',
-    DESCRIPTION_PLACEHOLDER: 'وصف تفصيلي للقطعة...',
-    PRICE: 'السعر ($)',
-    PRICE_PLACEHOLDER: '0.00',
-    IMAGE_URL: 'رابط الصورة (اختياري)',
-    IMAGE_URL_PLACEHOLDER: 'https://example.com/image.jpg',
-    SKU: 'رمز القطعة (اختياري)',
-    SKU_PLACEHOLDER: 'مثال: BP-001',
+import {useAppTheme} from '@/global/hooks'
+import {AddPartFieldCard} from './AddPartFieldCard'
+
+const ARABIC = {
+    REQ_HEADER: 'المعلومات الأساسية',
+    OPT_HEADER: 'معلومات إضافية',
+    NAME: 'اسم القطعة',
+    NAME_PH: 'مثال: فرامل أمامية',
+    DESC: 'الوصف',
+    DESC_PH: 'وصف تفصيلي للقطعة...',
+    PRICE: 'السعر',
+    PRICE_ERR: 'يرجى إدخال سعر صحيح',
+    IMG: 'رابط الصورة',
+    IMG_PH: 'https://example.com/image.jpg',
+    SKU: 'رمز القطعة',
+    SKU_PH: 'مثال: BP-001',
 }
 
 interface AddPartFieldsProps {
@@ -22,106 +25,100 @@ interface AddPartFieldsProps {
     price: string
     imageUrl: string
     sku: string
-    onNameChange: (value: string) => void
-    onDescriptionChange: (value: string) => void
-    onPriceChange: (value: string) => void
-    onImageUrlChange: (value: string) => void
-    onSkuChange: (value: string) => void
+    onNameChange: (v: string) => void
+    onDescriptionChange: (v: string) => void
+    onPriceChange: (v: string) => void
+    onImageUrlChange: (v: string) => void
+    onSkuChange: (v: string) => void
 }
 
-export const AddPartFields = ({
-    name,
-    description,
-    price,
-    imageUrl,
-    sku,
-    onNameChange,
-    onDescriptionChange,
-    onPriceChange,
-    onImageUrlChange,
-    onSkuChange,
-}: AddPartFieldsProps) => {
+export const AddPartFields = (p: AddPartFieldsProps) => {
     const theme = useAppTheme()
+    const priceNum = parseFloat(p.price)
+    const priceValid = !p.price.trim() || (!isNaN(priceNum) && priceNum >= 0)
+    const hasPreview = /^https?:\/\//i.test(p.imageUrl.trim())
 
     return (
         <>
-            {/* Required fields card */}
-            <View style={[styles.fieldGroup, {backgroundColor: theme.colors.surface}]}>
+            <AddPartFieldCard title={ARABIC.REQ_HEADER} required>
                 <TextInput
-                    label={ARABIC_TEXT.PART_NAME}
-                    value={name}
-                    onChangeText={onNameChange}
-                    placeholder={ARABIC_TEXT.PART_NAME_PLACEHOLDER}
+                    label={ARABIC.NAME}
+                    value={p.name}
+                    onChangeText={p.onNameChange}
+                    placeholder={ARABIC.NAME_PH}
                     mode='outlined'
                     style={styles.input}
                     left={<TextInput.Icon icon='tag-outline' />}
                 />
                 <TextInput
-                    label={ARABIC_TEXT.PRICE}
-                    value={price}
-                    onChangeText={onPriceChange}
-                    placeholder={ARABIC_TEXT.PRICE_PLACEHOLDER}
+                    label={ARABIC.PRICE}
+                    value={p.price}
+                    onChangeText={p.onPriceChange}
+                    placeholder='0.00'
                     mode='outlined'
                     keyboardType='decimal-pad'
+                    error={!priceValid}
                     style={styles.input}
                     left={<TextInput.Icon icon='cash' />}
+                    right={<TextInput.Affix text='$' />}
                 />
+                {!priceValid && (
+                    <HelperText type='error' visible>
+                        {ARABIC.PRICE_ERR}
+                    </HelperText>
+                )}
                 <TextInput
-                    label={ARABIC_TEXT.DESCRIPTION}
-                    value={description}
-                    onChangeText={onDescriptionChange}
-                    placeholder={ARABIC_TEXT.DESCRIPTION_PLACEHOLDER}
+                    label={ARABIC.DESC}
+                    value={p.description}
+                    onChangeText={p.onDescriptionChange}
+                    placeholder={ARABIC.DESC_PH}
                     mode='outlined'
                     multiline
                     numberOfLines={3}
                     style={styles.inputLast}
                     left={<TextInput.Icon icon='text' />}
                 />
-            </View>
+            </AddPartFieldCard>
 
-            {/* Optional fields card */}
-            <View style={[styles.fieldGroup, {backgroundColor: theme.colors.surface}]}>
+            <AddPartFieldCard title={ARABIC.OPT_HEADER}>
                 <TextInput
-                    label={ARABIC_TEXT.IMAGE_URL}
-                    value={imageUrl}
-                    onChangeText={onImageUrlChange}
-                    placeholder={ARABIC_TEXT.IMAGE_URL_PLACEHOLDER}
+                    label={ARABIC.IMG}
+                    value={p.imageUrl}
+                    onChangeText={p.onImageUrlChange}
+                    placeholder={ARABIC.IMG_PH}
                     mode='outlined'
                     keyboardType='url'
                     autoCapitalize='none'
                     style={styles.input}
                     left={<TextInput.Icon icon='image-outline' />}
                 />
+                {hasPreview && (
+                    <View
+                        style={[
+                            styles.preview,
+                            {borderColor: theme.colors.outlineVariant, backgroundColor: theme.colors.surfaceVariant},
+                        ]}>
+                        <Image source={{uri: p.imageUrl.trim()}} style={styles.previewImg} resizeMode='cover' />
+                    </View>
+                )}
                 <TextInput
-                    label={ARABIC_TEXT.SKU}
-                    value={sku}
-                    onChangeText={onSkuChange}
-                    placeholder={ARABIC_TEXT.SKU_PLACEHOLDER}
+                    label={ARABIC.SKU}
+                    value={p.sku}
+                    onChangeText={p.onSkuChange}
+                    placeholder={ARABIC.SKU_PH}
                     mode='outlined'
                     autoCapitalize='characters'
                     style={styles.inputLast}
                     left={<TextInput.Icon icon='barcode' />}
                 />
-            </View>
+            </AddPartFieldCard>
         </>
     )
 }
 
 const styles = StyleSheet.create({
-    fieldGroup: {
-        borderRadius: 14,
-        padding: 14,
-        marginBottom: 12,
-        shadowColor: themeColors.shadow,
-        shadowOffset: {width: 0, height: 1},
-        shadowOpacity: 0.04,
-        shadowRadius: 4,
-        elevation: 1,
-    },
-    input: {
-        marginBottom: 12,
-    },
-    inputLast: {
-        marginBottom: 0,
-    },
+    input: {marginBottom: 10},
+    inputLast: {marginBottom: 0},
+    preview: {borderRadius: 12, borderWidth: 1, padding: 6, marginBottom: 10, alignItems: 'center'},
+    previewImg: {width: '100%', height: 140, borderRadius: 8},
 })

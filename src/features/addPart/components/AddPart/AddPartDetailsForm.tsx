@@ -1,11 +1,13 @@
-import {StyleSheet, View, ScrollView} from 'react-native'
-import {Text, Icon} from 'react-native-paper'
+import {ScrollView, StyleSheet, View} from 'react-native'
+import {Icon, Text} from 'react-native-paper'
+
 import {useAppTheme} from '@/global/hooks'
 import {AddPartFields} from './AddPartFields'
 import {AddPartFormActions} from './AddPartFormActions'
 
 const ARABIC_TEXT = {
     SECTION_TITLE: 'تفاصيل القطعة',
+    SECTION_SUBTITLE: 'أخبرنا عن القطعة التي ترغب بإضافتها إلى متجرك',
 }
 
 interface AddPartDetailsFormProps {
@@ -55,9 +57,16 @@ export const AddPartDetailsForm = ({
             keyboardShouldPersistTaps='handled'>
             <View style={styles.sectionHeader}>
                 <View style={[styles.sectionIcon, {backgroundColor: theme.colors.primaryContainer}]}>
-                    <Icon source='text-box-outline' size={16} color={theme.colors.primary} />
+                    <Icon source='package-variant-plus' size={20} color={theme.colors.primary} />
                 </View>
-                <Text style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.SECTION_TITLE}</Text>
+                <View style={styles.headerText}>
+                    <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
+                        {ARABIC_TEXT.SECTION_TITLE}
+                    </Text>
+                    <Text variant='bodySmall' style={[styles.sectionSubtitle, {color: theme.colors.onSurfaceVariant}]}>
+                        {ARABIC_TEXT.SECTION_SUBTITLE}
+                    </Text>
+                </View>
             </View>
 
             <AddPartFields
@@ -86,27 +95,17 @@ export const AddPartDetailsForm = ({
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    content: {
-        paddingBottom: 24,
-    },
-    sectionHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-        marginBottom: 14,
-    },
+    container: {flex: 1},
+    content: {paddingBottom: 24},
+    sectionHeader: {flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 18},
     sectionIcon: {
-        width: 28,
-        height: 28,
-        borderRadius: 8,
+        width: 42,
+        height: 42,
+        borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    sectionTitle: {
-        fontSize: 15,
-        fontWeight: '700',
-    },
+    headerText: {flex: 1, gap: 2},
+    sectionTitle: {fontWeight: '700'},
+    sectionSubtitle: {lineHeight: 18},
 })
