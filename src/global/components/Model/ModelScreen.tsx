@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {StyleSheet, View, FlatList} from 'react-native'
+import {FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View} from 'react-native'
 import {Text, ActivityIndicator} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
@@ -21,9 +21,23 @@ interface ModelScreenProps {
     valueId: string | null
     onSelect: (name: string, id: string) => void
     onNext: () => void
+    onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+    hideHeader?: boolean
+    contentTopInset?: number
 }
 
-export const ModelScreen = ({makeId, makeName, getModels, value: _value, valueId, onSelect, onNext}: ModelScreenProps) => {
+export const ModelScreen = ({
+    makeId,
+    makeName,
+    getModels,
+    value: _value,
+    valueId,
+    onSelect,
+    onNext,
+    onScroll,
+    hideHeader,
+    contentTopInset = 0,
+}: ModelScreenProps) => {
     const theme = useAppTheme()
     const [models, setModels] = useState<ModelApi[]>([])
     const [loading, setLoading] = useState(false)
@@ -72,20 +86,24 @@ export const ModelScreen = ({makeId, makeName, getModels, value: _value, valueId
 
     return (
         <View style={styles.stepContent}>
-            <View style={styles.headerContainer}>
-                <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                    {ARABIC_TEXT.SELECT_MODEL}
-                </Text>
-                <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
-                    {ARABIC_TEXT.FOR_MAKE(makeName)}
-                </Text>
-            </View>
+            {!hideHeader && (
+                <View style={styles.headerContainer}>
+                    <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
+                        {ARABIC_TEXT.SELECT_MODEL}
+                    </Text>
+                    <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
+                        {ARABIC_TEXT.FOR_MAKE(makeName)}
+                    </Text>
+                </View>
+            )}
             <FlatList
                 data={models}
                 keyExtractor={item => item.id}
                 renderItem={({item}) => <ModelCard item={item} isSelected={valueId === item.id} onPress={handleSelect} />}
-                contentContainerStyle={styles.listContent}
+                contentContainerStyle={[styles.listContent, {paddingTop: contentTopInset}]}
                 showsVerticalScrollIndicator={false}
+                onScroll={onScroll}
+                scrollEventThrottle={16}
             />
         </View>
     )

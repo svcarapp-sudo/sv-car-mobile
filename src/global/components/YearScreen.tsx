@@ -1,4 +1,4 @@
-import {StyleSheet, View, FlatList, TouchableOpacity} from 'react-native'
+import {FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, TouchableOpacity, View} from 'react-native'
 import {Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
@@ -14,9 +14,12 @@ interface YearScreenProps {
     value: string
     onSelect: (year: string) => void
     onNext: () => void
+    onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+    hideHeader?: boolean
+    contentTopInset?: number
 }
 
-export const YearScreen = ({years, value, onSelect, onNext}: YearScreenProps) => {
+export const YearScreen = ({years, value, onSelect, onNext, onScroll, hideHeader, contentTopInset = 0}: YearScreenProps) => {
     const theme = useAppTheme()
 
     const handleSelect = (year: string) => {
@@ -26,14 +29,16 @@ export const YearScreen = ({years, value, onSelect, onNext}: YearScreenProps) =>
 
     return (
         <View style={styles.stepContent}>
-            <View style={styles.headerContainer}>
-                <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                    {ARABIC_TEXT.PRODUCTION_YEAR}
-                </Text>
-                <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
-                    {ARABIC_TEXT.SELECT_YEAR}
-                </Text>
-            </View>
+            {!hideHeader && (
+                <View style={styles.headerContainer}>
+                    <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
+                        {ARABIC_TEXT.PRODUCTION_YEAR}
+                    </Text>
+                    <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
+                        {ARABIC_TEXT.SELECT_YEAR}
+                    </Text>
+                </View>
+            )}
             <FlatList
                 data={years.map(String)}
                 numColumns={3}
@@ -62,8 +67,10 @@ export const YearScreen = ({years, value, onSelect, onNext}: YearScreenProps) =>
                         </TouchableOpacity>
                     )
                 }}
-                contentContainerStyle={styles.yearGrid}
+                contentContainerStyle={[styles.yearGrid, {paddingTop: contentTopInset}]}
                 showsVerticalScrollIndicator={false}
+                onScroll={onScroll}
+                scrollEventThrottle={16}
             />
         </View>
     )

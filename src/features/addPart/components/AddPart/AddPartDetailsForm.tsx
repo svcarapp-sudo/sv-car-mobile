@@ -1,4 +1,4 @@
-import {ScrollView, StyleSheet, View} from 'react-native'
+import {NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
@@ -27,6 +27,9 @@ interface AddPartDetailsFormProps {
     canSubmit: boolean
     submitLabel?: string
     submitLoadingLabel?: string
+    onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+    hideHeader?: boolean
+    contentTopInset?: number
 }
 
 export const AddPartDetailsForm = ({
@@ -46,28 +49,35 @@ export const AddPartDetailsForm = ({
     canSubmit,
     submitLabel,
     submitLoadingLabel,
+    onScroll,
+    hideHeader,
+    contentTopInset = 0,
 }: AddPartDetailsFormProps) => {
     const theme = useAppTheme()
 
     return (
         <ScrollView
             style={styles.container}
-            contentContainerStyle={styles.content}
+            contentContainerStyle={[styles.content, {paddingTop: contentTopInset}]}
             showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps='handled'>
-            <View style={styles.sectionHeader}>
-                <View style={[styles.sectionIcon, {backgroundColor: theme.colors.primaryContainer}]}>
-                    <Icon source='package-variant-plus' size={20} color={theme.colors.primary} />
+            keyboardShouldPersistTaps='handled'
+            onScroll={onScroll}
+            scrollEventThrottle={16}>
+            {!hideHeader && (
+                <View style={styles.sectionHeader}>
+                    <View style={[styles.sectionIcon, {backgroundColor: theme.colors.primaryContainer}]}>
+                        <Icon source='package-variant-plus' size={20} color={theme.colors.primary} />
+                    </View>
+                    <View style={styles.headerText}>
+                        <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
+                            {ARABIC_TEXT.SECTION_TITLE}
+                        </Text>
+                        <Text variant='bodySmall' style={[styles.sectionSubtitle, {color: theme.colors.onSurfaceVariant}]}>
+                            {ARABIC_TEXT.SECTION_SUBTITLE}
+                        </Text>
+                    </View>
                 </View>
-                <View style={styles.headerText}>
-                    <Text variant='titleMedium' style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>
-                        {ARABIC_TEXT.SECTION_TITLE}
-                    </Text>
-                    <Text variant='bodySmall' style={[styles.sectionSubtitle, {color: theme.colors.onSurfaceVariant}]}>
-                        {ARABIC_TEXT.SECTION_SUBTITLE}
-                    </Text>
-                </View>
-            </View>
+            )}
 
             <AddPartFields
                 name={name}

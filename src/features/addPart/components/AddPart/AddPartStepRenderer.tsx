@@ -1,3 +1,5 @@
+import type {NativeScrollEvent, NativeSyntheticEvent} from 'react-native'
+
 import {MakeScreen, ModelScreen, YearScreen, CategoryScreen} from '@/global/components'
 import {AddPartDetailsForm} from './AddPartDetailsForm'
 import {Step} from './AddPartStepper'
@@ -36,6 +38,9 @@ interface AddPartStepRendererProps {
     onSubmit: () => void
     onCancel: () => void
     canSubmit: boolean
+    onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+    hideHeader?: boolean
+    contentTopInset?: number
 }
 
 export const AddPartStepRenderer = (props: AddPartStepRendererProps) => {
@@ -49,6 +54,9 @@ export const AddPartStepRenderer = (props: AddPartStepRendererProps) => {
                     valueId={props.makeId?.toString() || null}
                     onSelect={props.onMakeSelect}
                     onNext={() => {}}
+                    onScroll={props.onScroll}
+                    hideHeader={props.hideHeader}
+                    contentTopInset={props.contentTopInset}
                 />
             )
         case Step.Model:
@@ -61,6 +69,9 @@ export const AddPartStepRenderer = (props: AddPartStepRendererProps) => {
                     valueId={props.modelId?.toString() || null}
                     onSelect={props.onModelSelect}
                     onNext={() => {}}
+                    onScroll={props.onScroll}
+                    hideHeader={props.hideHeader}
+                    contentTopInset={props.contentTopInset}
                 />
             ) : null
         case Step.Year:
@@ -70,6 +81,9 @@ export const AddPartStepRenderer = (props: AddPartStepRendererProps) => {
                     value={props.year?.toString() || ''}
                     onSelect={props.onYearSelect}
                     onNext={() => {}}
+                    onScroll={props.onScroll}
+                    hideHeader={props.hideHeader}
+                    contentTopInset={props.contentTopInset}
                 />
             )
         case Step.Category:
@@ -80,6 +94,9 @@ export const AddPartStepRenderer = (props: AddPartStepRendererProps) => {
                     valueId={props.categoryId}
                     onSelect={props.onCategorySelect}
                     onNext={() => {}}
+                    onScroll={props.onScroll}
+                    hideHeader={props.hideHeader}
+                    contentTopInset={props.contentTopInset}
                 />
             )
         case Step.Details:
@@ -99,6 +116,9 @@ export const AddPartStepRenderer = (props: AddPartStepRendererProps) => {
                     onSubmit={props.onSubmit}
                     onCancel={props.onCancel}
                     canSubmit={props.canSubmit}
+                    onScroll={props.onScroll}
+                    hideHeader={props.hideHeader}
+                    contentTopInset={props.contentTopInset}
                 />
             )
         default:

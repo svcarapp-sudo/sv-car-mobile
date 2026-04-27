@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {StyleSheet, View, FlatList} from 'react-native'
+import {FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View} from 'react-native'
 import {Text, ActivityIndicator} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
@@ -19,9 +19,22 @@ interface MakeScreenProps {
     valueId: string | null
     onSelect: (name: string, id: string, logoUrl?: string | null) => void
     onNext: () => void
+    onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+    hideHeader?: boolean
+    contentTopInset?: number
 }
 
-export const MakeScreen = ({originId, getMakes, value: _value, valueId, onSelect, onNext}: MakeScreenProps) => {
+export const MakeScreen = ({
+    originId,
+    getMakes,
+    value: _value,
+    valueId,
+    onSelect,
+    onNext,
+    onScroll,
+    hideHeader,
+    contentTopInset = 0,
+}: MakeScreenProps) => {
     const theme = useAppTheme()
     const [makes, setMakes] = useState<MakeApi[]>([])
     const [loading, setLoading] = useState(false)
@@ -82,11 +95,13 @@ export const MakeScreen = ({originId, getMakes, value: _value, valueId, onSelect
                 data={sections}
                 keyExtractor={item => item.title}
                 ListHeaderComponent={
-                    <View style={styles.headerContainer}>
-                        <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                            {ARABIC_TEXT.SELECT_MAKE}
-                        </Text>
-                    </View>
+                    hideHeader ? null : (
+                        <View style={styles.headerContainer}>
+                            <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
+                                {ARABIC_TEXT.SELECT_MAKE}
+                            </Text>
+                        </View>
+                    )
                 }
                 renderItem={({item: section}) => (
                     <View style={styles.sectionContainer}>
@@ -105,8 +120,10 @@ export const MakeScreen = ({originId, getMakes, value: _value, valueId, onSelect
                         </View>
                     </View>
                 )}
-                contentContainerStyle={styles.gridContainer}
+                contentContainerStyle={[styles.gridContainer, {paddingTop: contentTopInset}]}
                 showsVerticalScrollIndicator={false}
+                onScroll={onScroll}
+                scrollEventThrottle={16}
             />
         </View>
     )
