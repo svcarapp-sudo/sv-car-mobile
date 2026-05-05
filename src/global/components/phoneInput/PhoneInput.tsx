@@ -5,6 +5,8 @@ import {getCountries, getCountryCallingCode, isValidPhoneNumber} from 'libphonen
 import type {CountryCode} from 'libphonenumber-js'
 import {getLocales} from 'expo-localization'
 
+import {NumericTextInput} from '@/global/components/numericInput'
+import {toAsciiDigits} from '@/global/utils'
 import {CountryCodePicker} from './CountryCodePicker'
 
 const toFlag = (code: string): string =>
@@ -105,13 +107,13 @@ export const PhoneInput = ({onChange, initialValue = '', defaultCountry, disable
         return countries.find(x => x.code === c) ?? countries[0]
     }, [defaultCountry, countries])
 
-    const [digits, setDigits] = useState(() => initialValue.replace(/[^\d]/g, ''))
+    const [digits, setDigits] = useState(() => toAsciiDigits(initialValue).replace(/[^\d]/g, ''))
     const [country, setCountry] = useState<Country>(initCountry)
     const [pickerOpen, setPickerOpen] = useState(false)
 
     const notify = useCallback(
         (nat: string, c: Country) => {
-            const full = c.dial + nat.replace(/[^\d]/g, '')
+            const full = c.dial + toAsciiDigits(nat).replace(/[^\d]/g, '')
             let valid = false
             if (nat.trim()) {
                 try {
@@ -125,6 +127,8 @@ export const PhoneInput = ({onChange, initialValue = '', defaultCountry, disable
 
     const onType = useCallback(
         (text: string) => {
+            // text is already ASCII (NumericTextInput converted it). Strip non-digits so
+            // the field only ever shows digits.
             const d = text.replace(/[^\d]/g, '')
             setDigits(d)
             notify(d, country)
@@ -157,7 +161,7 @@ export const PhoneInput = ({onChange, initialValue = '', defaultCountry, disable
             </Pressable>
 
             <View style={styles.numberWrap}>
-                <TextInput
+                <NumericTextInput
                     value={digits}
                     onChangeText={onType}
                     mode='outlined'

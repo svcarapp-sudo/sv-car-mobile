@@ -2,7 +2,7 @@ import React from 'react'
 import {StyleSheet, View} from 'react-native'
 import {Button, Text, TextInput} from 'react-native-paper'
 
-import {SellerTypePicker, getSellerTypeFieldConfig} from '@/global/components'
+import {NumericTextInput, SellerTypePicker, getSellerTypeFieldConfig} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 import type {SellerType} from '@/global/types'
@@ -69,7 +69,7 @@ export const SellerProfileForm = ({
                     label={ARABIC.SELECT_TYPE}
                 />
 
-                <TextInput
+                <NumericTextInput
                     label={ARABIC.PHONE}
                     value={form.phone}
                     onChangeText={phone => onFormChange(f => ({...f, phone}))}

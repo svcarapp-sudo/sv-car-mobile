@@ -1,6 +1,8 @@
 import {StyleSheet, View} from 'react-native'
 import {TextInput, Button} from 'react-native-paper'
 
+import {NumericTextInput, PartNameInput} from '@/global/components'
+
 const ARABIC_TEXT = {
     PART_NAME: 'اسم القطعة',
     PART_NAME_PLACEHOLDER: 'مثال: فرامل أمامية',
@@ -28,6 +30,7 @@ interface EditPartFormFieldsProps {
     onImageUrlChange: (value: string) => void
     sku: string
     onSkuChange: (value: string) => void
+    categoryId: number | null
     saving: boolean
     onSave: () => void
     onCancel: () => void
@@ -44,20 +47,20 @@ export const EditPartFormFields = ({
     onImageUrlChange,
     sku,
     onSkuChange,
+    categoryId,
     saving,
     onSave,
     onCancel,
 }: EditPartFormFieldsProps) => {
     return (
         <>
-            <TextInput
+            <PartNameInput
                 label={ARABIC_TEXT.PART_NAME}
                 value={name}
                 onChangeText={onNameChange}
                 placeholder={ARABIC_TEXT.PART_NAME_PLACEHOLDER}
-                mode='outlined'
+                categoryId={categoryId}
                 style={styles.input}
-                left={<TextInput.Icon icon='tag-outline' />}
             />
 
             <TextInput
@@ -72,7 +75,7 @@ export const EditPartFormFields = ({
                 left={<TextInput.Icon icon='text' />}
             />
 
-            <TextInput
+            <NumericTextInput
                 label={ARABIC_TEXT.PRICE}
                 value={price}
                 onChangeText={onPriceChange}

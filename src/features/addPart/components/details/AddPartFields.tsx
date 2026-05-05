@@ -1,6 +1,7 @@
 import {Image, StyleSheet, View} from 'react-native'
 import {HelperText, TextInput} from 'react-native-paper'
 
+import {NumericTextInput, PartNameInput} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {AddPartFieldCard} from './AddPartFieldCard'
 
@@ -25,6 +26,7 @@ interface AddPartFieldsProps {
     price: string
     imageUrl: string
     sku: string
+    categoryId: number | null
     onNameChange: (v: string) => void
     onDescriptionChange: (v: string) => void
     onPriceChange: (v: string) => void
@@ -41,16 +43,15 @@ export const AddPartFields = (p: AddPartFieldsProps) => {
     return (
         <>
             <AddPartFieldCard title={ARABIC.REQ_HEADER} required>
-                <TextInput
+                <PartNameInput
                     label={ARABIC.NAME}
                     value={p.name}
                     onChangeText={p.onNameChange}
                     placeholder={ARABIC.NAME_PH}
-                    mode='outlined'
+                    categoryId={p.categoryId}
                     style={styles.input}
-                    left={<TextInput.Icon icon='tag-outline' />}
                 />
-                <TextInput
+                <NumericTextInput
                     label={ARABIC.PRICE}
                     value={p.price}
                     onChangeText={p.onPriceChange}

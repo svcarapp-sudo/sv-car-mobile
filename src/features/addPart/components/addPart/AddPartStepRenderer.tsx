@@ -1,7 +1,8 @@
 import type {NativeScrollEvent, NativeSyntheticEvent} from 'react-native'
 
-import {MakeScreen, ModelScreen, YearScreen, CategoryScreen} from '@/global/components'
-import {AddPartDetailsForm} from './AddPartDetailsForm'
+import {MakeScreen, ModelScreen, YearScreen} from '@/global/components'
+import {CategoryScreen} from '../category'
+import {AddPartDetailsForm} from '../details'
 import {Step} from './AddPartStepper'
 import type {PartCategoryApi} from '@/global/types'
 import type {MakeApi, ModelApi} from '@/global/services/catalogService'
@@ -107,6 +108,7 @@ export const AddPartStepRenderer = (props: AddPartStepRendererProps) => {
                     price={props.price}
                     imageUrl={props.imageUrl}
                     sku={props.sku}
+                    categoryId={props.categoryId}
                     loading={props.loading}
                     onNameChange={props.onNameChange}
                     onDescriptionChange={props.onDescriptionChange}

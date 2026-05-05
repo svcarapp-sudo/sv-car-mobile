@@ -81,7 +81,7 @@ export const CategoryGrid = ({
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 8,
+        marginTop: 4,
     },
     header: {
         marginBottom: 16,

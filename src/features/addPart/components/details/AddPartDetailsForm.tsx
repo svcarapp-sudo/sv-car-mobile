@@ -16,6 +16,7 @@ interface AddPartDetailsFormProps {
     price: string
     imageUrl: string
     sku: string
+    categoryId: number | null
     loading: boolean
     onNameChange: (value: string) => void
     onDescriptionChange: (value: string) => void
@@ -38,6 +39,7 @@ export const AddPartDetailsForm = ({
     price,
     imageUrl,
     sku,
+    categoryId,
     loading,
     onNameChange,
     onDescriptionChange,
@@ -85,6 +87,7 @@ export const AddPartDetailsForm = ({
                 price={price}
                 imageUrl={imageUrl}
                 sku={sku}
+                categoryId={categoryId}
                 onNameChange={onNameChange}
                 onDescriptionChange={onDescriptionChange}
                 onPriceChange={onPriceChange}

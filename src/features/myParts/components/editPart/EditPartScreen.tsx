@@ -120,6 +120,7 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
                     onImageUrlChange={setImageUrl}
                     sku={sku}
                     onSkuChange={setSku}
+                    categoryId={part?.categoryId ?? categoryInfo?.id ?? null}
                     saving={saving}
                     onSave={handleSave}
                     onCancel={() => navigation?.goBack()}

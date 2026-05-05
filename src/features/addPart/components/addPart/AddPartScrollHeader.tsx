@@ -19,18 +19,16 @@ interface AddPartScrollHeaderProps {
     opacity: Animated.AnimatedInterpolation<number>
 }
 
-const TITLES: Record<Step, string> = {
+const TITLES: Partial<Record<Step, string>> = {
     [Step.Make]: 'اختر الشركة المصنعة',
     [Step.Model]: 'اختر الموديل',
     [Step.Year]: 'سنة الصنع',
     [Step.Category]: 'اختر فئة القطعة',
-    [Step.Details]: 'تفاصيل القطعة',
 }
 
 const subtitleFor = (step: Step, makeName: string): string | undefined => {
     if (step === Step.Model) return makeName ? `لسيارة ${makeName}` : undefined
     if (step === Step.Year) return 'اختر سنة صنع المركبة'
-    if (step === Step.Details) return 'أخبرنا عن القطعة التي ترغب بإضافتها إلى متجرك'
     return undefined
 }
 
@@ -47,6 +45,7 @@ export const AddPartScrollHeader = ({
     opacity,
 }: AddPartScrollHeaderProps) => {
     const theme = useAppTheme()
+    const title = TITLES[currentStep]
     const subtitle = subtitleFor(currentStep, makeName)
 
     return (
@@ -61,16 +60,18 @@ export const AddPartScrollHeader = ({
                 categoryName={categoryName}
                 onEdit={onEditSummary}
             />
-            <View style={styles.titleWrap}>
-                <Text variant='headlineSmall' style={[styles.title, {color: theme.colors.onSurface}]}>
-                    {TITLES[currentStep]}
-                </Text>
-                {subtitle && (
-                    <Text variant='bodyMedium' style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>
-                        {subtitle}
+            {title && (
+                <View style={styles.titleWrap}>
+                    <Text variant='headlineSmall' style={[styles.title, {color: theme.colors.onSurface}]}>
+                        {title}
                     </Text>
-                )}
-            </View>
+                    {subtitle && (
+                        <Text variant='bodyMedium' style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>
+                            {subtitle}
+                        </Text>
+                    )}
+                </View>
+            )}
         </Animated.View>
     )
 }

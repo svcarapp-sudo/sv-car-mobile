@@ -2,7 +2,7 @@ import {useState, useCallback, useEffect} from 'react'
 import {KeyboardAvoidingView, Platform, StyleSheet, View, ScrollView} from 'react-native'
 import {ActivityIndicator, Button, Chip, Divider, TextInput} from 'react-native-paper'
 
-import {SellerTypePicker} from '@/global/components'
+import {NumericTextInput, SellerTypePicker} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {apiClient} from '@/global/services/ApiClient'
 import type {SellerProfile, SellerType, CreateSellerProfileRequest} from '@/global/types'
@@ -126,7 +126,7 @@ export const SellerProfileGate = ({children}: {children: React.ReactNode}) => {
                         label={ARABIC.SELECT_TYPE}
                     />
 
-                    <TextInput
+                    <NumericTextInput
                         label={ARABIC.PHONE}
                         value={form.phone}
                         onChangeText={phone => setForm(f => ({...f, phone}))}

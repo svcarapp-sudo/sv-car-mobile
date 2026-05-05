@@ -1,0 +1,1 @@
+export {AddPartDetailsForm} from './AddPartDetailsForm'
