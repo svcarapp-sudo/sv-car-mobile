@@ -1,6 +1,7 @@
-import {StyleSheet, ScrollView, View} from 'react-native'
+import {StyleSheet, View} from 'react-native'
 import {Button, Text, HelperText} from 'react-native-paper'
 
+import {Screen} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 import {VinInputSection} from './VinInputSection'
@@ -36,7 +37,7 @@ export const AddVinScreen = ({
     const theme = useAppTheme()
 
     return (
-        <ScrollView style={styles.stepContent} showsVerticalScrollIndicator={false}>
+        <Screen style={styles.stepContent}>
             <View style={styles.headerContainer}>
                 <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
                     {ARABIC_TEXT.VIN_DETAILS}
@@ -67,7 +68,7 @@ export const AddVinScreen = ({
                 icon='check-bold'>
                 {ARABIC_TEXT.SUBMIT_BUTTON}
             </Button>
-        </ScrollView>
+        </Screen>
     )
 }
 

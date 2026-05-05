@@ -1,6 +1,7 @@
-import {NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, View} from 'react-native'
+import {NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
+import {Screen} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {AddPartFields} from './AddPartFields'
 import {AddPartFormActions} from './AddPartFormActions'
@@ -58,13 +59,10 @@ export const AddPartDetailsForm = ({
     const theme = useAppTheme()
 
     return (
-        <ScrollView
+        <Screen
             style={styles.container}
             contentContainerStyle={[styles.content, {paddingTop: contentTopInset}]}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps='handled'
-            onScroll={onScroll}
-            scrollEventThrottle={16}>
+            onScroll={onScroll}>
             {!hideHeader && (
                 <View style={styles.sectionHeader}>
                     <View style={[styles.sectionIcon, {backgroundColor: theme.colors.primaryContainer}]}>
@@ -103,7 +101,7 @@ export const AddPartDetailsForm = ({
                 submitLabel={submitLabel}
                 submitLoadingLabel={submitLoadingLabel}
             />
-        </ScrollView>
+        </Screen>
     )
 }
 

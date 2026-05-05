@@ -1,9 +1,10 @@
 import {useState, useEffect, useCallback} from 'react'
-import {StyleSheet, View, Alert, ScrollView} from 'react-native'
+import {StyleSheet, View, Alert} from 'react-native'
 import {Text, ActivityIndicator, Icon} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
 import {useMyParts} from '../../hooks/useMyParts'
+import {Screen} from '@/global/components'
 import {useCatalog, useAppTheme} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import {EditPartVehicleBanner} from './EditPartVehicleBanner'
@@ -104,10 +105,7 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
-            <ScrollView
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps='handled'>
+            <Screen contentContainerStyle={styles.scrollContent}>
                 <EditPartVehicleBanner vehicles={vehicles} categoryName={categoryInfo?.name} />
                 <EditPartFormFields
                     name={name}
@@ -125,7 +123,7 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
                     onSave={handleSave}
                     onCancel={() => navigation?.goBack()}
                 />
-            </ScrollView>
+            </Screen>
         </View>
     )
 }
