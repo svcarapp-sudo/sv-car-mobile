@@ -1,7 +1,10 @@
-import {PartCard} from '../partCard'
-import type {Part, PartCategoryApi} from '@/global/types'
+import {StyleSheet, View} from 'react-native'
 import type {NavigationProp} from '@react-navigation/native'
+
 import type {RootStackParamList} from '@/global/navigation/types'
+import type {Part, PartCategoryApi} from '@/global/types'
+
+import {PartCard} from '@/global/components'
 
 interface PartCardItemProps {
     part: Part
@@ -13,6 +16,16 @@ export const PartCardItem = ({part, navigation, categories = []}: PartCardItemPr
     const categoryInfo = categories.find(c => c.slug === part.category) || categories.find(c => c.id === part.categoryId)
 
     return (
-        <PartCard part={part} categoryInfo={categoryInfo} onPress={() => navigation?.navigate('PartDetail', {partId: part.id})} />
+        <View style={styles.gridItem}>
+            <PartCard
+                part={part}
+                categoryInfo={categoryInfo}
+                onPress={() => navigation?.navigate('PartDetail', {partId: part.id})}
+            />
+        </View>
     )
 }
+
+const styles = StyleSheet.create({
+    gridItem: {flex: 1, paddingHorizontal: 5},
+})

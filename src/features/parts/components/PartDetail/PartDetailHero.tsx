@@ -1,141 +1,143 @@
-import {Image, StyleSheet, View} from 'react-native'
+import {Image, StyleSheet, TouchableOpacity, View, I18nManager} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 import type {Part, PartCategoryApi} from '@/global/types'
-import {useAppTheme} from '@/global/hooks'
-import {themeColors} from '@/global/theme'
 
-const ARABIC_TEXT = {
-    IN_STOCK: 'متوفر',
-    OUT_OF_STOCK: 'غير متوفر',
-}
+import {SaveButton} from '@/global/components'
+import {useAppTheme} from '@/global/hooks'
+import {useSavedPartsStore} from '@/global/store'
+import {shadows} from '@/global/theme'
 
 interface PartDetailHeroProps {
     part: Part
     categoryInfo: PartCategoryApi | undefined
+    onBack: () => void
+    onShare?: () => void
 }
 
-export const PartDetailHero = ({part, categoryInfo}: PartDetailHeroProps) => {
+/**
+ * Edge-to-edge hero with floating circular nav buttons (Airbnb pattern).
+ * Image fills the top portion; placeholder shows category icon on a soft amber wash.
+ */
+export const PartDetailHero = ({part, categoryInfo, onBack, onShare}: PartDetailHeroProps) => {
     const theme = useAppTheme()
+    const saved = useSavedPartsStore(s => s.ids.includes(part.id))
+    const toggle = useSavedPartsStore(s => s.toggle)
+    const backIcon = I18nManager.isRTL ? 'arrow-left' : 'arrow-right'
 
     return (
-        <View style={[styles.heroCard, {backgroundColor: theme.colors.surface}]}>
-            {part.imageUrl ? (
-                <Image source={{uri: part.imageUrl}} style={styles.heroImage} resizeMode='cover' />
-            ) : (
-                <View style={[styles.heroIconBox, {backgroundColor: theme.colors.primaryContainer}]}>
-                    <Icon source={categoryInfo?.icon || 'package-variant'} size={56} color={theme.colors.primary} />
-                </View>
-            )}
+        <View style={styles.wrapper}>
+            <View style={[styles.imageBox, {backgroundColor: theme.colors.surfaceContainerLow}]}>
+                {part.imageUrl ? (
+                    <Image source={{uri: part.imageUrl}} style={styles.image} resizeMode='cover' />
+                ) : (
+                    <View style={[styles.placeholder, {backgroundColor: theme.colors.accentSubtle}]}>
+                        <View style={[styles.placeholderGlow, {backgroundColor: theme.colors.accentMuted}]} />
+                        <Icon source={categoryInfo?.icon || 'package-variant'} size={96} color={theme.colors.tertiary} />
+                    </View>
+                )}
 
-            <View style={styles.heroInfo}>
-                <Text style={[styles.partName, {color: theme.colors.onSurface}]}>{part.name}</Text>
-                {part.brand && <Text style={[styles.partBrand, {color: theme.colors.onSurfaceVariant}]}>{part.brand}</Text>}
-                <View style={styles.metaRow}>
+                <View style={[styles.gradientTop, {backgroundColor: theme.colors.surface}]} />
+
+                <View style={[styles.navRow, {top: 12}]}>
+                    <TouchableOpacity
+                        onPress={onBack}
+                        style={[styles.circleBtn, shadows.sm, {backgroundColor: theme.colors.surface}]}
+                        accessibilityRole='button'>
+                        <Icon source={backIcon} size={22} color={theme.colors.onSurface} />
+                    </TouchableOpacity>
+                    <View style={styles.navEnd}>
+                        {onShare && (
+                            <TouchableOpacity
+                                onPress={onShare}
+                                style={[styles.circleBtn, shadows.sm, {backgroundColor: theme.colors.surface}]}
+                                accessibilityRole='button'>
+                                <Icon source='share-variant' size={20} color={theme.colors.onSurface} />
+                            </TouchableOpacity>
+                        )}
+                        <SaveButton
+                            saved={saved}
+                            onPress={() => {
+                                void toggle(part.id).catch(() => undefined)
+                            }}
+                            floating
+                        />
+                    </View>
+                </View>
+
+                {categoryInfo && (
                     <View
                         style={[
-                            styles.stockBadge,
-                            {backgroundColor: part.inStock ? theme.colors.successContainer : theme.colors.errorContainer},
+                            styles.categoryPill,
+                            shadows.sm,
+                            {backgroundColor: theme.colors.surface, borderColor: theme.colors.outlineVariant},
                         ]}>
-                        <View
-                            style={[
-                                styles.stockDot,
-                                {backgroundColor: part.inStock ? theme.colors.successBright : theme.colors.error},
-                            ]}
-                        />
-                        <Text style={[styles.stockLabel, {color: part.inStock ? theme.colors.success : theme.colors.errorDark}]}>
-                            {part.inStock ? ARABIC_TEXT.IN_STOCK : ARABIC_TEXT.OUT_OF_STOCK}
+                        <Icon source={categoryInfo.icon || 'tag'} size={13} color={theme.colors.tertiary} />
+                        <Text style={[styles.categoryText, {color: theme.colors.onSurface}]} numberOfLines={1}>
+                            {categoryInfo.name}
                         </Text>
                     </View>
-                    {categoryInfo && (
-                        <View style={[styles.categoryPill, {backgroundColor: theme.colors.primaryContainer}]}>
-                            <Icon source={categoryInfo.icon || 'tag'} size={13} color={theme.colors.primary} />
-                            <Text style={[styles.categoryPillText, {color: theme.colors.primary}]}>{categoryInfo.name}</Text>
-                        </View>
-                    )}
-                </View>
+                )}
             </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    heroCard: {
-        borderRadius: 24,
-        padding: 20,
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        shadowColor: themeColors.shadow,
-        shadowOffset: {width: 0, height: 3},
-        shadowOpacity: 0.08,
-        shadowRadius: 10,
-        elevation: 3,
-        marginBottom: 12,
+    wrapper: {position: 'relative'},
+    imageBox: {
+        width: '100%',
+        height: 320,
+        position: 'relative',
     },
-    heroImage: {
-        width: 96,
-        height: 96,
-        borderRadius: 18,
-        backgroundColor: themeColors.surfaceVariant,
-        marginEnd: 16,
-    },
-    heroIconBox: {
-        width: 96,
-        height: 96,
-        borderRadius: 18,
+    image: {width: '100%', height: '100%'},
+    placeholder: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginEnd: 16,
+        overflow: 'hidden',
     },
-    heroInfo: {
-        flex: 1,
+    placeholderGlow: {
+        position: 'absolute',
+        width: 280,
+        height: 280,
+        borderRadius: 140,
+        opacity: 0.4,
     },
-    partName: {
-        fontSize: 20,
-        fontWeight: '700',
-        letterSpacing: -0.3,
-        lineHeight: 26,
-        marginBottom: 4,
+    gradientTop: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 24,
+        opacity: 0,
     },
-    partBrand: {
-        fontSize: 13,
-        letterSpacing: 0.1,
-        opacity: 0.7,
-        marginBottom: 10,
-    },
-    metaRow: {
+    navRow: {
+        position: 'absolute',
+        left: 16,
+        right: 16,
         flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
-    stockBadge: {
+    navEnd: {flexDirection: 'row', alignItems: 'center', gap: 10},
+    circleBtn: {
+        width: 42,
+        height: 42,
+        borderRadius: 999,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    categoryPill: {
+        position: 'absolute',
+        bottom: 16,
+        start: 16,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
         paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 10,
+        paddingVertical: 6,
+        borderRadius: 999,
+        borderWidth: 1,
     },
-    stockDot: {
-        width: 7,
-        height: 7,
-        borderRadius: 4,
-    },
-    stockLabel: {
-        fontSize: 12,
-        fontWeight: '600',
-        letterSpacing: 0.2,
-    },
-    categoryPill: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 5,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 10,
-    },
-    categoryPillText: {
-        fontSize: 12,
-        fontWeight: '600',
-        letterSpacing: 0.2,
-    },
+    categoryText: {fontSize: 11.5, fontWeight: '700', letterSpacing: 0.1},
 })

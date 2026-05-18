@@ -1,16 +1,16 @@
-import React, {useEffect, useRef} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {Animated, ScrollView, StyleSheet, View} from 'react-native'
 import type {NavigationProp} from '@react-navigation/native'
 
 import {useAppTheme, useVehicleApi} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
-import {useAuthStore, useVehicleStore} from '@/global/store'
+import {MAX_VEHICLES, useAuthStore, useVehicleStore} from '@/global/store'
 import type {PartCategory} from '@/global/types'
 
 import {CategoryGrid} from './categoryGrid'
 import {HomeHero} from './homeHero'
-import {QuickActions} from './quickActions'
 import {RecommendedRail} from './recommendedRail'
+import {VehicleSwitcherSheet} from './vehicleSwitcher'
 
 interface HomeScreenProps {
     navigation?: NavigationProp<RootStackParamList>
@@ -19,15 +19,18 @@ interface HomeScreenProps {
 export const HomeScreen = ({navigation}: HomeScreenProps) => {
     const theme = useAppTheme()
     const vehicle = useVehicleStore(s => s.vehicle)
+    const vehicles = useVehicleStore(s => s.vehicles)
+    const activeVehicleId = useVehicleStore(s => s.activeVehicleId)
     const userName = useAuthStore(s => s.user?.name)
-    const {fetchVehicle} = useVehicleApi()
+    const {fetchVehicles, setActiveVehicle, deleteVehicle} = useVehicleApi()
 
+    const [switcherOpen, setSwitcherOpen] = useState(false)
     const fade = useRef(new Animated.Value(0)).current
     const slide = useRef(new Animated.Value(16)).current
 
     useEffect(() => {
-        if (!vehicle) fetchVehicle().catch(() => {})
-    }, [vehicle, fetchVehicle])
+        fetchVehicles().catch(() => {})
+    }, [fetchVehicles])
 
     useEffect(() => {
         Animated.parallel([
@@ -36,14 +39,43 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
         ]).start()
     }, [fade, slide])
 
-    const goAddVehicle = () => navigation?.navigate('AddVehicle')
-    const goEditVehicle = () => navigation?.navigate('AddVehicle', vehicle ? {vehicleId: vehicle.id} : undefined)
+    const goAddVehicle = useCallback(() => {
+        setSwitcherOpen(false)
+        navigation?.navigate('AddVehicle')
+    }, [navigation])
+
+    const goEditVehicle = useCallback(
+        (id?: string) => {
+            setSwitcherOpen(false)
+            const targetId = id ?? vehicle?.id
+            navigation?.navigate('AddVehicle', targetId ? {vehicleId: targetId} : undefined)
+        },
+        [navigation, vehicle?.id]
+    )
+
     const goCategory = (category: PartCategory) => navigation?.navigate('PartsList', {category})
     const goBrowseAll = () => navigation?.navigate('PartsList', {category: null})
     const goPart = (partId: string) => navigation?.navigate('PartDetail', {partId})
-    const goMyParts = () => navigation?.navigate('MyParts')
-    const goAddPart = () => navigation?.navigate('AddPart')
-    const goMyAccount = () => navigation?.navigate('MyAccount')
+
+    const handleSwitch = useCallback(
+        (id: string) => {
+            setActiveVehicle(id).catch(() => {})
+            setSwitcherOpen(false)
+        },
+        [setActiveVehicle]
+    )
+
+    const handleDelete = useCallback(
+        (id: string) => {
+            deleteVehicle(id).catch(() => {})
+        },
+        [deleteVehicle]
+    )
+
+    const canAdd = vehicles.length < MAX_VEHICLES
+    const handleAddFromSwitcher = () => {
+        if (canAdd) goAddVehicle()
+    }
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
@@ -53,15 +85,30 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
                 showsVerticalScrollIndicator={false}
                 bounces>
                 <Animated.View style={{opacity: fade, transform: [{translateY: slide}]}}>
-                    <HomeHero userName={userName} vehicle={vehicle} onAddVehicle={goAddVehicle} onChangeVehicle={goEditVehicle} />
-
-                    <QuickActions onMyParts={goMyParts} onAddPart={goAddPart} onViewAll={goBrowseAll} onMyAccount={goMyAccount} />
+                    <HomeHero
+                        userName={userName}
+                        vehicle={vehicle}
+                        vehicleCount={vehicles.length}
+                        onAddVehicle={goAddVehicle}
+                        onManageVehicles={() => setSwitcherOpen(true)}
+                    />
 
                     <CategoryGrid onSelectCategory={goCategory} onViewAll={goBrowseAll} />
 
                     {vehicle && <RecommendedRail vehicle={vehicle} onSelectPart={goPart} onViewAll={goBrowseAll} />}
                 </Animated.View>
             </ScrollView>
+
+            <VehicleSwitcherSheet
+                visible={switcherOpen}
+                onClose={() => setSwitcherOpen(false)}
+                vehicles={vehicles}
+                activeVehicleId={activeVehicleId}
+                onSelect={handleSwitch}
+                onEdit={goEditVehicle}
+                onDelete={handleDelete}
+                onAdd={handleAddFromSwitcher}
+            />
         </View>
     )
 }

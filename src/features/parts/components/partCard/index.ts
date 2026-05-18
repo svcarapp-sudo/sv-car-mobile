@@ -1,1 +1,0 @@
-export {PartCard} from './PartCard'

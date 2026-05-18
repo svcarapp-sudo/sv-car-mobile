@@ -1,2 +1,3 @@
 export {useAuthStore} from './authStore'
-export {useVehicleStore} from './vehicleStore'
+export {useVehicleStore, MAX_VEHICLES} from './vehicleStore'
+export {useSavedPartsStore} from './savedPartsStore'

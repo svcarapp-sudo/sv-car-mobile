@@ -1,84 +1,68 @@
-import React from 'react'
-import {Animated, LayoutChangeEvent, StyleSheet, View} from 'react-native'
-import {Text} from 'react-native-paper'
+import {Animated, LayoutChangeEvent, StyleSheet} from 'react-native'
 
 import {useAppTheme} from '@/global/hooks'
-import {AddPartSummaryCard} from './AddPartSummaryCard'
-import {Step} from './AddPartStepper'
+
+import {AddPartPreview} from './AddPartPreview'
+import {StepHeader} from './StepHeader'
+import type {Step} from './addPartConstants'
 
 interface AddPartScrollHeaderProps {
     currentStep: Step
+    title: string
+    subtitle: string
     makeName: string
     makeLogoUrl?: string | null
     modelName: string
     year: number | null
     categoryName: string
-    onEditSummary: () => void
+    onStepPress: (step: Step) => void
     onLayout: (event: LayoutChangeEvent) => void
     translateY: Animated.AnimatedInterpolation<number>
     opacity: Animated.AnimatedInterpolation<number>
 }
 
-const TITLES: Partial<Record<Step, string>> = {
-    [Step.Make]: 'اختر الشركة المصنعة',
-    [Step.Model]: 'اختر الموديل',
-    [Step.Year]: 'سنة الصنع',
-    [Step.Category]: 'اختر فئة القطعة',
-}
-
-const subtitleFor = (step: Step, makeName: string): string | undefined => {
-    if (step === Step.Model) return makeName ? `لسيارة ${makeName}` : undefined
-    if (step === Step.Year) return 'اختر سنة صنع المركبة'
-    return undefined
-}
-
 export const AddPartScrollHeader = ({
     currentStep,
+    title,
+    subtitle,
     makeName,
     makeLogoUrl,
     modelName,
     year,
     categoryName,
-    onEditSummary,
+    onStepPress,
     onLayout,
     translateY,
     opacity,
 }: AddPartScrollHeaderProps) => {
     const theme = useAppTheme()
-    const title = TITLES[currentStep]
-    const subtitle = subtitleFor(currentStep, makeName)
 
     return (
         <Animated.View
             onLayout={onLayout}
             style={[styles.container, {backgroundColor: theme.colors.background, transform: [{translateY}], opacity}]}>
-            <AddPartSummaryCard
+            <AddPartPreview
+                currentStep={currentStep}
                 makeName={makeName}
                 makeLogoUrl={makeLogoUrl}
                 modelName={modelName}
                 year={year}
                 categoryName={categoryName}
-                onEdit={onEditSummary}
+                onStepPress={onStepPress}
             />
-            {title && (
-                <View style={styles.titleWrap}>
-                    <Text variant='headlineSmall' style={[styles.title, {color: theme.colors.onSurface}]}>
-                        {title}
-                    </Text>
-                    {subtitle && (
-                        <Text variant='bodyMedium' style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>
-                            {subtitle}
-                        </Text>
-                    )}
-                </View>
-            )}
+            <StepHeader title={title} subtitle={subtitle} />
         </Animated.View>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, paddingHorizontal: 16, paddingTop: 16},
-    titleWrap: {marginTop: 4},
-    title: {fontWeight: '700', marginBottom: 4},
-    subtitle: {opacity: 0.6, fontSize: 14},
+    container: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 10,
+        paddingHorizontal: 16,
+        paddingTop: 16,
+    },
 })

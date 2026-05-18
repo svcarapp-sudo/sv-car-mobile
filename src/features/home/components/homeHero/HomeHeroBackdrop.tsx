@@ -13,8 +13,8 @@ const NAVY_BOTTOM = '#243558'
 const AMBER = themeColors.tertiary
 
 /**
- * Two-layer hero backdrop: navy gradient + amber radial glow.
- * Anchored top-trailing so eyes land on the brand accent first.
+ * Layered hero backdrop: navy gradient + soft amber glow + frosted glass sheen.
+ * Tuned for a calm, glassy feel — the amber is whispered, not shouted.
  */
 export const HomeHeroBackdrop = ({height}: HomeHeroBackdropProps) => {
     const {width} = useWindowDimensions()
@@ -28,10 +28,17 @@ export const HomeHeroBackdrop = ({height}: HomeHeroBackdropProps) => {
                         <Stop offset='100%' stopColor={NAVY_BOTTOM} stopOpacity={1} />
                     </LinearGradient>
 
-                    <RadialGradient id='heroGlow' cx='90%' cy='8%' r='65%' fx='90%' fy='8%'>
-                        <Stop offset='0%' stopColor={AMBER} stopOpacity={0.32} />
-                        <Stop offset='45%' stopColor={AMBER} stopOpacity={0.12} />
+                    <RadialGradient id='heroGlow' cx='92%' cy='4%' r='72%' fx='92%' fy='4%'>
+                        <Stop offset='0%' stopColor={AMBER} stopOpacity={0.13} />
+                        <Stop offset='35%' stopColor={AMBER} stopOpacity={0.05} />
+                        <Stop offset='75%' stopColor={AMBER} stopOpacity={0.012} />
                         <Stop offset='100%' stopColor={AMBER} stopOpacity={0} />
+                    </RadialGradient>
+
+                    <RadialGradient id='heroSheen' cx='78%' cy='-6%' r='55%' fx='78%' fy='-6%'>
+                        <Stop offset='0%' stopColor='#FFFFFF' stopOpacity={0.07} />
+                        <Stop offset='60%' stopColor='#FFFFFF' stopOpacity={0.018} />
+                        <Stop offset='100%' stopColor='#FFFFFF' stopOpacity={0} />
                     </RadialGradient>
 
                     <LinearGradient id='heroFade' x1='0%' y1='65%' x2='0%' y2='100%'>
@@ -42,6 +49,7 @@ export const HomeHeroBackdrop = ({height}: HomeHeroBackdropProps) => {
 
                 <Rect x={0} y={0} width={width} height={height} fill='url(#heroNavy)' />
                 <Rect x={0} y={0} width={width} height={height} fill='url(#heroGlow)' />
+                <Rect x={0} y={0} width={width} height={height} fill='url(#heroSheen)' />
                 <Rect x={0} y={0} width={width} height={height} fill='url(#heroFade)' />
             </Svg>
         </View>

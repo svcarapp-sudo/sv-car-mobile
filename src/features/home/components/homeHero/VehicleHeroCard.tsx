@@ -1,19 +1,21 @@
 import React from 'react'
-import {Image, Pressable, StyleSheet, View} from 'react-native'
+import {Image, Pressable, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
-import {shadows, themeColors} from '@/global/theme'
+import {themeColors} from '@/global/theme'
 import type {Vehicle} from '@/global/types'
+import {styles} from './VehicleHeroCard.styles'
 
 const ARABIC_TEXT = {
     MY_VEHICLE: 'مركبتي الحالية',
-    EDIT: 'تعديل',
+    MANAGE: 'إدارة',
     COMPATIBLE_LABEL: 'متوافقة',
 }
 
 interface VehicleHeroCardProps {
     vehicle: Partial<Vehicle>
-    onChangeVehicle: () => void
+    vehicleCount?: number
+    onManage: () => void
 }
 
 const Spec = ({text}: {text: string}) => (
@@ -22,8 +24,9 @@ const Spec = ({text}: {text: string}) => (
     </View>
 )
 
-export const VehicleHeroCard = ({vehicle, onChangeVehicle}: VehicleHeroCardProps) => {
+export const VehicleHeroCard = ({vehicle, vehicleCount = 1, onManage}: VehicleHeroCardProps) => {
     const specs = [vehicle.year && String(vehicle.year), vehicle.fuelType, vehicle.engine].filter(Boolean) as string[]
+    const showCount = vehicleCount >= 2
 
     return (
         <View style={styles.card}>
@@ -54,11 +57,18 @@ export const VehicleHeroCard = ({vehicle, onChangeVehicle}: VehicleHeroCardProps
                 </View>
 
                 <Pressable
-                    onPress={onChangeVehicle}
-                    style={({pressed}) => [styles.editBtn, pressed && styles.editBtnPressed]}
+                    onPress={onManage}
+                    style={({pressed}) => [styles.manageBtn, pressed && styles.manageBtnPressed]}
                     hitSlop={8}
-                    accessibilityLabel={ARABIC_TEXT.EDIT}>
-                    <Icon source='pencil-outline' size={18} color={themeColors.primary} />
+                    accessibilityRole='button'
+                    accessibilityLabel={ARABIC_TEXT.MANAGE}>
+                    <Icon source='garage-variant' size={16} color={themeColors.onTertiary} />
+                    <Text style={styles.manageBtnText}>{ARABIC_TEXT.MANAGE}</Text>
+                    {showCount && (
+                        <View style={styles.manageCountChip}>
+                            <Text style={styles.manageCountText}>{vehicleCount}</Text>
+                        </View>
+                    )}
                 </Pressable>
             </View>
 
@@ -69,69 +79,3 @@ export const VehicleHeroCard = ({vehicle, onChangeVehicle}: VehicleHeroCardProps
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    card: {
-        borderRadius: 22,
-        backgroundColor: themeColors.surface,
-        paddingTop: 16,
-        paddingBottom: 12,
-        paddingHorizontal: 14,
-        overflow: 'hidden',
-        ...shadows.lg,
-    },
-    accentEdge: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        end: 0,
-        width: 4,
-        backgroundColor: themeColors.tertiary,
-        opacity: 0.95,
-    },
-    row: {flexDirection: 'row', alignItems: 'center'},
-    logoBox: {
-        width: 56,
-        height: 56,
-        borderRadius: 16,
-        backgroundColor: themeColors.primaryContainer,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginEnd: 12,
-    },
-    logo: {width: 36, height: 36},
-    info: {flex: 1, marginEnd: 8},
-    labelRow: {flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2},
-    dot: {width: 5, height: 5, borderRadius: 3, backgroundColor: themeColors.tertiary},
-    label: {fontSize: 11, fontWeight: '600', letterSpacing: 0.4, color: themeColors.onSurfaceVariant},
-    name: {fontSize: 18, fontWeight: '700', letterSpacing: -0.3, color: themeColors.onSurface, marginBottom: 6},
-    specsRow: {flexDirection: 'row', gap: 6, flexWrap: 'wrap'},
-    specChip: {
-        paddingHorizontal: 8,
-        paddingVertical: 3,
-        borderRadius: 8,
-        backgroundColor: themeColors.surfaceContainerLow,
-        borderWidth: 1,
-        borderColor: themeColors.outlineVariant,
-    },
-    specText: {fontSize: 11, fontWeight: '600', color: themeColors.onSurfaceVariant},
-    editBtn: {
-        width: 40,
-        height: 40,
-        borderRadius: 12,
-        backgroundColor: themeColors.primaryContainer,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    editBtnPressed: {opacity: 0.7, transform: [{scale: 0.96}]},
-    footer: {
-        marginTop: 14,
-        paddingTop: 10,
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: themeColors.outlineVariant,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-    },
-    footerText: {fontSize: 11.5, fontWeight: '500', color: themeColors.onSurfaceVariant, flex: 1},
-})

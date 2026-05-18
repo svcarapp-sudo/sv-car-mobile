@@ -6,14 +6,17 @@ import {Text, IconButton} from 'react-native-paper'
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 import {navigationRef} from '@/global/navigation/navigationRef'
+import {useSavedPartsStore} from '@/global/store'
 import {useLayoutStore} from './layoutStore'
 
-const BOTTOM_NAV_SCREENS = ['Home', 'PartsList', 'MyParts']
+const BOTTOM_NAV_SCREENS = ['Home', 'PartsList', 'PartRequestsList', 'MyParts']
+const SHOW_FAVORITES_ICON_ON = ['Home', 'PartsList', 'PartsCategories']
 
 export const AppHeader = () => {
     const theme = useAppTheme()
     const {toggleDrawer} = useLayoutStore()
     const insets = useSafeAreaInsets()
+    const savedCount = useSavedPartsStore(s => s.ids.length)
 
     const activeRoute = useNavigationState(state => {
         if (!state?.routes?.length) return 'Home'
@@ -34,8 +37,15 @@ export const AppHeader = () => {
     const isBottomNavScreen = BOTTOM_NAV_SCREENS.includes(activeRoute)
     const showMenuIcon = !canGoBack || isBottomNavScreen
     const showBackButton = canGoBack && !isBottomNavScreen
+    const showFavorites = SHOW_FAVORITES_ICON_ON.includes(activeRoute)
 
     const headerHeight = 58 + insets.top
+
+    const goToFavorites = () => {
+        if (navigationRef.isReady()) {
+            navigationRef.navigate('Main', {screen: 'SavedParts'})
+        }
+    }
 
     return (
         <View
@@ -48,7 +58,6 @@ export const AppHeader = () => {
                     borderBottomColor: theme.colors.outline,
                 },
             ]}>
-            {/* Start side */}
             <View style={styles.side}>
                 {showMenuIcon && (
                     <IconButton
@@ -61,16 +70,14 @@ export const AppHeader = () => {
                 )}
             </View>
 
-            {/* Logo */}
             <View style={styles.center}>
                 <Text style={[styles.brandText, {color: theme.colors.onSurface}]}>
                     sv-<Text style={{color: theme.colors.tertiary}}>car</Text>
                 </Text>
             </View>
 
-            {/* End side */}
             <View style={styles.side}>
-                {showBackButton && (
+                {showBackButton ? (
                     <IconButton
                         icon={I18nManager.isRTL ? 'arrow-left' : 'arrow-right'}
                         size={26}
@@ -82,7 +89,25 @@ export const AppHeader = () => {
                         }}
                         style={styles.iconBtn}
                     />
-                )}
+                ) : showFavorites ? (
+                    <View style={styles.favWrap}>
+                        <IconButton
+                            icon='heart-outline'
+                            size={24}
+                            iconColor={theme.colors.onSurfaceVariant}
+                            onPress={goToFavorites}
+                            style={styles.iconBtn}
+                            accessibilityLabel='Favorites'
+                        />
+                        {savedCount > 0 && (
+                            <View style={[styles.badge, {backgroundColor: theme.colors.error}]} pointerEvents='none'>
+                                <Text style={[styles.badgeText, {color: theme.colors.onError}]} numberOfLines={1}>
+                                    {savedCount > 99 ? '99+' : savedCount}
+                                </Text>
+                            </View>
+                        )}
+                    </View>
+                ) : null}
             </View>
         </View>
     )
@@ -116,5 +141,24 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: '800',
         letterSpacing: -0.3,
+    },
+    favWrap: {
+        position: 'relative',
+    },
+    badge: {
+        position: 'absolute',
+        top: 4,
+        end: 2,
+        minWidth: 16,
+        height: 16,
+        borderRadius: 8,
+        paddingHorizontal: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    badgeText: {
+        fontSize: 9.5,
+        fontWeight: '800',
+        lineHeight: 11,
     },
 })

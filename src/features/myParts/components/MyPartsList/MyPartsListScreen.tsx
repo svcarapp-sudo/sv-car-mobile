@@ -1,79 +1,79 @@
-import {useMemo} from 'react'
-import {StyleSheet, View, FlatList, Alert} from 'react-native'
-import {FAB, Text, Icon} from 'react-native-paper'
+import {useMemo, useState} from 'react'
+import {FlatList, StyleSheet, View} from 'react-native'
+import {FAB} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
-import {useMyParts} from '../../hooks/useMyParts'
 import {useAppTheme, useCatalog} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {Part} from '@/global/types'
-import {MyPartCardItem} from './MyPartCardItem'
-import {MyPartsListEmpty} from './MyPartsListEmpty'
 
-const ARABIC_TEXT = {
-    DELETE: 'حذف القطعة',
-    DELETE_CONFIRM: 'هل أنت متأكد من حذف هذه القطعة؟\nلا يمكن التراجع عن هذا الإجراء.',
-    DELETE_ERROR: 'فشل حذف القطعة',
-    ADD_PART: 'إضافة قطعة',
-    CANCEL: 'إلغاء',
-    TOTAL_PARTS: 'عدد القطع',
-    TOTAL_VALUE: 'القيمة الإجمالية',
-}
+import {useMyParts} from '../../hooks/useMyParts'
+import {useMyPartsFilters} from '../../hooks/useMyPartsFilters'
+import {MyPartCardItem} from './MyPartCardItem'
+import {MyPartsDeleteDialog} from './MyPartsDeleteDialog'
+import {MyPartsFilterBar} from './MyPartsFilterBar'
+import {MyPartsListEmpty} from './MyPartsListEmpty'
+import {MyPartsSearchBar} from './MyPartsSearchBar'
+import {MyPartsStatsStrip} from './MyPartsStatsStrip'
+
+const ARABIC_TEXT = {ADD_PART: 'إضافة قطعة'}
 
 interface MyPartsListScreenProps {
     route?: RouteProp<RootStackParamList, 'MyParts'>
     navigation?: NavigationProp<RootStackParamList>
 }
 
+interface PendingDelete {
+    id: string
+    name: string
+}
+
 export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
     const theme = useAppTheme()
     const {parts, loading, deletePart, fetchMyParts} = useMyParts()
     const {getBySlug, categories} = useCatalog()
+    const filters = useMyPartsFilters(parts, categories)
+
+    const [pending, setPending] = useState<PendingDelete | null>(null)
+    const [deleting, setDeleting] = useState(false)
 
     const stats = useMemo(() => {
         const totalValue = parts.reduce((sum, p) => sum + p.price, 0)
-        return {count: parts.length, totalValue}
+        const cats = new Set(parts.map(p => p.categoryId).filter(Boolean) as number[])
+        return {count: parts.length, totalValue, categoriesCount: cats.size}
     }, [parts])
-
-    const handleDelete = (partId: string, _partName: string) => {
-        Alert.alert(ARABIC_TEXT.DELETE, ARABIC_TEXT.DELETE_CONFIRM, [
-            {text: ARABIC_TEXT.CANCEL, style: 'cancel'},
-            {
-                text: ARABIC_TEXT.DELETE,
-                style: 'destructive',
-                onPress: async () => {
-                    try {
-                        await deletePart(partId)
-                    } catch {
-                        Alert.alert(ARABIC_TEXT.DELETE_ERROR)
-                    }
-                },
-            },
-        ])
-    }
 
     const getCategoryInfo = (part: Part) => {
         return getBySlug(part.category) || categories.find(c => c.id === part.categoryId) || null
     }
 
+    const handleConfirmDelete = async () => {
+        if (!pending) return
+        setDeleting(true)
+        try {
+            await deletePart(pending.id)
+            setPending(null)
+        } finally {
+            setDeleting(false)
+        }
+    }
+
+    const showToolbar = parts.length > 0
+    const showEmpty = filters.filtered.length === 0
+
     const renderHeader = () => {
-        if (parts.length === 0) return null
+        if (!showToolbar) return null
         return (
-            <View style={styles.statsRow}>
-                <View style={[styles.statCard, {backgroundColor: theme.colors.primaryContainer}]}>
-                    <View style={[styles.statIcon, {backgroundColor: theme.colors.surface}]}>
-                        <Icon source='package-variant' size={18} color={theme.colors.primary} />
-                    </View>
-                    <Text style={[styles.statValue, {color: theme.colors.primary}]}>{stats.count}</Text>
-                    <Text style={[styles.statLabel, {color: theme.colors.primary}]}>{ARABIC_TEXT.TOTAL_PARTS}</Text>
-                </View>
-                <View style={[styles.statCard, {backgroundColor: theme.colors.accentContainer}]}>
-                    <View style={[styles.statIcon, {backgroundColor: theme.colors.surface}]}>
-                        <Icon source='cash' size={18} color={theme.colors.tertiary} />
-                    </View>
-                    <Text style={[styles.statValue, {color: theme.colors.tertiary}]}>${stats.totalValue.toFixed(0)}</Text>
-                    <Text style={[styles.statLabel, {color: theme.colors.tertiary}]}>{ARABIC_TEXT.TOTAL_VALUE}</Text>
-                </View>
+            <View style={styles.header}>
+                <MyPartsStatsStrip count={stats.count} totalValue={stats.totalValue} categoriesCount={stats.categoriesCount} />
+                <MyPartsSearchBar value={filters.search} onChange={filters.setSearch} />
+                <MyPartsFilterBar
+                    categories={filters.availableCategories}
+                    activeCategoryId={filters.activeCategoryId}
+                    onSelectCategory={filters.setActiveCategoryId}
+                    sort={filters.sort}
+                    onChangeSort={filters.setSort}
+                />
             </View>
         )
     }
@@ -81,21 +81,29 @@ export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
             <FlatList
-                data={parts}
+                data={filters.filtered}
                 renderItem={({item}) => (
                     <MyPartCardItem
                         part={item}
                         onEdit={id => navigation?.navigate('EditPart', {partId: id})}
-                        onDelete={handleDelete}
+                        onDelete={(id, name) => setPending({id, name})}
                         categoryInfo={getCategoryInfo(item)}
                     />
                 )}
                 keyExtractor={item => item.id}
-                contentContainerStyle={[styles.listContent, parts.length === 0 && styles.emptyContent]}
+                contentContainerStyle={[styles.listContent, showEmpty && styles.emptyContent]}
                 refreshing={loading}
                 onRefresh={fetchMyParts}
                 ListHeaderComponent={renderHeader}
-                ListEmptyComponent={<MyPartsListEmpty loading={loading && parts.length === 0} navigation={navigation} />}
+                ListEmptyComponent={
+                    <MyPartsListEmpty
+                        loading={loading && parts.length === 0}
+                        isFiltered={showToolbar && filters.isFiltered}
+                        onResetFilters={filters.resetFilters}
+                        navigation={navigation}
+                    />
+                }
+                showsVerticalScrollIndicator={false}
             />
             <FAB
                 icon='plus'
@@ -104,18 +112,21 @@ export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
                 color={theme.colors.onPrimary}
                 onPress={() => navigation?.navigate('AddPart')}
             />
+            <MyPartsDeleteDialog
+                visible={pending != null}
+                partName={pending?.name}
+                submitting={deleting}
+                onCancel={() => setPending(null)}
+                onConfirm={handleConfirmDelete}
+            />
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {flex: 1},
-    listContent: {padding: 16, paddingBottom: 80},
+    listContent: {padding: 16, paddingBottom: 92},
     emptyContent: {flexGrow: 1},
-    statsRow: {flexDirection: 'row', gap: 12, marginBottom: 16},
-    statCard: {flex: 1, alignItems: 'center', paddingVertical: 14, borderRadius: 14, gap: 4},
-    statIcon: {width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', marginBottom: 2},
-    statValue: {fontSize: 20, fontWeight: '700'},
-    statLabel: {fontSize: 11, fontWeight: '500', opacity: 0.8},
+    header: {paddingTop: 4},
     fab: {position: 'absolute', margin: 16, end: 0, bottom: 0, borderRadius: 16},
 })

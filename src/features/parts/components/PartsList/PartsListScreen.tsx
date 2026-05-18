@@ -1,15 +1,17 @@
-import React, {useCallback, useRef} from 'react'
-import {Animated, StyleSheet, View} from 'react-native'
+import {useCallback, useMemo, useState} from 'react'
+import {FlatList, StyleSheet, View} from 'react-native'
 import {ActivityIndicator} from 'react-native-paper'
-import {useCatalog, useAppTheme} from '@/global/hooks'
-import {useParts} from '../../hooks'
-import type {RootStackParamList} from '@/global/navigation/types'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
-import {PartCardItem} from './PartCardItem'
-import {PartsListHeader} from './PartsListHeader'
-import {PartsListEmpty} from './PartsListEmpty'
 
-const HEADER_HEIGHT = 104
+import {useAppTheme, useCatalog} from '@/global/hooks'
+import type {RootStackParamList} from '@/global/navigation/types'
+
+import {useParts} from '../../hooks'
+import {PartCardItem} from './PartCardItem'
+import {PartsListEmpty} from './PartsListEmpty'
+import {PartsListFilters} from './PartsListFilters'
+import {PartsListHeader} from './PartsListHeader'
+import {PartsListSortSheet, SORT_LABELS, type SortOption} from './PartsListSortSheet'
 
 interface PartsListScreenProps {
     route?: RouteProp<RootStackParamList, 'PartsList'>
@@ -22,17 +24,21 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
     const {getBySlug, categories} = useCatalog()
     const theme = useAppTheme()
 
-    const categoryFromApi = routeCategory ? getBySlug(routeCategory) : null
-    const categoryName = categoryFromApi?.name || routeCategory || null
+    const [inStockOnly, setInStockOnly] = useState(false)
+    const [sortOpen, setSortOpen] = useState(false)
+    const [sort, setSort] = useState<SortOption>('newest')
 
-    const scrollY = useRef(new Animated.Value(0)).current
-    const headerTranslate = scrollY.interpolate({
-        inputRange: [0, HEADER_HEIGHT],
-        outputRange: [0, -HEADER_HEIGHT],
-        extrapolate: 'clamp',
-    })
+    const goAddVehicle = () => navigation?.navigate('AddVehicle')
+    const categoryName = (routeCategory ? getBySlug(routeCategory)?.name : null) || routeCategory || null
 
-    const onScroll = Animated.event([{nativeEvent: {contentOffset: {y: scrollY}}}], {useNativeDriver: true})
+    const visibleParts = useMemo(() => {
+        let list = parts
+        if (inStockOnly) list = list.filter(p => p.inStock)
+        if (sort === 'price_asc') list = list.slice().sort((a, b) => a.price - b.price)
+        if (sort === 'price_desc') list = list.slice().sort((a, b) => b.price - a.price)
+        if (sort === 'name') list = list.slice().sort((a, b) => a.name.localeCompare(b.name))
+        return list
+    }, [parts, inStockOnly, sort])
 
     const renderItem = useCallback(
         ({item}: {item: (typeof parts)[0]}) => <PartCardItem part={item} navigation={navigation} categories={categories} />,
@@ -41,39 +47,56 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
-            <Animated.View style={[styles.headerWrap, {transform: [{translateY: headerTranslate}]}]}>
-                <PartsListHeader categoryName={categoryName} partsCount={total} search={search} onSearchChange={setSearch} />
-            </Animated.View>
-
-            <Animated.FlatList
-                data={parts}
+            <FlatList
+                data={visibleParts}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
-                contentContainerStyle={[styles.listContent, parts.length === 0 && styles.emptyContent]}
+                numColumns={2}
+                columnWrapperStyle={styles.gridRow}
+                ListHeaderComponent={
+                    <View style={styles.headerWrap}>
+                        <PartsListHeader
+                            categoryName={categoryName}
+                            partsCount={total}
+                            search={search}
+                            onSearchChange={setSearch}
+                            onChangeVehicle={goAddVehicle}
+                            onAddVehicle={goAddVehicle}
+                        />
+                        <PartsListFilters
+                            inStockOnly={inStockOnly}
+                            onToggleInStock={() => setInStockOnly(v => !v)}
+                            onOpenSort={() => setSortOpen(true)}
+                            sortLabel={SORT_LABELS[sort]}
+                        />
+                    </View>
+                }
+                contentContainerStyle={[styles.listContent, visibleParts.length === 0 && styles.emptyContent]}
                 showsVerticalScrollIndicator={false}
                 refreshing={loading}
                 onRefresh={refresh}
                 onEndReached={hasMore ? loadMore : undefined}
                 onEndReachedThreshold={0.4}
-                onScroll={onScroll}
-                scrollEventThrottle={16}
                 ListEmptyComponent={<PartsListEmpty loading={loading} categoryName={categoryName} navigation={navigation} />}
                 ListFooterComponent={
                     loadingMore ? (
                         <View style={styles.footer}>
-                            <ActivityIndicator size='small' color={theme.colors.primary} />
+                            <ActivityIndicator size='small' color={theme.colors.tertiary} />
                         </View>
                     ) : null
                 }
             />
+
+            <PartsListSortSheet visible={sortOpen} selected={sort} onSelect={setSort} onDismiss={() => setSortOpen(false)} />
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {flex: 1},
-    headerWrap: {position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10},
-    listContent: {paddingHorizontal: 16, paddingTop: HEADER_HEIGHT + 12, paddingBottom: 24},
-    emptyContent: {flexGrow: 1},
+    headerWrap: {marginHorizontal: -16, marginBottom: 8},
+    listContent: {paddingHorizontal: 16, paddingBottom: 28},
+    emptyContent: {flexGrow: 1, paddingHorizontal: 0},
+    gridRow: {gap: 0, marginHorizontal: -5, marginBottom: 10},
     footer: {paddingVertical: 20, alignItems: 'center'},
 })

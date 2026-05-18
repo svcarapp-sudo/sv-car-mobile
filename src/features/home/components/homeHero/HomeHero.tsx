@@ -13,11 +13,12 @@ const INITIAL_HEIGHT = 300
 interface HomeHeroProps {
     userName?: string | null
     vehicle: Partial<Vehicle> | null
+    vehicleCount?: number
     onAddVehicle: () => void
-    onChangeVehicle: () => void
+    onManageVehicles: () => void
 }
 
-export const HomeHero = ({userName, vehicle, onAddVehicle, onChangeVehicle}: HomeHeroProps) => {
+export const HomeHero = ({userName, vehicle, vehicleCount, onAddVehicle, onManageVehicles}: HomeHeroProps) => {
     const [height, setHeight] = useState(INITIAL_HEIGHT)
 
     const onLayout = (e: LayoutChangeEvent) => {
@@ -33,7 +34,7 @@ export const HomeHero = ({userName, vehicle, onAddVehicle, onChangeVehicle}: Hom
                 <HomeGreeting name={userName} />
 
                 {vehicle ? (
-                    <VehicleHeroCard vehicle={vehicle} onChangeVehicle={onChangeVehicle} />
+                    <VehicleHeroCard vehicle={vehicle} vehicleCount={vehicleCount} onManage={onManageVehicles} />
                 ) : (
                     <VehicleEmptyHeroCard onAddVehicle={onAddVehicle} />
                 )}
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     content: {
         paddingHorizontal: 18,
         paddingTop: 4,
-        paddingBottom: 56,
+        paddingBottom: 28,
         position: 'relative',
         zIndex: 1,
     },

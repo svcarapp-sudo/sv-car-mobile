@@ -1,133 +1,113 @@
-import {useState} from 'react'
-import {StyleSheet, View} from 'react-native'
+import {useRef, useState} from 'react'
+import {Animated, StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent} from 'react-native'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
+
 import type {RootStackParamList} from '@/global/navigation/types'
-import {useAppTheme, useCatalog, useVehicleApi} from '@/global/hooks'
-import {AddVehicleStepper, Step} from './AddVehicleStepper'
-import {AddVehicleSummaryCard} from './AddVehicleSummaryCard'
+import {useAppTheme, useCatalog} from '@/global/hooks'
+
+import {AddVehicleProgress} from './AddVehicleProgress'
+import {AddVehicleScrollHeader} from './AddVehicleScrollHeader'
 import {AddVehicleStepContent} from './AddVehicleStepContent'
+import {STEPS} from './addVehicleConstants'
+import {useAddVehicleForm} from './useAddVehicleForm'
 
 interface AddVehicleScreenProps {
     navigation?: NavigationProp<RootStackParamList>
     route?: RouteProp<RootStackParamList, 'AddVehicle'>
 }
 
+const HIDE_DY = 6
+const SHOW_DY = 4
+const TOP_PIN = 24
+
 export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => {
-    const vehicleInfo = useCatalog()
-    const {createVehicle, updateVehicle, loading: submitLoading, error: submitError} = useVehicleApi()
     const theme = useAppTheme()
+    const vehicleInfo = useCatalog()
     const editVehicleId = route?.params?.vehicleId
-    const [currentStep, setCurrentStep] = useState<Step>(Step.Origin)
-    const [originId, setOriginId] = useState<number | null>(null)
-    const [originName, setOriginName] = useState('')
-    const [make, setMake] = useState('')
-    const [makeId, setMakeId] = useState<string | null>(null)
-    const [makeLogoUrl, setMakeLogoUrl] = useState<string | null>(null)
-    const [model, setModel] = useState('')
-    const [modelId, setModelId] = useState<string | null>(null)
-    const [year, setYear] = useState('')
-    const [fuelType, setFuelType] = useState('')
-    const [vin, setVin] = useState('')
-    const [displayName, setDisplayName] = useState('')
+    const form = useAddVehicleForm({editVehicleId, onSuccess: () => navigation?.navigate('Home')})
 
-    const handleNext = () => {
-        if (currentStep < Step.Details) {
-            setCurrentStep(currentStep + 1)
+    const meta = STEPS[form.currentStep]
+    const [headerHeight, setHeaderHeight] = useState(0)
+    const headerVisible = useRef(new Animated.Value(1)).current
+    const lastY = useRef(0)
+    const direction = useRef<'up' | 'down' | null>(null)
+
+    const animateTo = (toValue: 0 | 1) => {
+        Animated.timing(headerVisible, {
+            toValue,
+            duration: toValue === 1 ? 200 : 220,
+            useNativeDriver: true,
+        }).start()
+    }
+
+    const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const y = e.nativeEvent.contentOffset.y
+        const dy = y - lastY.current
+        lastY.current = y
+
+        if (y < TOP_PIN) {
+            if (direction.current !== 'up') {
+                direction.current = 'up'
+                animateTo(1)
+            }
+            return
+        }
+        if (dy > HIDE_DY && direction.current !== 'down') {
+            direction.current = 'down'
+            animateTo(0)
+        } else if (dy < -SHOW_DY && direction.current !== 'up') {
+            direction.current = 'up'
+            animateTo(1)
         }
     }
 
-    const handleStepChange = (step: Step) => {
-        if (step < currentStep) {
-            if (step < Step.Details) {
-                setVin('')
-                setDisplayName('')
-            }
-            if (step < Step.Fuel) setFuelType('')
-            if (step < Step.Year) setYear('')
-            if (step < Step.Model) {
-                setModel('')
-                setModelId(null)
-            }
-            if (step < Step.Make) {
-                setMake('')
-                setMakeId(null)
-                setMakeLogoUrl(null)
-            }
-            if (step < Step.Origin) {
-                setOriginId(null)
-                setOriginName('')
-            }
-            setCurrentStep(step)
-        }
-    }
-
-    const handleSubmit = async () => {
-        if (!makeId || !modelId || !year) return
-        try {
-            const data = {
-                makeId: Number(makeId),
-                modelId: Number(modelId),
-                year: Number(year),
-                fuelType: fuelType || null,
-                vin: vin || null,
-                displayName: displayName || null,
-            }
-            if (editVehicleId) await updateVehicle(editVehicleId, data)
-            else await createVehicle(data)
-            navigation?.navigate('Home')
-        } catch {}
-    }
+    const translateY = headerVisible.interpolate({inputRange: [0, 1], outputRange: [-headerHeight, 0]})
+    const opacity = headerVisible.interpolate({inputRange: [0, 1], outputRange: [0, 1]})
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
-            <AddVehicleStepper currentStep={currentStep} onStepPress={handleStepChange} />
-            <View style={styles.mainContent}>
-                <AddVehicleSummaryCard
-                    currentStep={currentStep}
-                    originName={originName}
-                    make={make}
-                    makeLogoUrl={makeLogoUrl}
-                    model={model}
-                    year={year}
-                    fuelType={fuelType}
-                    onStepPress={handleStepChange}
-                />
-                <View style={styles.contentArea}>
+            <AddVehicleProgress currentStep={form.currentStep} onStepPress={form.handleStepChange} />
+
+            <View style={styles.contentArea}>
+                <View style={styles.stepContent}>
                     <AddVehicleStepContent
-                        currentStep={currentStep}
+                        currentStep={form.currentStep}
                         vehicleInfo={vehicleInfo}
-                        originId={originId}
-                        make={make}
-                        makeId={makeId}
-                        model={model}
-                        modelId={modelId}
-                        year={year}
-                        fuelType={fuelType}
-                        vin={vin}
-                        displayName={displayName}
-                        submitLoading={submitLoading}
-                        submitError={submitError}
-                        onOriginSelect={(id, name) => {
-                            setOriginId(id)
-                            setOriginName(name)
-                        }}
-                        onMakeSelect={(name, id, logoUrl) => {
-                            setMake(name)
-                            setMakeId(id)
-                            setMakeLogoUrl(logoUrl ?? null)
-                        }}
-                        onModelSelect={(name, id) => {
-                            setModel(name)
-                            setModelId(id)
-                        }}
-                        onYearSelect={setYear}
-                        onFuelSelect={setFuelType}
-                        onVinChange={setVin}
-                        onDisplayNameChange={setDisplayName}
-                        onSubmit={handleSubmit}
-                        onNext={handleNext}
+                        originId={form.originId}
+                        make={form.make}
+                        makeId={form.makeId}
+                        model={form.model}
+                        modelId={form.modelId}
+                        year={form.year}
+                        fuelType={form.fuelType}
+                        submitLoading={form.submitLoading}
+                        submitError={form.submitError}
+                        onOriginSelect={form.selectOrigin}
+                        onMakeSelect={form.selectMake}
+                        onModelSelect={form.selectModel}
+                        onYearSelect={form.setYear}
+                        onFuelSubmit={form.selectFuelAndSubmit}
+                        onNext={form.handleNext}
+                        onScroll={handleScroll}
+                        contentTopInset={headerHeight}
                     />
                 </View>
+
+                <AddVehicleScrollHeader
+                    currentStep={form.currentStep}
+                    title={meta.title}
+                    subtitle={meta.subtitle}
+                    originName={form.originName}
+                    make={form.make}
+                    makeLogoUrl={form.makeLogoUrl}
+                    model={form.model}
+                    year={form.year}
+                    fuelType={form.fuelType}
+                    onStepPress={form.handleStepChange}
+                    onLayout={e => setHeaderHeight(e.nativeEvent.layout.height)}
+                    translateY={translateY}
+                    opacity={opacity}
+                />
             </View>
         </View>
     )
@@ -137,12 +117,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    mainContent: {
-        flex: 1,
-        paddingHorizontal: 20,
-        paddingTop: 20,
-    },
     contentArea: {
         flex: 1,
+        overflow: 'hidden',
+    },
+    stepContent: {
+        flex: 1,
+        paddingHorizontal: 18,
     },
 })

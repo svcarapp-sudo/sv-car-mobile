@@ -93,7 +93,7 @@ export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) =
 }
 
 const styles = StyleSheet.create({
-    container: {paddingHorizontal: 18, marginBottom: 24},
+    container: {paddingHorizontal: 18, marginTop: 20, marginBottom: 24},
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',

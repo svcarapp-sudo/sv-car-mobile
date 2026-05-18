@@ -3,6 +3,7 @@ import {StyleSheet, View, ScrollView} from 'react-native'
 import {Drawer, Text, Avatar, Divider} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
+import {navigationRef} from '@/global/navigation/navigationRef'
 import {themeColors} from '@/global/theme'
 import {useAuthStore} from '@/global/store'
 import {useLayoutStore} from './layoutStore'
@@ -43,9 +44,12 @@ export const AppDrawer = ({onClose, onLogout}: AppDrawerProps) => {
         {id: 'help', label: ARABIC_TEXT.HELP_SUPPORT, icon: 'help-circle-outline'},
     ]
 
-    const handlePress = (_id: string) => {
+    const handlePress = (id: string) => {
         onClose?.()
         toggleDrawer(false)
+        if (id === 'favorites' && navigationRef.isReady()) {
+            navigationRef.navigate('Main', {screen: 'SavedParts'})
+        }
     }
 
     const handleLogout = () => {

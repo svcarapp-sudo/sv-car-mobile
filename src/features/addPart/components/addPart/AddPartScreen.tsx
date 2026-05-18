@@ -7,7 +7,8 @@ import {useAddPartForm} from '../../hooks/useAddPartForm'
 import {useAppTheme} from '@/global/hooks'
 import {SellerProfileGate} from '../sellerProfileGate'
 import {AddPartScrollHeader} from './AddPartScrollHeader'
-import {AddPartStepper, Step} from './AddPartStepper'
+import {AddPartProgress} from './AddPartProgress'
+import {STEPS} from './addPartConstants'
 import {AddPartStepRenderer} from './AddPartStepRenderer'
 import type {RootStackParamList} from '@/global/navigation/types'
 
@@ -22,6 +23,7 @@ const TOP_PIN = 24
 export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
     const theme = useAppTheme()
     const form = useAddPartForm(navigation)
+    const meta = STEPS[form.currentStep]
 
     const [headerHeight, setHeaderHeight] = useState(0)
     const headerVisible = useRef(new Animated.Value(1)).current
@@ -65,7 +67,7 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
     return (
         <SellerProfileGate>
             <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
-                <AddPartStepper currentStep={form.currentStep} onStepPress={form.handleStepChange} />
+                <AddPartProgress currentStep={form.currentStep} onStepPress={form.handleStepChange} />
                 <View style={styles.contentArea}>
                     <View style={styles.stepContent}>
                         <AddPartStepRenderer
@@ -107,12 +109,14 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
                     </View>
                     <AddPartScrollHeader
                         currentStep={form.currentStep}
+                        title={meta.title}
+                        subtitle={meta.subtitle}
                         makeName={form.makeName}
                         makeLogoUrl={form.makeLogoUrl}
                         modelName={form.modelName}
                         year={form.year}
                         categoryName={form.categoryName}
-                        onEditSummary={() => form.handleStepChange(Step.Make)}
+                        onStepPress={form.handleStepChange}
                         onLayout={e => setHeaderHeight(e.nativeEvent.layout.height)}
                         translateY={translateY}
                         opacity={opacity}

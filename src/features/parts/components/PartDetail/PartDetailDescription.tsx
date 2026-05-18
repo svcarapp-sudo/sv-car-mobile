@@ -1,7 +1,7 @@
 import {StyleSheet, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
+
 import {useAppTheme} from '@/global/hooks'
-import {themeColors} from '@/global/theme'
 
 const ARABIC_TEXT = {
     DESCRIPTION: 'الوصف',
@@ -15,50 +15,28 @@ export const PartDetailDescription = ({description}: PartDetailDescriptionProps)
     const theme = useAppTheme()
 
     return (
-        <View style={[styles.sectionCard, {backgroundColor: theme.colors.surface}]}>
-            <View style={styles.sectionHeader}>
-                <View style={[styles.sectionIconBox, {backgroundColor: theme.colors.primaryContainer}]}>
-                    <Icon source='text-box-outline' size={16} color={theme.colors.primary} />
+        <View style={[styles.card, {backgroundColor: theme.colors.surface, borderColor: theme.colors.outlineVariant}]}>
+            <View style={styles.header}>
+                <View style={[styles.iconBox, {backgroundColor: theme.colors.accentSubtle}]}>
+                    <Icon source='text-box-outline' size={16} color={theme.colors.tertiary} />
                 </View>
-                <Text style={[styles.sectionTitle, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.DESCRIPTION}</Text>
+                <Text style={[styles.title, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.DESCRIPTION}</Text>
             </View>
-            <Text style={[styles.sectionBody, {color: theme.colors.onSurfaceVariant}]}>{description}</Text>
+            <Text style={[styles.body, {color: theme.colors.onSurfaceVariant}]}>{description}</Text>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    sectionCard: {
-        borderRadius: 20,
-        padding: 20,
-        marginBottom: 12,
-        shadowColor: themeColors.shadow,
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 0.05,
-        shadowRadius: 6,
-        elevation: 1,
-    },
-    sectionHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-        marginBottom: 14,
-    },
-    sectionIconBox: {
+    card: {borderRadius: 22, padding: 18, borderWidth: 1, gap: 12},
+    header: {flexDirection: 'row', alignItems: 'center', gap: 10},
+    iconBox: {
         width: 32,
         height: 32,
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    sectionTitle: {
-        fontSize: 15,
-        fontWeight: '700',
-        letterSpacing: -0.1,
-    },
-    sectionBody: {
-        fontSize: 14,
-        lineHeight: 22,
-        letterSpacing: 0.1,
-    },
+    title: {fontSize: 14.5, fontWeight: '800', letterSpacing: -0.2},
+    body: {fontSize: 14, lineHeight: 24, letterSpacing: 0.1, fontWeight: '500'},
 })

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import {useAuthStore} from '@/global/store'
+import {useAuthStore} from '@/global/store/authStore'
 import {API_BASE_URL} from '@/global/constants'
 
 interface RequestOptions {

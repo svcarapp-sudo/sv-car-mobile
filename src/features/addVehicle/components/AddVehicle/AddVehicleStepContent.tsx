@@ -1,10 +1,12 @@
+import {useEffect, useRef} from 'react'
+import {Animated, StyleSheet, type NativeScrollEvent, type NativeSyntheticEvent} from 'react-native'
+
 import {MakeScreen, ModelScreen, YearScreen} from '@/global/components'
 import type {useCatalog} from '@/global/hooks'
 
-import {Step} from './AddVehicleStepper'
+import {Step} from './addVehicleConstants'
 import {OriginScreen} from '../origin'
-import {FuelScreen} from '../FuelScreen'
-import {AddVinScreen} from '../addVin'
+import {FuelScreen} from '../fuel'
 
 interface AddVehicleStepContentProps {
     currentStep: Step
@@ -16,45 +18,21 @@ interface AddVehicleStepContentProps {
     modelId: string | null
     year: string
     fuelType: string
-    vin: string
-    displayName: string
     submitLoading: boolean
     submitError: string | null
     onOriginSelect: (id: number, name: string) => void
     onMakeSelect: (name: string, id: string, logoUrl?: string | null) => void
     onModelSelect: (name: string, id: string) => void
     onYearSelect: (year: string) => void
-    onFuelSelect: (fuel: string) => void
-    onVinChange: (vin: string) => void
-    onDisplayNameChange: (name: string) => void
-    onSubmit: () => void
+    onFuelSubmit: (fuel: string) => void | Promise<void>
     onNext: () => void
+    onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+    contentTopInset: number
 }
 
-export const AddVehicleStepContent = ({
-    currentStep,
-    vehicleInfo,
-    originId,
-    make,
-    makeId,
-    model,
-    modelId,
-    year,
-    fuelType,
-    vin,
-    displayName,
-    submitLoading,
-    submitError,
-    onOriginSelect,
-    onMakeSelect,
-    onModelSelect,
-    onYearSelect,
-    onFuelSelect,
-    onVinChange,
-    onDisplayNameChange,
-    onSubmit,
-    onNext,
-}: AddVehicleStepContentProps) => {
+const renderBody = (props: AddVehicleStepContentProps) => {
+    const {currentStep, vehicleInfo, originId, make, makeId, model, modelId, year, fuelType, onScroll, contentTopInset} = props
+
     switch (currentStep) {
         case Step.Origin:
             return (
@@ -62,8 +40,10 @@ export const AddVehicleStepContent = ({
                     origins={vehicleInfo.origins}
                     loading={vehicleInfo.originsLoading}
                     value={originId}
-                    onSelect={onOriginSelect}
-                    onNext={onNext}
+                    onSelect={props.onOriginSelect}
+                    onNext={props.onNext}
+                    onScroll={onScroll}
+                    contentTopInset={contentTopInset}
                 />
             )
         case Step.Make:
@@ -73,8 +53,11 @@ export const AddVehicleStepContent = ({
                     getMakes={vehicleInfo.getMakes}
                     value={make}
                     valueId={makeId}
-                    onSelect={onMakeSelect}
-                    onNext={onNext}
+                    onSelect={props.onMakeSelect}
+                    onNext={props.onNext}
+                    hideHeader
+                    onScroll={onScroll}
+                    contentTopInset={contentTopInset}
                 />
             )
         case Step.Model:
@@ -85,27 +68,60 @@ export const AddVehicleStepContent = ({
                     getModels={vehicleInfo.getModels}
                     value={model}
                     valueId={modelId}
-                    onSelect={onModelSelect}
-                    onNext={onNext}
+                    onSelect={props.onModelSelect}
+                    onNext={props.onNext}
+                    hideHeader
+                    onScroll={onScroll}
+                    contentTopInset={contentTopInset}
                 />
             )
         case Step.Year:
-            return <YearScreen years={vehicleInfo.years} value={year} onSelect={onYearSelect} onNext={onNext} />
-        case Step.Fuel:
-            return <FuelScreen fuelTypes={vehicleInfo.fuelTypes} value={fuelType} onSelect={onFuelSelect} onNext={onNext} />
-        case Step.Details:
             return (
-                <AddVinScreen
-                    vin={vin}
-                    displayName={displayName}
-                    onVinChange={onVinChange}
-                    onDisplayNameChange={onDisplayNameChange}
-                    onSubmit={onSubmit}
-                    loading={submitLoading}
-                    error={submitError}
+                <YearScreen
+                    years={vehicleInfo.years}
+                    value={year}
+                    onSelect={props.onYearSelect}
+                    onNext={props.onNext}
+                    hideHeader
+                    onScroll={onScroll}
+                    contentTopInset={contentTopInset}
+                />
+            )
+        case Step.Fuel:
+            return (
+                <FuelScreen
+                    fuelTypes={vehicleInfo.fuelTypes}
+                    value={fuelType}
+                    onSubmit={props.onFuelSubmit}
+                    loading={props.submitLoading}
+                    error={props.submitError}
+                    onScroll={onScroll}
+                    contentTopInset={contentTopInset}
                 />
             )
         default:
             return null
     }
 }
+
+export const AddVehicleStepContent = (props: AddVehicleStepContentProps) => {
+    const opacity = useRef(new Animated.Value(0)).current
+    const translateY = useRef(new Animated.Value(8)).current
+
+    useEffect(() => {
+        opacity.setValue(0)
+        translateY.setValue(8)
+        Animated.parallel([
+            Animated.timing(opacity, {toValue: 1, duration: 260, useNativeDriver: true}),
+            Animated.spring(translateY, {toValue: 0, tension: 110, friction: 14, useNativeDriver: true}),
+        ]).start()
+    }, [props.currentStep, opacity, translateY])
+
+    return <Animated.View style={[styles.body, {opacity, transform: [{translateY}]}]}>{renderBody(props)}</Animated.View>
+}
+
+const styles = StyleSheet.create({
+    body: {
+        flex: 1,
+    },
+})

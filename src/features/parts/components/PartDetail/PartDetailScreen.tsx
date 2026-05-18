@@ -1,27 +1,33 @@
-import {useState, useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {Animated, ScrollView, StyleSheet, View} from 'react-native'
 import {ActivityIndicator, Icon, Text} from 'react-native-paper'
-import type {Part} from '@/global/types'
+import type {NavigationProp, RouteProp} from '@react-navigation/native'
+
 import {useAppTheme, useCatalog} from '@/global/hooks'
-import {usePartApi} from '../../hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
-import type {RouteProp} from '@react-navigation/native'
-import {PartDetailHero} from './PartDetailHero'
+import {useSavedPartsStore} from '@/global/store'
+import type {Part} from '@/global/types'
+
+import {usePartApi} from '../../hooks'
 import {PartDetailActions} from './PartDetailActions'
+import {PartDetailCompatibility} from './PartDetailCompatibility'
 import {PartDetailDescription} from './PartDetailDescription'
-import {PartDetailVehicles} from './PartDetailVehicles'
+import {PartDetailHero} from './PartDetailHero'
+import {PartDetailInfo} from './PartDetailInfo'
+import {PartDetailSeller} from './PartDetailSeller'
+import {PartDetailSpecs} from './PartDetailSpecs'
 
 const ARABIC_TEXT = {
     LOADING: 'جاري التحميل...',
     NOT_FOUND: 'لم يتم العثور على القطعة',
-    SKU: 'الرمز',
 }
 
 interface PartDetailScreenProps {
     route?: RouteProp<RootStackParamList, 'PartDetail'>
+    navigation?: NavigationProp<RootStackParamList>
 }
 
-export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
+export const PartDetailScreen = ({route, navigation}: PartDetailScreenProps) => {
     const partId = route?.params?.partId
     const {getPartById} = usePartApi()
     const {getBySlug} = useCatalog()
@@ -29,42 +35,29 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
     const [part, setPart] = useState<Part | null>(null)
     const [loading, setLoading] = useState(true)
     const fadeIn = useRef(new Animated.Value(0)).current
+    const saved = useSavedPartsStore(s => (part ? s.ids.includes(part.id) : false))
+    const toggleSaved = useSavedPartsStore(s => s.toggle)
 
     useEffect(() => {
-        const fetchPart = async () => {
-            if (!partId) {
-                return
-            }
-
-            setLoading(true)
-            try {
-                const fetchedPart = await getPartById(partId)
-                setPart(fetchedPart)
-            } catch (error) {
-                console.error('Failed to fetch part:', error)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchPart()
+        if (!partId) return
+        setLoading(true)
+        getPartById(partId)
+            .then(setPart)
+            .catch(err => console.error('Failed to fetch part:', err))
+            .finally(() => setLoading(false))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [partId])
 
     useEffect(() => {
         if (!loading && part) {
-            Animated.timing(fadeIn, {
-                toValue: 1,
-                duration: 350,
-                useNativeDriver: true,
-            }).start()
+            Animated.timing(fadeIn, {toValue: 1, duration: 350, useNativeDriver: true}).start()
         }
     }, [loading, part, fadeIn])
 
     if (loading) {
         return (
             <View style={[styles.centered, {backgroundColor: theme.colors.background}]}>
-                <ActivityIndicator size='large' color={theme.colors.primary} />
+                <ActivityIndicator size='large' color={theme.colors.tertiary} />
                 <Text style={[styles.loadingLabel, {color: theme.colors.onSurfaceVariant}]}>{ARABIC_TEXT.LOADING}</Text>
             </View>
         )
@@ -73,8 +66,8 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
     if (!part) {
         return (
             <View style={[styles.centered, {backgroundColor: theme.colors.background}]}>
-                <View style={[styles.notFoundIcon, {backgroundColor: theme.colors.primaryContainer}]}>
-                    <Icon source='package-variant-closed-remove' size={40} color={theme.colors.primary} />
+                <View style={[styles.notFoundIcon, {backgroundColor: theme.colors.accentSubtle}]}>
+                    <Icon source='package-variant-closed-remove' size={40} color={theme.colors.tertiary} />
                 </View>
                 <Text style={[styles.notFoundText, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.NOT_FOUND}</Text>
             </View>
@@ -84,49 +77,40 @@ export const PartDetailScreen = ({route}: PartDetailScreenProps) => {
     const categoryInfo = getBySlug(part.category)
 
     return (
-        <Animated.View style={[styles.root, {backgroundColor: theme.colors.background, opacity: fadeIn}]}>
-            <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-                <PartDetailHero part={part} categoryInfo={categoryInfo} />
+        <View style={[styles.root, {backgroundColor: theme.colors.background}]}>
+            <Animated.View style={[styles.root, {opacity: fadeIn}]}>
+                <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+                    <PartDetailHero part={part} categoryInfo={categoryInfo} onBack={() => navigation?.goBack()} />
 
-                <View style={[styles.priceCard, {backgroundColor: theme.colors.accentContainer}]}>
-                    <View style={styles.priceInner}>
-                        <Text style={[styles.priceCurrency, {color: theme.colors.tertiary}]}>$</Text>
-                        <Text style={[styles.priceValue, {color: theme.colors.tertiary}]}>{part.price.toFixed(2)}</Text>
+                    <View style={styles.content}>
+                        <PartDetailInfo part={part} />
+                        <PartDetailCompatibility vehicles={part.compatibleVehicles} />
+                        <PartDetailSeller part={part} />
+                        {part.description && <PartDetailDescription description={part.description} />}
+                        <PartDetailSpecs part={part} categoryInfo={categoryInfo} />
                     </View>
-                    {part.sku && (
-                        <Text style={[styles.skuText, {color: theme.colors.onSurfaceVariant}]}>
-                            {ARABIC_TEXT.SKU}: {part.sku}
-                        </Text>
-                    )}
-                </View>
+                </ScrollView>
+            </Animated.View>
 
-                <PartDetailVehicles vehicles={part.compatibleVehicles} />
-                {part.description && <PartDetailDescription description={part.description} />}
-                <PartDetailActions inStock={part.inStock} />
-            </ScrollView>
-        </Animated.View>
+            <PartDetailActions
+                price={part.price}
+                inStock={part.inStock}
+                isSaved={saved}
+                onContact={() => {}}
+                onSave={() => {
+                    void toggleSaved(part.id).catch(() => undefined)
+                }}
+            />
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
-    root: {
-        flex: 1,
-    },
-    scroll: {
-        padding: 16,
-        paddingBottom: 32,
-    },
-    centered: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 32,
-    },
-    loadingLabel: {
-        marginTop: 16,
-        fontSize: 14,
-        letterSpacing: 0.1,
-    },
+    root: {flex: 1},
+    scroll: {paddingBottom: 110},
+    content: {paddingHorizontal: 16, gap: 12, marginTop: 0},
+    centered: {flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32},
+    loadingLabel: {marginTop: 16, fontSize: 14, letterSpacing: 0.1},
     notFoundIcon: {
         width: 80,
         height: 80,
@@ -135,36 +119,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 16,
     },
-    notFoundText: {
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    priceCard: {
-        borderRadius: 20,
-        padding: 20,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    priceInner: {
-        flexDirection: 'row',
-        alignItems: 'baseline',
-        gap: 4,
-    },
-    priceCurrency: {
-        fontSize: 16,
-        fontWeight: '500',
-        opacity: 0.7,
-    },
-    priceValue: {
-        fontSize: 32,
-        fontWeight: '700',
-        letterSpacing: -0.5,
-    },
-    skuText: {
-        fontSize: 12,
-        letterSpacing: 0.2,
-        opacity: 0.6,
-    },
+    notFoundText: {fontSize: 16, fontWeight: '700'},
 })

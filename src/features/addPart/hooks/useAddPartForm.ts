@@ -2,7 +2,7 @@ import {useCallback, useState} from 'react'
 import type {NavigationProp} from '@react-navigation/native'
 
 import {useCatalog} from '@/global/hooks'
-import {Step} from '../components/addPart/AddPartStepper'
+import {Step} from '../components/addPart/addPartConstants'
 import type {RootStackParamList} from '@/global/navigation/types'
 import {useAddPart} from './useAddPart'
 

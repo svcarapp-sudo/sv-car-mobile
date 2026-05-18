@@ -12,6 +12,7 @@ import {BottomNavItem} from './BottomNavItem'
 
 const ARABIC_TEXT = {
     HOME: 'الرئيسية',
+    PART_REQUESTS: 'المطلوبة',
     MY_PARTS: 'إعلاناتي',
     MY_ACCOUNT: 'حسابي',
 }
@@ -21,7 +22,7 @@ interface NavItem {
     icon: string
     activeIcon: string
     label: string
-    screenName: 'Home' | 'PartsList' | 'MyParts' | 'MyAccount'
+    screenName: 'Home' | 'PartsList' | 'PartRequestsList' | 'MyParts' | 'MyAccount'
     params?: Record<string, unknown>
 }
 
@@ -32,6 +33,13 @@ const NAV_ITEMS: NavItem[] = [
         activeIcon: 'home',
         label: ARABIC_TEXT.HOME,
         screenName: 'Home',
+    },
+    {
+        key: 'PartRequestsList',
+        icon: 'clipboard-list-outline',
+        activeIcon: 'clipboard-list',
+        label: ARABIC_TEXT.PART_REQUESTS,
+        screenName: 'PartRequestsList',
     },
     {
         key: 'MyParts',

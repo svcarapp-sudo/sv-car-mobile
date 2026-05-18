@@ -3,7 +3,7 @@ import type {NativeScrollEvent, NativeSyntheticEvent} from 'react-native'
 import {MakeScreen, ModelScreen, YearScreen} from '@/global/components'
 import {CategoryScreen} from '../category'
 import {AddPartDetailsForm} from '../details'
-import {Step} from './AddPartStepper'
+import {Step} from './addPartConstants'
 import type {PartCategoryApi} from '@/global/types'
 import type {MakeApi, ModelApi} from '@/global/services/catalogService'
 

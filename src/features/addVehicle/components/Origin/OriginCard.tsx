@@ -3,101 +3,120 @@ import {Text, Icon} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
 import type {OriginApi} from '@/global/services'
-import {themeColors} from '@/global/theme'
+import {shadows} from '@/global/theme'
 
 interface OriginCardProps {
     item: OriginApi
+    index: number
     isSelected: boolean
     onPress: (origin: OriginApi) => void
 }
 
+const initialOf = (name: string) => {
+    const trimmed = name.trim()
+    if (!trimmed) return '•'
+    return trimmed.charAt(0).toUpperCase()
+}
+
 export const OriginCard = ({item, isSelected, onPress}: OriginCardProps) => {
     const theme = useAppTheme()
+    const initial = initialOf(item.name)
 
     return (
         <TouchableOpacity
             onPress={() => onPress(item)}
-            activeOpacity={0.7}
-            style={[styles.originCard, {backgroundColor: theme.colors.surface}, isSelected && styles.originCardSelected]}>
-            {isSelected && <View style={styles.selectedAccent} />}
-            <View style={styles.originContent}>
-                <View
+            activeOpacity={0.75}
+            style={[
+                styles.card,
+                {backgroundColor: theme.colors.surface, borderColor: theme.colors.outlineVariant},
+                isSelected && {backgroundColor: theme.colors.accentSubtle, borderColor: theme.colors.tertiary},
+                shadows.sm,
+            ]}>
+            <View
+                style={[
+                    styles.avatar,
+                    {backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outlineVariant},
+                    isSelected && {backgroundColor: theme.colors.tertiary, borderColor: theme.colors.tertiary},
+                ]}>
+                <Text
                     style={[
-                        styles.originIcon,
-                        {
-                            backgroundColor: isSelected ? theme.colors.accentSoft : theme.colors.surfaceVariant,
-                        },
+                        styles.avatarLetter,
+                        {color: theme.colors.onSurfaceVariant},
+                        isSelected && {color: theme.colors.onPrimary},
                     ]}>
-                    <Icon source='earth' size={20} color={isSelected ? theme.colors.tertiary : theme.colors.onSurfaceVariant} />
-                </View>
+                    {initial}
+                </Text>
+            </View>
+            <View style={styles.body}>
+                <Text variant='labelSmall' style={[styles.eyebrow, {color: theme.colors.onSurfaceVariant}]}>
+                    منشأ المركبة
+                </Text>
                 <Text
                     variant='titleMedium'
-                    style={[styles.originName, {color: theme.colors.onSurface}, isSelected && {fontWeight: '700'}]}>
+                    style={[styles.name, {color: theme.colors.onSurface}, isSelected && {fontWeight: '800'}]}
+                    numberOfLines={1}>
                     {item.name}
                 </Text>
             </View>
-            {isSelected && (
-                <View style={styles.checkWrap}>
-                    <Icon source='check-circle' size={22} color={theme.colors.tertiary} />
-                </View>
-            )}
+            <View
+                style={[
+                    styles.action,
+                    {backgroundColor: theme.colors.surfaceVariant},
+                    isSelected && {backgroundColor: theme.colors.tertiary},
+                ]}>
+                <Icon
+                    source={isSelected ? 'check' : 'chevron-left'}
+                    size={16}
+                    color={isSelected ? theme.colors.onPrimary : theme.colors.onSurfaceVariant}
+                />
+            </View>
         </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
-    originCard: {
+    card: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
         paddingVertical: 14,
-        paddingHorizontal: 16,
-        borderRadius: 14,
+        paddingHorizontal: 14,
+        borderRadius: 18,
         marginBottom: 10,
         borderWidth: 1.5,
-        borderColor: 'transparent',
-        overflow: 'hidden',
-        shadowColor: themeColors.shadowLight,
-        shadowOffset: {width: 0, height: 1},
-        shadowOpacity: 0.06,
-        shadowRadius: 4,
-        elevation: 2,
+        gap: 14,
     },
-    originCardSelected: {
-        borderColor: themeColors.tertiary,
-        backgroundColor: themeColors.accentSubtle,
-        shadowColor: themeColors.tertiary,
-        shadowOpacity: 0.12,
-        shadowRadius: 8,
-        elevation: 3,
-    },
-    selectedAccent: {
-        position: 'absolute',
-        start: 0,
-        top: 10,
-        bottom: 10,
-        width: 4,
-        borderRadius: 2,
-        backgroundColor: themeColors.tertiary,
-    },
-    originContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-    },
-    originIcon: {
-        width: 42,
-        height: 42,
-        borderRadius: 21,
+    avatar: {
+        width: 44,
+        height: 44,
+        borderRadius: 14,
         justifyContent: 'center',
         alignItems: 'center',
-        marginEnd: 14,
+        borderWidth: 1,
     },
-    originName: {
+    avatarLetter: {
+        fontSize: 18,
+        fontWeight: '800',
+        letterSpacing: 0.5,
+    },
+    body: {
         flex: 1,
-        fontWeight: '500',
     },
-    checkWrap: {
-        marginStart: 8,
+    eyebrow: {
+        fontSize: 10,
+        fontWeight: '700',
+        letterSpacing: 0.4,
+        opacity: 0.7,
+        marginBottom: 2,
+    },
+    name: {
+        fontWeight: '700',
+        fontSize: 15,
+    },
+    action: {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 })

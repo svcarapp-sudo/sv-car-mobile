@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {useNavigation, NavigationContainer} from '@react-navigation/native'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack'
@@ -11,7 +11,15 @@ import {AddVehicleScreen} from '@/features/addVehicle'
 import {MyPartsListScreen, EditPartScreen} from '@/features/myParts'
 import {AddPartScreen} from '@/features/addPart'
 import {MyAccountScreen} from '@/features/account'
+import {SavedPartsScreen} from '@/features/savedParts'
+import {
+    PartRequestsListScreen,
+    PartRequestDetailScreen,
+    AddPartRequestScreen,
+    MyPartRequestsListScreen,
+} from '@/features/partRequest'
 import {MainLayout} from '@/global/layouts'
+import {useSavedPartsStore} from '@/global/store'
 
 import {LaunchScreen} from '../components'
 
@@ -28,12 +36,26 @@ const ARABIC_TEXT = {
     MY_PARTS: 'قطع الغيار الخاصة بي',
     EDIT_PART: 'تعديل قطعة غيار',
     MY_ACCOUNT: 'حسابي',
+    SAVED_PARTS: 'المفضلة',
+    PART_REQUESTS_LIST: 'القطع المطلوبة',
+    PART_REQUEST_DETAIL: 'تفاصيل الطلب',
+    ADD_PART_REQUEST: 'انشر طلباً',
+    MY_PART_REQUESTS: 'طلباتي',
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
 const MainFlow = () => {
     const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Main'>>()
+    const hydrateSaved = useSavedPartsStore(s => s.hydrate)
+    const clearSaved = useSavedPartsStore(s => s.clear)
+
+    useEffect(() => {
+        void hydrateSaved()
+        return () => {
+            clearSaved()
+        }
+    }, [hydrateSaved, clearSaved])
 
     return (
         <MainLayout
@@ -107,6 +129,41 @@ const MainFlow = () => {
                     component={MyAccountScreen}
                     options={{
                         title: ARABIC_TEXT.MY_ACCOUNT,
+                    }}
+                />
+                <Stack.Screen
+                    name='SavedParts'
+                    component={SavedPartsScreen}
+                    options={{
+                        title: ARABIC_TEXT.SAVED_PARTS,
+                    }}
+                />
+                <Stack.Screen
+                    name='PartRequestsList'
+                    component={PartRequestsListScreen}
+                    options={{
+                        title: ARABIC_TEXT.PART_REQUESTS_LIST,
+                    }}
+                />
+                <Stack.Screen
+                    name='PartRequestDetail'
+                    component={PartRequestDetailScreen}
+                    options={{
+                        title: ARABIC_TEXT.PART_REQUEST_DETAIL,
+                    }}
+                />
+                <Stack.Screen
+                    name='AddPartRequest'
+                    component={AddPartRequestScreen}
+                    options={{
+                        title: ARABIC_TEXT.ADD_PART_REQUEST,
+                    }}
+                />
+                <Stack.Screen
+                    name='MyPartRequests'
+                    component={MyPartRequestsListScreen}
+                    options={{
+                        title: ARABIC_TEXT.MY_PART_REQUESTS,
                     }}
                 />
             </Stack.Navigator>
