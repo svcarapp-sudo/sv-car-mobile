@@ -6,11 +6,9 @@ import {useAppTheme} from '@/global/hooks'
 import {shadows, themeColors} from '@/global/theme'
 import type {Part, PartCategoryApi} from '@/global/types'
 
-const FRESH_WINDOW_MS = 48 * 60 * 60 * 1000
-const CURRENCY = 'ر.س'
+import {MyPartCardFooter} from './MyPartCardFooter'
 
-const formatPrice = (price: number) =>
-    Number.isFinite(price) ? new Intl.NumberFormat('ar-SA', {maximumFractionDigits: 0}).format(price) : '—'
+const FRESH_WINDOW_MS = 48 * 60 * 60 * 1000
 
 interface MyPartCardItemProps {
     part: Part
@@ -19,7 +17,7 @@ interface MyPartCardItemProps {
     categoryInfo?: PartCategoryApi | null
 }
 
-const T = {EDIT: 'تعديل', DELETE: 'حذف', FRESH: 'جديد', SKU: 'SKU', MORE: (n: number) => `+${n} مركبة`}
+const T = {EDIT: 'تعديل', DELETE: 'حذف', FRESH: 'جديد', MORE: (n: number) => `+${n} مركبة`}
 
 const buildVehicleLabel = (v: NonNullable<Part['compatibleVehicles']>[number]) => {
     const range = v.yearFrom === v.yearTo ? `${v.yearFrom ?? ''}` : `${v.yearFrom ?? ''}-${v.yearTo ?? ''}`
@@ -106,16 +104,7 @@ export const MyPartCardItem = ({part, onEdit, onDelete, categoryInfo}: MyPartCar
                                 )}
                             </View>
                         )}
-                        <View style={styles.bottomRow}>
-                            <Text style={[styles.price, {color: themeColors.textPrice}]}>
-                                {formatPrice(part.price)} <Text style={styles.currency}>{CURRENCY}</Text>
-                            </Text>
-                            {part.sku ? (
-                                <Text style={[styles.sku, {color: theme.colors.onSurfaceVariant}]} numberOfLines={1}>
-                                    {T.SKU} {part.sku}
-                                </Text>
-                            ) : null}
-                        </View>
+                        <MyPartCardFooter price={part.price} viewCount={part.viewCount ?? 0} sku={part.sku} />
                     </View>
                 </View>
             </TouchableRipple>
@@ -141,8 +130,4 @@ const styles = StyleSheet.create({
     vehicleRow: {flexDirection: 'row', alignItems: 'center', gap: 4},
     vehicleText: {fontSize: 11, fontWeight: '500', flex: 1},
     morePill: {fontSize: 10, fontWeight: '700'},
-    bottomRow: {flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 6, marginTop: 2},
-    price: {fontSize: 16, fontWeight: '800', letterSpacing: -0.3},
-    currency: {fontSize: 10, fontWeight: '600'},
-    sku: {fontSize: 10, opacity: 0.7, flexShrink: 1},
 })

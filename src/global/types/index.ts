@@ -184,6 +184,7 @@ export interface Part {
     inStock: boolean
     rating?: number
     categoryId?: number
+    viewCount?: number
     createdAt?: number
 }
 

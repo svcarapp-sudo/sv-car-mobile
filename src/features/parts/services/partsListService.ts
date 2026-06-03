@@ -82,6 +82,10 @@ class PartsListService {
     async deletePart(id: string): Promise<void> {
         return apiClient.delete<void>(`${this.basePath}/${id}`)
     }
+
+    async recordView(id: string): Promise<void> {
+        await apiClient.post<void>(`${this.basePath}/${id}/view`)
+    }
 }
 
 export const partsListService = new PartsListService()

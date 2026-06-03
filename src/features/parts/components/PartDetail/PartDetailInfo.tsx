@@ -17,6 +17,10 @@ interface PartDetailInfoProps {
  */
 export const PartDetailInfo = ({part}: PartDetailInfoProps) => {
     const theme = useAppTheme()
+    const views = part.viewCount ?? 0
+    const hasBrand = Boolean(part.brand)
+    const hasSku = Boolean(part.sku)
+    const dividerColor = {backgroundColor: theme.colors.outline}
 
     return (
         <View style={[styles.card, {backgroundColor: theme.colors.surface, borderColor: theme.colors.outlineVariant}]}>
@@ -27,19 +31,24 @@ export const PartDetailInfo = ({part}: PartDetailInfoProps) => {
             <Text style={[styles.name, {color: theme.colors.onSurface}]}>{part.name}</Text>
 
             <View style={styles.metaRow}>
-                {part.brand && (
+                {hasBrand && (
                     <View style={styles.metaItem}>
                         <Icon source='factory' size={13} color={theme.colors.onSurfaceVariant} />
                         <Text style={[styles.metaText, {color: theme.colors.onSurfaceVariant}]}>{part.brand}</Text>
                     </View>
                 )}
-                {part.brand && part.sku && <View style={[styles.divider, {backgroundColor: theme.colors.outline}]} />}
-                {part.sku && (
+                {hasBrand && hasSku && <View style={[styles.divider, dividerColor]} />}
+                {hasSku && (
                     <View style={styles.metaItem}>
                         <Icon source='barcode' size={13} color={theme.colors.onSurfaceVariant} />
                         <Text style={[styles.metaText, {color: theme.colors.onSurfaceVariant}]}>{part.sku}</Text>
                     </View>
                 )}
+                {(hasBrand || hasSku) && <View style={[styles.divider, dividerColor]} />}
+                <View style={styles.metaItem}>
+                    <Icon source='eye-outline' size={13} color={theme.colors.onSurfaceVariant} />
+                    <Text style={[styles.metaText, {color: theme.colors.onSurfaceVariant}]}>{views}</Text>
+                </View>
             </View>
 
             <View style={[styles.priceRow, {borderTopColor: theme.colors.outlineVariant}]}>

@@ -23,6 +23,7 @@ export interface PartModelResponse {
     imageUrls?: string[] | null
     sku?: string | null
     compatibilities?: PartCompatibilityResponse[]
+    viewCount?: number | null
     createdAt?: string | number
     updatedAt?: string | number
 }
@@ -65,6 +66,7 @@ export function mapPartModelToPart(model: PartModelResponse, categories?: {id: n
         sellerCity: model.sellerCity || undefined,
         inStock: true,
         rating: undefined,
+        viewCount: typeof model.viewCount === 'number' ? model.viewCount : 0,
         createdAt: model.createdAt ? new Date(model.createdAt).getTime() : undefined,
     }
 }

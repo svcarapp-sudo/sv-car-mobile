@@ -9,6 +9,7 @@ import {useSavedPartsStore} from '@/global/store'
 import type {Part} from '@/global/types'
 
 import {usePartApi} from '../../hooks'
+import {partsListService} from '../../services'
 import {PartDetailActions} from './PartDetailActions'
 import {PartDetailCompatibility} from './PartDetailCompatibility'
 import {PartDetailDescription} from './PartDetailDescription'
@@ -45,6 +46,7 @@ export const PartDetailScreen = ({route, navigation}: PartDetailScreenProps) => 
             .then(setPart)
             .catch(err => console.error('Failed to fetch part:', err))
             .finally(() => setLoading(false))
+        void partsListService.recordView(partId).catch(() => undefined)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [partId])
 
