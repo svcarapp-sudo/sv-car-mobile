@@ -1,0 +1,1 @@
+export {CategoryArt} from './CategoryArt'

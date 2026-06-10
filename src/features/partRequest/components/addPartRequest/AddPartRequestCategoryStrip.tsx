@@ -6,7 +6,6 @@ import type {PartCategoryApi} from '@/global/types'
 
 const T = {
     HEADING: 'فئة القطعة',
-    SUBTITLE: 'حدّد نوع القطعة المطلوبة',
     EMPTY: 'لا توجد فئات متاحة',
 }
 
@@ -21,10 +20,7 @@ export const AddPartRequestCategoryStrip = ({categories, selectedId, onSelect}: 
 
     return (
         <View style={styles.section}>
-            <View style={styles.headerRow}>
-                <Text style={[styles.heading, {color: theme.colors.onSurface}]}>{T.HEADING}</Text>
-                <Text style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>{T.SUBTITLE}</Text>
-            </View>
+            <Text style={[styles.heading, {color: theme.colors.onSurface}]}>{T.HEADING}</Text>
             {categories.length === 0 ? (
                 <Text style={[styles.empty, {color: theme.colors.onSurfaceVariant}]}>{T.EMPTY}</Text>
             ) : (
@@ -63,10 +59,8 @@ export const AddPartRequestCategoryStrip = ({categories, selectedId, onSelect}: 
 }
 
 const styles = StyleSheet.create({
-    section: {gap: 10},
-    headerRow: {gap: 2},
+    section: {gap: 8},
     heading: {fontSize: 14, fontWeight: '800', letterSpacing: -0.2},
-    subtitle: {fontSize: 11.5, fontWeight: '500'},
     empty: {fontSize: 13, fontStyle: 'italic'},
     chips: {flexDirection: 'row', gap: 8, paddingEnd: 8},
     chip: {

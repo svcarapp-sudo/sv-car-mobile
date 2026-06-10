@@ -1,6 +1,6 @@
+import {useEffect, useState} from 'react'
 import {StyleSheet, View, I18nManager} from 'react-native'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
-import {useNavigationState} from '@react-navigation/native'
 import {Text, IconButton} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
@@ -8,9 +8,18 @@ import {themeColors} from '@/global/theme'
 import {navigationRef} from '@/global/navigation/navigationRef'
 import {useSavedPartsStore} from '@/global/store'
 import {useLayoutStore} from './layoutStore'
+import {FavoritesButton} from './FavoritesButton'
 
-const BOTTOM_NAV_SCREENS = ['Home', 'PartsList', 'PartRequestsList', 'MyParts']
-const SHOW_FAVORITES_ICON_ON = ['Home', 'PartsList', 'PartsCategories']
+/**
+ * Reads the deepest active route and whether we can go back straight from the
+ * container ref. This is reliable across nested navigators — a parent-level
+ * useNavigationState selector does NOT re-render on a nested push, which left
+ * the header stuck showing the Home favorites button on pushed sub-pages.
+ */
+const readNav = () => ({
+    routeName: navigationRef.isReady() ? (navigationRef.getCurrentRoute()?.name ?? 'Home') : 'Home',
+    canGoBack: navigationRef.isReady() ? navigationRef.canGoBack() : false,
+})
 
 export const AppHeader = () => {
     const theme = useAppTheme()
@@ -18,26 +27,20 @@ export const AppHeader = () => {
     const insets = useSafeAreaInsets()
     const savedCount = useSavedPartsStore(s => s.ids.length)
 
-    const activeRoute = useNavigationState(state => {
-        if (!state?.routes?.length) return 'Home'
-        const mainRoute = state.routes[state.index]
-        if (mainRoute?.name !== 'Main' || !mainRoute.state?.routes?.length) return 'Home'
-        const inner = mainRoute.state
-        const innerRoute = inner.routes[inner.index ?? 0]
-        return (innerRoute?.name as string) || 'Home'
-    })
+    const [nav, setNav] = useState(readNav)
 
-    const canGoBack = useNavigationState(state => {
-        if (!state?.routes?.length) return false
-        const mainRoute = state.routes[state.index]
-        if (mainRoute?.name !== 'Main' || !mainRoute.state) return false
-        return (mainRoute.state.index ?? 0) > 0
-    })
+    useEffect(() => {
+        const sync = () => setNav(readNav())
+        sync()
+        return navigationRef.addListener('state', sync)
+    }, [])
 
-    const isBottomNavScreen = BOTTOM_NAV_SCREENS.includes(activeRoute)
-    const showMenuIcon = !canGoBack || isBottomNavScreen
-    const showBackButton = canGoBack && !isBottomNavScreen
-    const showFavorites = SHOW_FAVORITES_ICON_ON.includes(activeRoute)
+    // Favorites lives only on Home. Every screen you can navigate back from
+    // (any pushed sub-page) shows a back arrow in its place instead. Bottom-nav
+    // tabs reset the stack to index 0, so canGoBack is false on those roots.
+    const showFavorites = nav.routeName === 'Home'
+    const showBackButton = nav.canGoBack
+    const showMenuIcon = !nav.canGoBack
 
     const headerHeight = 58 + insets.top
 
@@ -90,23 +93,7 @@ export const AppHeader = () => {
                         style={styles.iconBtn}
                     />
                 ) : showFavorites ? (
-                    <View style={styles.favWrap}>
-                        <IconButton
-                            icon='heart-outline'
-                            size={24}
-                            iconColor={theme.colors.onSurfaceVariant}
-                            onPress={goToFavorites}
-                            style={styles.iconBtn}
-                            accessibilityLabel='Favorites'
-                        />
-                        {savedCount > 0 && (
-                            <View style={[styles.badge, {backgroundColor: theme.colors.error}]} pointerEvents='none'>
-                                <Text style={[styles.badgeText, {color: theme.colors.onError}]} numberOfLines={1}>
-                                    {savedCount > 99 ? '99+' : savedCount}
-                                </Text>
-                            </View>
-                        )}
-                    </View>
+                    <FavoritesButton count={savedCount} onPress={goToFavorites} />
                 ) : null}
             </View>
         </View>
@@ -141,24 +128,5 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: '800',
         letterSpacing: -0.3,
-    },
-    favWrap: {
-        position: 'relative',
-    },
-    badge: {
-        position: 'absolute',
-        top: 4,
-        end: 2,
-        minWidth: 16,
-        height: 16,
-        borderRadius: 8,
-        paddingHorizontal: 4,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    badgeText: {
-        fontSize: 9.5,
-        fontWeight: '800',
-        lineHeight: 11,
     },
 })

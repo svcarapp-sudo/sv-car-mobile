@@ -57,7 +57,7 @@ export const AddPartRequestFormFields = ({values, errors, onChange}: AddPartRequ
                 placeholder={T.DESCRIPTION_HINT}
                 mode='outlined'
                 multiline
-                numberOfLines={4}
+                numberOfLines={3}
                 maxLength={4000}
             />
 

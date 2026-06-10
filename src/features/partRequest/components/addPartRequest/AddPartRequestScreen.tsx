@@ -123,5 +123,5 @@ export const AddPartRequestScreen = ({navigation}: AddPartRequestScreenProps) =>
 
 const styles = StyleSheet.create({
     flex: {flex: 1},
-    content: {padding: 16, gap: 18, paddingBottom: 40},
+    content: {padding: 16, gap: 14, paddingBottom: 32},
 })

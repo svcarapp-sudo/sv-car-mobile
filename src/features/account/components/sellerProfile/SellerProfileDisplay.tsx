@@ -3,6 +3,7 @@ import {StyleSheet, View} from 'react-native'
 import {Button, Chip, Divider, Icon, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
+import {navigationRef} from '@/global/navigation/navigationRef'
 import {themeColors} from '@/global/theme'
 import type {SellerProfile} from '@/global/types'
 
@@ -13,6 +14,11 @@ const ARABIC = {
     CITY: 'المدينة',
     DESCRIPTION: 'الوصف',
     WORKING_HOURS: 'ساعات العمل',
+    VIEW_DASHBOARD: 'عرض لوحة البائع والملخص',
+}
+
+const goToDashboard = () => {
+    if (navigationRef.isReady()) navigationRef.navigate('Main', {screen: 'SellerAccount'})
 }
 
 interface SellerProfileDisplayProps {
@@ -74,6 +80,17 @@ export const SellerProfileDisplay = ({sellerProfile, onEditPress}: SellerProfile
                         />
                     )}
                 </View>
+
+                <Divider />
+
+                <Button
+                    mode='text'
+                    onPress={goToDashboard}
+                    icon='chart-box-outline'
+                    contentStyle={styles.dashboardContent}
+                    style={styles.dashboardBtn}>
+                    {ARABIC.VIEW_DASHBOARD}
+                </Button>
             </View>
         </View>
     )
@@ -118,4 +135,6 @@ const styles = StyleSheet.create({
     infoSection: {padding: 16, gap: 14},
     infoRow: {flexDirection: 'row', alignItems: 'flex-start', gap: 12},
     infoContent: {flex: 1, gap: 2},
+    dashboardBtn: {marginVertical: 4},
+    dashboardContent: {paddingVertical: 6},
 })

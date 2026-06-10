@@ -64,6 +64,10 @@ const customColors = {
     // Dark surface (stepper, dark cards)
     surfaceDark: '#0F172A',
 
+    // Illustration gradient shades (category art)
+    primaryTint: '#34466B',
+    tertiaryDark: '#B45309',
+
     // On-dark text/icon hierarchy
     onDarkHigh: 'rgba(255,255,255,0.87)',
     onDarkIcon: 'rgba(255,255,255,0.8)',
@@ -198,6 +202,8 @@ export const createAppTheme = (isRTL: boolean = false): AppTheme => {
             onSecondaryContainer: themeColors.onSecondaryContainer,
             tertiary: themeColors.tertiary,
             onTertiary: themeColors.onTertiary,
+            tertiaryContainer: themeColors.tertiaryContainer,
+            onTertiaryContainer: themeColors.onTertiaryContainer,
             error: themeColors.error,
             background: themeColors.background,
             surface: themeColors.surface,

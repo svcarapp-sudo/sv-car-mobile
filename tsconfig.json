@@ -1,49 +1,22 @@
 {
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/features/*": [
-        "./src/features/*"
-      ],
-      "@/shared/*": [
-        "src/global/*"
-      ],
-      "@/components/*": [
-        "src/global/components/*"
-      ],
-      "@/utils/*": [
-        "src/global/utils/*"
-      ],
-      "@/types/*": [
-        "src/global/types/*"
-      ],
-      "@/constants/*": [
-        "src/global/constants/*"
-      ],
-      "@/hooks/*": [
-        "src/global/hooks/*"
-      ],
-      "@/services/*": [
-        "src/global/services/*"
-      ],
-      "@/navigation/*": [
-        "src/global/navigation/*"
-      ],
-      "@/store/*": [
-        "src/global/store/*"
-      ]
-    }
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+    "extends": "expo/tsconfig.base",
+    "compilerOptions": {
+        "strict": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["./src/*"],
+            "@/features/*": ["./src/features/*"],
+            "@/shared/*": ["src/global/*"],
+            "@/components/*": ["src/global/components/*"],
+            "@/utils/*": ["src/global/utils/*"],
+            "@/types/*": ["src/global/types/*"],
+            "@/constants/*": ["src/global/constants/*"],
+            "@/hooks/*": ["src/global/hooks/*"],
+            "@/services/*": ["src/global/services/*"],
+            "@/navigation/*": ["src/global/navigation/*"],
+            "@/store/*": ["src/global/store/*"]
+        }
+    },
+    "include": ["**/*.ts", "**/*.tsx"],
+    "exclude": ["node_modules"]
 }

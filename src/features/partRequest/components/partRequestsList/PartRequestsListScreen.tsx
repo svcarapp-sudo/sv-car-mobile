@@ -23,7 +23,7 @@ export const PartRequestsListScreen = ({navigation}: PartRequestsListScreenProps
     const theme = useAppTheme()
     const list = usePartRequestsList()
 
-    const isFiltered = list.search.trim().length > 0 || list.status !== 'OPEN' || list.condition !== null
+    const isFiltered = list.search.trim().length > 0 || list.condition !== null
 
     const goDetail = useCallback((id: string) => navigation?.navigate('PartRequestDetail', {requestId: id}), [navigation])
 
@@ -32,7 +32,6 @@ export const PartRequestsListScreen = ({navigation}: PartRequestsListScreenProps
 
     const resetFilters = useCallback(() => {
         list.setSearch('')
-        list.setStatus('OPEN')
         list.setCondition(null)
     }, [list])
 
@@ -56,12 +55,7 @@ export const PartRequestsListScreen = ({navigation}: PartRequestsListScreenProps
                             onSearchChange={list.setSearch}
                             onOpenMyRequests={goMyRequests}
                         />
-                        <PartRequestsListFilters
-                            status={list.status}
-                            condition={list.condition}
-                            onStatusChange={list.setStatus}
-                            onConditionChange={list.setCondition}
-                        />
+                        <PartRequestsListFilters condition={list.condition} onConditionChange={list.setCondition} />
                     </>
                 }
                 ListEmptyComponent={
@@ -98,7 +92,7 @@ export const PartRequestsListScreen = ({navigation}: PartRequestsListScreenProps
 
 const styles = StyleSheet.create({
     container: {flex: 1},
-    listContent: {paddingHorizontal: 16, paddingBottom: 96},
+    listContent: {paddingHorizontal: 12, paddingBottom: 96},
     emptyContent: {flexGrow: 1, paddingHorizontal: 0},
     footer: {paddingVertical: 20, alignItems: 'center'},
     fab: {position: 'absolute', margin: 16, end: 0, bottom: 0, borderRadius: 16},

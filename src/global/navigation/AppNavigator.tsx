@@ -11,6 +11,7 @@ import {AddVehicleScreen} from '@/features/addVehicle'
 import {MyPartsListScreen, EditPartScreen} from '@/features/myParts'
 import {AddPartScreen} from '@/features/addPart'
 import {MyAccountScreen} from '@/features/account'
+import {SellerAccountScreen} from '@/features/sellerAccount'
 import {SavedPartsScreen} from '@/features/savedParts'
 import {
     PartRequestsListScreen,
@@ -19,7 +20,7 @@ import {
     MyPartRequestsListScreen,
 } from '@/features/partRequest'
 import {MainLayout} from '@/global/layouts'
-import {useSavedPartsStore} from '@/global/store'
+import {useSavedPartsStore, useVehicleStore} from '@/global/store'
 
 import {LaunchScreen} from '../components'
 
@@ -36,6 +37,7 @@ const ARABIC_TEXT = {
     MY_PARTS: 'قطع الغيار الخاصة بي',
     EDIT_PART: 'تعديل قطعة غيار',
     MY_ACCOUNT: 'حسابي',
+    SELLER_ACCOUNT: 'لوحة البائع',
     SAVED_PARTS: 'المفضلة',
     PART_REQUESTS_LIST: 'القطع المطلوبة',
     PART_REQUEST_DETAIL: 'تفاصيل الطلب',
@@ -49,13 +51,17 @@ const MainFlow = () => {
     const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Main'>>()
     const hydrateSaved = useSavedPartsStore(s => s.hydrate)
     const clearSaved = useSavedPartsStore(s => s.clear)
+    const clearVehicles = useVehicleStore(s => s.removeVehicle)
 
     useEffect(() => {
         void hydrateSaved()
+        // On logout the whole Main stack unmounts; wipe per-user data so the
+        // next user never sees the previous user's vehicles or saved parts.
         return () => {
             clearSaved()
+            clearVehicles()
         }
-    }, [hydrateSaved, clearSaved])
+    }, [hydrateSaved, clearSaved, clearVehicles])
 
     return (
         <MainLayout
@@ -129,6 +135,13 @@ const MainFlow = () => {
                     component={MyAccountScreen}
                     options={{
                         title: ARABIC_TEXT.MY_ACCOUNT,
+                    }}
+                />
+                <Stack.Screen
+                    name='SellerAccount'
+                    component={SellerAccountScreen}
+                    options={{
+                        title: ARABIC_TEXT.SELLER_ACCOUNT,
                     }}
                 />
                 <Stack.Screen

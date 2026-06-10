@@ -14,7 +14,7 @@ interface PartRequestsListHeaderProps {
 const T = {
     HERO_KICKER: 'سوق الطلبات',
     HERO_TITLE: 'القطع المطلوبة',
-    HERO_SUBTITLE: 'تصفّح طلبات قطع الغيار وتواصل مع من يحتاجها',
+    HERO_SUBTITLE: 'تصفّح الطلبات وتواصل مع أصحابها',
     SEARCH_PLACEHOLDER: 'ابحث في الطلبات المتاحة...',
     COUNT: (n: number) => `${n} طلب نشط`,
     MY_REQUESTS: 'طلباتي',
@@ -27,16 +27,20 @@ export const PartRequestsListHeader = ({total, search, onSearchChange, onOpenMyR
         <View style={styles.container}>
             <View style={[styles.hero, {backgroundColor: theme.colors.primary}]}>
                 <View style={styles.heroTextBlock}>
-                    <View style={[styles.kicker, {backgroundColor: theme.colors.accentMuted}]}>
-                        <Icon source='broadcast' size={11} color={themeColors.tertiary} />
-                        <Text style={[styles.kickerText, {color: themeColors.tertiary}]}>{T.HERO_KICKER}</Text>
+                    <View style={styles.topRow}>
+                        <View style={[styles.kicker, {backgroundColor: theme.colors.accentMuted}]}>
+                            <Icon source='broadcast' size={11} color={themeColors.tertiary} />
+                            <Text style={[styles.kickerText, {color: themeColors.tertiary}]}>{T.HERO_KICKER}</Text>
+                        </View>
+                        <View style={[styles.countPill, {backgroundColor: theme.colors.onDarkSurfaceLight}]}>
+                            <View style={[styles.countDot, {backgroundColor: theme.colors.successBright}]} />
+                            <Text style={[styles.countText, {color: theme.colors.onPrimary}]}>{T.COUNT(total)}</Text>
+                        </View>
                     </View>
                     <Text style={[styles.heroTitle, {color: theme.colors.onPrimary}]}>{T.HERO_TITLE}</Text>
-                    <Text style={[styles.heroSubtitle, {color: theme.colors.onDarkMedium}]}>{T.HERO_SUBTITLE}</Text>
-                    <View style={[styles.countPill, {backgroundColor: theme.colors.onDarkSurfaceLight}]}>
-                        <View style={[styles.countDot, {backgroundColor: theme.colors.successBright}]} />
-                        <Text style={[styles.countText, {color: theme.colors.onPrimary}]}>{T.COUNT(total)}</Text>
-                    </View>
+                    <Text style={[styles.heroSubtitle, {color: theme.colors.onDarkMedium}]} numberOfLines={1}>
+                        {T.HERO_SUBTITLE}
+                    </Text>
                 </View>
                 <View style={[styles.heroDecor, {backgroundColor: theme.colors.onDarkSurfaceLight}]} pointerEvents='none' />
             </View>
@@ -52,9 +56,9 @@ export const PartRequestsListHeader = ({total, search, onSearchChange, onOpenMyR
                     placeholderTextColor={theme.colors.onSurfaceVariant}
                     elevation={1}
                 />
-                <View style={[styles.myBtn, {backgroundColor: theme.colors.tertiaryContainer}]}>
-                    <Icon source='bookmark-multiple-outline' size={20} color={theme.colors.tertiary} />
-                    <Text style={[styles.myBtnLabel, {color: theme.colors.tertiary}]} onPress={onOpenMyRequests}>
+                <View style={[styles.myBtn, {backgroundColor: theme.colors.primaryContainer}]}>
+                    <Icon source='bookmark-multiple-outline' size={20} color={theme.colors.primary} />
+                    <Text style={[styles.myBtnLabel, {color: theme.colors.primary}]} onPress={onOpenMyRequests}>
                         {T.MY_REQUESTS}
                     </Text>
                 </View>
@@ -64,10 +68,11 @@ export const PartRequestsListHeader = ({total, search, onSearchChange, onOpenMyR
 }
 
 const styles = StyleSheet.create({
-    container: {paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4, gap: 12},
-    hero: {borderRadius: 20, padding: 18, position: 'relative', overflow: 'hidden'},
-    heroDecor: {position: 'absolute', width: 140, height: 140, borderRadius: 999, end: -50, top: -40, opacity: 0.5},
-    heroTextBlock: {gap: 8},
+    container: {paddingHorizontal: 12, paddingTop: 6, paddingBottom: 4, gap: 8},
+    hero: {borderRadius: 18, padding: 12, position: 'relative', overflow: 'hidden'},
+    heroDecor: {position: 'absolute', width: 120, height: 120, borderRadius: 999, end: -45, top: -38, opacity: 0.5},
+    heroTextBlock: {gap: 6},
+    topRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8},
     kicker: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -75,11 +80,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         paddingVertical: 4,
         borderRadius: 999,
-        alignSelf: 'flex-start',
     },
     kickerText: {fontSize: 10, fontWeight: '800', letterSpacing: 0.4},
-    heroTitle: {fontSize: 22, fontWeight: '800', letterSpacing: -0.4},
-    heroSubtitle: {fontSize: 12.5, fontWeight: '500', lineHeight: 18, maxWidth: '80%'},
+    heroTitle: {fontSize: 18, fontWeight: '800', letterSpacing: -0.4},
+    heroSubtitle: {fontSize: 12, fontWeight: '500'},
     countPill: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -87,8 +91,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 999,
-        alignSelf: 'flex-start',
-        marginTop: 4,
     },
     countDot: {width: 6, height: 6, borderRadius: 3},
     countText: {fontSize: 11, fontWeight: '700'},
