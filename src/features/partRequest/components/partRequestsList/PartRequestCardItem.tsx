@@ -1,6 +1,7 @@
-import {Image, Pressable, StyleSheet, View} from 'react-native'
-import {Icon, Text, TouchableRipple} from 'react-native-paper'
+import {Image, StyleSheet, View} from 'react-native'
+import {Icon, Text} from 'react-native-paper'
 
+import {PressableScale} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {shadows, themeColors} from '@/global/theme'
 
@@ -42,71 +43,74 @@ export const PartRequestCardItem = ({request, onPress}: PartRequestCardItemProps
     const thumb = request.imageUrls?.[0]
 
     return (
-        <View style={[styles.cardShadow, {backgroundColor: theme.colors.surface}]}>
+        <PressableScale
+            onPress={onPress}
+            containerStyle={styles.cardContainer}
+            style={[styles.card, {backgroundColor: theme.colors.surface}]}
+            accessibilityRole='button'
+            accessibilityLabel={`${request.title}، ${formatVehicle(request)}`}>
             <View style={styles.cardInner}>
-                <TouchableRipple onPress={onPress} borderless rippleColor={theme.colors.scrim} style={styles.ripple}>
-                    <View style={styles.body}>
-                        <View style={styles.thumbBox}>
-                            {thumb ? (
-                                <Image source={{uri: thumb}} style={styles.thumb} resizeMode='cover' />
-                            ) : (
-                                <View style={[styles.thumbPlaceholder, {backgroundColor: theme.colors.primaryContainer}]}>
-                                    <Icon source='clipboard-list-outline' size={28} color={theme.colors.primary} />
-                                </View>
-                            )}
-                            {isRecent && (
-                                <View style={[styles.recentPill, {backgroundColor: theme.colors.tertiary}]}>
-                                    <Text style={[styles.recentText, {color: theme.colors.onTertiary}]}>جديد</Text>
-                                </View>
-                            )}
+                <View style={styles.body}>
+                    <View style={styles.thumbBox}>
+                        {thumb ? (
+                            <Image source={{uri: thumb}} style={styles.thumb} resizeMode='cover' />
+                        ) : (
+                            <View style={[styles.thumbPlaceholder, {backgroundColor: theme.colors.primaryContainer}]}>
+                                <Icon source='clipboard-list-outline' size={28} color={theme.colors.primary} />
+                            </View>
+                        )}
+                        {isRecent && (
+                            <View style={[styles.recentPill, {backgroundColor: theme.colors.tertiary}]}>
+                                <Text style={[styles.recentText, {color: theme.colors.onTertiary}]}>جديد</Text>
+                            </View>
+                        )}
+                    </View>
+
+                    <View style={styles.info}>
+                        <View style={styles.topRow}>
+                            <PartRequestStatusBadge status={request.status} />
+                            <View style={[styles.condPill, {backgroundColor: theme.colors.accentSubtle}]}>
+                                <Text style={[styles.condText, {color: theme.colors.tertiary}]}>
+                                    {CONDITION_LABEL[request.conditionPreference]}
+                                </Text>
+                            </View>
                         </View>
 
-                        <View style={styles.info}>
-                            <View style={styles.topRow}>
-                                <PartRequestStatusBadge status={request.status} />
-                                <View style={[styles.condPill, {backgroundColor: theme.colors.accentSubtle}]}>
-                                    <Text style={[styles.condText, {color: theme.colors.tertiary}]}>
-                                        {CONDITION_LABEL[request.conditionPreference]}
+                        <Text style={[styles.title, {color: theme.colors.onSurface}]} numberOfLines={2}>
+                            {request.title}
+                        </Text>
+
+                        <View style={styles.vehicleRow}>
+                            <Icon source='shield-car' size={12} color={theme.colors.success} />
+                            <Text style={[styles.vehicleText, {color: theme.colors.onSurfaceVariant}]} numberOfLines={1}>
+                                {formatVehicle(request)}
+                            </Text>
+                        </View>
+
+                        <View style={styles.bottomRow}>
+                            <Text style={[styles.budget, {color: themeColors.textPrice}]} numberOfLines={1}>
+                                {formatBudget(request.budgetMin, request.budgetMax)}
+                            </Text>
+                            {request.city ? (
+                                <View style={styles.cityRow}>
+                                    <Icon source='map-marker-outline' size={12} color={theme.colors.onSurfaceVariant} />
+                                    <Text style={[styles.city, {color: theme.colors.onSurfaceVariant}]} numberOfLines={1}>
+                                        {request.city}
                                     </Text>
                                 </View>
-                            </View>
-
-                            <Text style={[styles.title, {color: theme.colors.onSurface}]} numberOfLines={2}>
-                                {request.title}
-                            </Text>
-
-                            <View style={styles.vehicleRow}>
-                                <Icon source='shield-car' size={12} color={theme.colors.success} />
-                                <Text style={[styles.vehicleText, {color: theme.colors.onSurfaceVariant}]} numberOfLines={1}>
-                                    {formatVehicle(request)}
-                                </Text>
-                            </View>
-
-                            <View style={styles.bottomRow}>
-                                <Text style={[styles.budget, {color: themeColors.textPrice}]} numberOfLines={1}>
-                                    {formatBudget(request.budgetMin, request.budgetMax)}
-                                </Text>
-                                {request.city ? (
-                                    <Pressable style={styles.cityRow}>
-                                        <Icon source='map-marker-outline' size={12} color={theme.colors.onSurfaceVariant} />
-                                        <Text style={[styles.city, {color: theme.colors.onSurfaceVariant}]} numberOfLines={1}>
-                                            {request.city}
-                                        </Text>
-                                    </Pressable>
-                                ) : null}
-                            </View>
+                            ) : null}
                         </View>
                     </View>
-                </TouchableRipple>
+                </View>
             </View>
-        </View>
+        </PressableScale>
     )
 }
 
 const styles = StyleSheet.create({
-    cardShadow: {borderRadius: 16, marginBottom: 12, ...shadows.md},
+    cardContainer: {marginBottom: 12},
+    card: {borderRadius: 16, ...shadows.md},
     cardInner: {borderRadius: 16, overflow: 'hidden'},
-    ripple: {borderRadius: 16},
     body: {flexDirection: 'row', padding: 12, gap: 12},
     thumbBox: {width: 96, height: 96, borderRadius: 14, overflow: 'hidden', position: 'relative'},
     thumb: {width: '100%', height: '100%'},

@@ -1,8 +1,9 @@
 import {useCallback} from 'react'
-import {FlatList, StyleSheet, View} from 'react-native'
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native'
 import {ActivityIndicator, FAB} from 'react-native-paper'
 import type {NavigationProp} from '@react-navigation/native'
 
+import {FadeSlideIn, staggerDelay} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 
@@ -12,6 +13,7 @@ import {PartRequestCardItem} from './PartRequestCardItem'
 import {PartRequestsListEmpty} from './PartRequestsListEmpty'
 import {PartRequestsListFilters} from './PartRequestsListFilters'
 import {PartRequestsListHeader} from './PartRequestsListHeader'
+import {PartRequestsListSkeleton} from './PartRequestsListSkeleton'
 
 const ARABIC_TEXT = {ADD_PART_REQUEST: 'انشر طلباً'}
 
@@ -36,7 +38,11 @@ export const PartRequestsListScreen = ({navigation}: PartRequestsListScreenProps
     }, [list])
 
     const renderItem = useCallback(
-        ({item}: {item: PartRequest}) => <PartRequestCardItem request={item} onPress={() => goDetail(item.id)} />,
+        ({item, index}: {item: PartRequest; index: number}) => (
+            <FadeSlideIn delay={index < 8 ? staggerDelay(index) : 0}>
+                <PartRequestCardItem request={item} onPress={() => goDetail(item.id)} />
+            </FadeSlideIn>
+        ),
         [goDetail]
     )
 
@@ -59,12 +65,11 @@ export const PartRequestsListScreen = ({navigation}: PartRequestsListScreenProps
                     </>
                 }
                 ListEmptyComponent={
-                    <PartRequestsListEmpty
-                        loading={list.loading && list.requests.length === 0}
-                        isFiltered={isFiltered}
-                        onAdd={goAdd}
-                        onReset={resetFilters}
-                    />
+                    list.loading ? (
+                        <PartRequestsListSkeleton />
+                    ) : (
+                        <PartRequestsListEmpty loading={false} isFiltered={isFiltered} onAdd={goAdd} onReset={resetFilters} />
+                    )
                 }
                 ListFooterComponent={
                     list.loadingMore ? (
@@ -73,8 +78,15 @@ export const PartRequestsListScreen = ({navigation}: PartRequestsListScreenProps
                         </View>
                     ) : null
                 }
-                refreshing={list.loading && list.requests.length > 0}
-                onRefresh={list.refresh}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={list.loading && list.requests.length > 0}
+                        onRefresh={list.refresh}
+                        tintColor={theme.colors.tertiary}
+                        colors={[theme.colors.tertiary]}
+                        progressBackgroundColor={theme.colors.surface}
+                    />
+                }
                 onEndReached={list.hasMore ? list.loadMore : undefined}
                 onEndReachedThreshold={0.4}
                 showsVerticalScrollIndicator={false}

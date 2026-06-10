@@ -1,9 +1,9 @@
 import React, {useState, useCallback, useEffect} from 'react'
-import {StyleSheet, View} from 'react-native'
-import {Divider, Snackbar, ActivityIndicator} from 'react-native-paper'
+import {StyleSheet} from 'react-native'
+import {Divider} from 'react-native-paper'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 
-import {Screen} from '@/global/components'
+import {Screen, showToast} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {useAuthStore} from '@/global/store'
 import type {UserSubscription} from '@/global/types'
@@ -11,11 +11,12 @@ import {profileService} from '../services/profileService'
 import {ProfileHeader} from './ProfileHeader'
 import {SellerProfileCard} from './sellerProfile'
 import {SubscriptionCard} from './SubscriptionCard'
-import {ProfileForm} from './ProfileForm'
-import type {ProfileFormState} from './ProfileForm'
+import {MyAccountSkeleton} from './MyAccountSkeleton'
+import {ProfileForm} from './profile'
+import type {ProfileFormState} from './profile'
 
 const ARABIC = {
-    SAVED: 'تم حفظ التعديلات بنجاح',
+    SAVED: 'تم حفظ التغييرات',
     ERROR: 'حدث خطأ، يرجى المحاولة مرة أخرى',
 }
 
@@ -27,7 +28,6 @@ export const MyAccountScreen = () => {
 
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
-    const [toast, setToast] = useState<string | null>(null)
     const [subscription, setSubscription] = useState<UserSubscription | null>(null)
     const [form, setForm] = useState<ProfileFormState>({
         name: user?.name ?? '',
@@ -76,10 +76,10 @@ export const MyAccountScreen = () => {
                 bio: form.bio.trim() || undefined,
             })
             updateUser(updated)
-            setToast(ARABIC.SAVED)
+            showToast(ARABIC.SAVED, 'success')
             return true
         } catch {
-            setToast(ARABIC.ERROR)
+            showToast(ARABIC.ERROR, 'error')
             return false
         } finally {
             setSaving(false)
@@ -97,40 +97,32 @@ export const MyAccountScreen = () => {
     }, [user])
 
     if (loading) {
-        return (
-            <View style={[styles.loadingContainer, {backgroundColor: theme.colors.background}]}>
-                <ActivityIndicator size='large' color={theme.colors.primary} />
-            </View>
-        )
+        return <MyAccountSkeleton />
     }
 
     const plan = subscription?.plan ?? null
 
     return (
-        <View style={[styles.flex, {backgroundColor: theme.colors.background}]}>
-            <Screen contentContainerStyle={{paddingBottom: insets.bottom + 24}}>
-                <ProfileHeader name={user?.name ?? ''} email={user?.email ?? ''} plan={plan} />
-                <SellerProfileCard onToast={setToast} />
-                <Divider />
-                <SubscriptionCard plan={plan} />
-                <Divider />
-                <ProfileForm
-                    form={form}
-                    onFormChange={patch => setForm(f => ({...f, ...patch}))}
-                    onSave={handleSave}
-                    onCancel={handleCancel}
-                    saving={saving}
-                    hasChanges={hasChanges}
-                />
-            </Screen>
-            <Snackbar visible={!!toast} onDismiss={() => setToast(null)} duration={2500}>
-                {toast ?? ''}
-            </Snackbar>
-        </View>
+        <Screen
+            style={[styles.flex, {backgroundColor: theme.colors.background}]}
+            contentContainerStyle={{paddingBottom: insets.bottom + 24}}>
+            <ProfileHeader name={user?.name ?? ''} email={user?.email ?? ''} plan={plan} />
+            <SellerProfileCard />
+            <Divider />
+            <SubscriptionCard plan={plan} />
+            <Divider />
+            <ProfileForm
+                form={form}
+                onFormChange={patch => setForm(f => ({...f, ...patch}))}
+                onSave={handleSave}
+                onCancel={handleCancel}
+                saving={saving}
+                hasChanges={hasChanges}
+            />
+        </Screen>
     )
 }
 
 const styles = StyleSheet.create({
     flex: {flex: 1},
-    loadingContainer: {flex: 1, justifyContent: 'center', alignItems: 'center'},
 })

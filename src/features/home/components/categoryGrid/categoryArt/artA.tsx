@@ -1,76 +1,111 @@
 import React from 'react'
-import {Circle, Ellipse, G, Line, Path, Rect} from 'react-native-svg'
+import {Circle, G, Line, Path, Rect} from 'react-native-svg'
 
 import type {ArtColors, CategoryArtRenderer} from './types'
 
-// Engine — block with valve cover, cooling fins, intake runner and belt pulley.
+const BLOCK_RIBS = [22, 27.4, 32.8, 38.2]
+const HEAD_PORTS = [22.5, 30, 37.5]
+const COILS = [26.5, 32.5, 38.5]
+const GEAR_L = [0, 36, 72, 108, 144, 180, 216, 252, 288, 324]
+const GEAR_S = [0, 45, 90, 135, 180, 225, 270, 315]
+const WEB_HOLES: [number, number][] = [
+    [27, 25.9],
+    [21, 30.3],
+    [23.3, 37.3],
+    [30.7, 37.3],
+    [33, 30.3],
+]
+
+// Engine — full inline block: valve cover with ignition coils and oil cap, head with
+// intake ports, ribbed crankcase with freeze plug, curved intake runner, dipstick,
+// finned oil pan with drain plug, and a grooved serpentine crank pulley.
 const engine: CategoryArtRenderer = (c: ArtColors) => (
     <G strokeLinecap='round' strokeLinejoin='round'>
-        <Rect x={17} y={43} width={7} height={4} rx={1.5} fill={c.navyDark} />
-        <Rect x={37} y={43} width={7} height={4} rx={1.5} fill={c.navyDark} />
-        <Path d='M16 31 Q9 31 9 38 L9 41' fill='none' stroke={c.amber} strokeWidth={2.6} />
-        <Rect x={15} y={25} width={28} height={19} rx={4} fill={c.navyGrad} stroke={c.navyDark} strokeWidth={1.5} />
-        <Rect x={19} y={16} width={19} height={10} rx={3} fill={c.navyLt} stroke={c.navy} strokeWidth={1.5} />
-        <Circle cx={24} cy={21} r={1.4} fill={c.amber} />
-        <Circle cx={29} cy={21} r={1.4} fill={c.amber} />
-        <Circle cx={34} cy={21} r={1.4} fill={c.amber} />
-        <Line x1={21} y1={31} x2={21} y2={40} stroke={c.navyDark} strokeWidth={1.4} opacity={0.45} />
-        <Line x1={25} y1={31} x2={25} y2={40} stroke={c.navyDark} strokeWidth={1.4} opacity={0.45} />
-        <Line x1={29} y1={31} x2={29} y2={40} stroke={c.navyDark} strokeWidth={1.4} opacity={0.45} />
-        <Circle cx={45} cy={36} r={7} fill={c.steelGrad} stroke={c.navy} strokeWidth={1.5} />
-        <Circle cx={45} cy={36} r={2.6} fill={c.amberGrad} stroke={c.amberDark} strokeWidth={1} />
-        <Line x1={22} y1={18.5} x2={33} y2={18.5} stroke={c.surface} strokeWidth={1.4} opacity={0.5} />
+        <Path d='M13.5 21 Q7.5 23.5 8.5 30.5 Q9.2 34.8 15.8 34.8' fill='none' stroke={c.amberGrad} strokeWidth={3.4} />
+        <Circle cx={13.5} cy={20.6} r={2.2} fill={c.steelGrad} stroke={c.navy} strokeWidth={0.9} />
+        <Line x1={18.5} y1={26} x2={16.2} y2={13.5} stroke={c.line} strokeWidth={1.5} />
+        <Circle cx={15.9} cy={11.8} r={1.9} fill='none' stroke={c.amberGrad} strokeWidth={1.6} />
+        <Rect x={12.6} y={39} width={4} height={5.5} rx={1.2} fill={c.navyDark} />
+        <Rect x={18} y={21.5} width={30} height={5.5} fill={c.navyLt} stroke={c.navy} strokeWidth={1} />
+        {HEAD_PORTS.map(x => (
+            <Rect key={`p${x}`} x={x} y={23.1} width={3.2} height={2.3} rx={0.9} fill={c.navyDark} opacity={0.45} />
+        ))}
+        <Rect x={20} y={12.5} width={26} height={9} rx={3} fill={c.navyGrad} stroke={c.navyDark} strokeWidth={1.4} />
+        <Line x1={23} y1={14.4} x2={39} y2={14.4} stroke={c.surface} strokeWidth={1.3} opacity={0.5} />
+        {COILS.map(x => (
+            <Circle key={`c${x}`} cx={x} cy={17.4} r={1.6} fill={c.amberGrad} stroke={c.amberDark} strokeWidth={0.8} />
+        ))}
+        <Circle cx={43} cy={15.6} r={1.8} fill={c.steelGrad} stroke={c.navy} strokeWidth={0.9} />
+        <Rect x={16} y={27} width={32} height={17} rx={2.5} fill={c.navyGrad} stroke={c.navyDark} strokeWidth={1.5} />
+        {BLOCK_RIBS.map(x => (
+            <Line key={`r${x}`} x1={x} y1={29.5} x2={x} y2={41} stroke={c.navyDark} strokeWidth={1.3} opacity={0.35} />
+        ))}
+        <Circle cx={43.6} cy={33} r={2} fill={c.steelGrad} stroke={c.navy} strokeWidth={0.9} />
+        <Path
+            d='M19.5 44 H44.5 V46.5 Q44.5 49.5 40.5 49.5 H23.5 Q19.5 49.5 19.5 46.5 Z'
+            fill={c.steelGrad}
+            stroke={c.navy}
+            strokeWidth={1.2}
+        />
+        <Circle cx={31} cy={49.3} r={1.2} fill={c.amberGrad} stroke={c.amberDark} strokeWidth={0.7} />
+        <Circle cx={44.6} cy={43.5} r={5.8} fill={c.steelGrad} stroke={c.navy} strokeWidth={1.3} />
+        <Circle cx={44.6} cy={43.5} r={4.1} fill='none' stroke={c.navyDark} strokeWidth={1.1} opacity={0.5} />
+        <Circle cx={44.6} cy={43.5} r={2.9} fill='none' stroke={c.navyDark} strokeWidth={1.1} opacity={0.35} />
+        <Circle cx={44.6} cy={43.5} r={1.8} fill={c.navyGrad} stroke={c.navyDark} strokeWidth={0.8} />
+        <Circle cx={44.6} cy={43.5} r={0.8} fill={c.amber} />
     </G>
 )
 
-// Suspension — coil-over: spring wound over a shock body between two mounts.
-const suspension: CategoryArtRenderer = (c: ArtColors) => (
+// Transmission — gear set on shafts: input and output shafts with yokes, a large
+// machined gear (web holes, keyed steel hub) meshing with an amber pinion gear.
+const transmission: CategoryArtRenderer = (c: ArtColors) => (
     <G strokeLinecap='round' strokeLinejoin='round'>
-        <Rect x={28} y={13} width={8} height={34} rx={4} fill={c.navyGrad} stroke={c.navyDark} strokeWidth={1.4} />
-        <Ellipse cx={32} cy={18} rx={11} ry={3.4} fill='none' stroke={c.amberGrad} strokeWidth={3.2} />
-        <Ellipse cx={32} cy={25} rx={11} ry={3.4} fill='none' stroke={c.amberGrad} strokeWidth={3.2} />
-        <Ellipse cx={32} cy={32} rx={11} ry={3.4} fill='none' stroke={c.amberGrad} strokeWidth={3.2} />
-        <Ellipse cx={32} cy={39} rx={11} ry={3.4} fill='none' stroke={c.amberGrad} strokeWidth={3.2} />
-        <Rect x={23} y={9} width={18} height={5} rx={2.5} fill={c.navyGrad} stroke={c.navyDark} strokeWidth={1.2} />
-        <Circle cx={32} cy={48} r={4.5} fill={c.steelGrad} stroke={c.navy} strokeWidth={1.5} />
-        <Circle cx={32} cy={48} r={1.7} fill={c.navyDark} />
+        <Rect x={36} y={16.1} width={18} height={2.8} rx={1.4} fill={c.darkGrad} stroke={c.navyDark} strokeWidth={0.8} />
+        <Rect x={9.5} y={30.6} width={45} height={3.2} rx={1.6} fill={c.darkGrad} stroke={c.navyDark} strokeWidth={0.9} />
+        <Rect x={9.5} y={29.2} width={3} height={6} rx={1.2} fill={c.steelGrad} stroke={c.navy} strokeWidth={1} />
+        <Rect x={50.8} y={28.6} width={3.4} height={7.2} rx={1.2} fill={c.steelGrad} stroke={c.navy} strokeWidth={1} />
+        {GEAR_L.map(a => (
+            <Rect
+                key={`l${a}`}
+                x={24.6}
+                y={15.4}
+                width={4.8}
+                height={5.4}
+                rx={1.2}
+                fill={c.navyGrad}
+                rotation={a}
+                originX={27}
+                originY={32.2}
+            />
+        ))}
+        <Circle cx={27} cy={32.2} r={12} fill={c.navyGrad} stroke={c.navyDark} strokeWidth={1.5} />
+        <Circle cx={27} cy={32.2} r={8.8} fill='none' stroke={c.navyLt} strokeWidth={1.2} opacity={0.45} />
+        {WEB_HOLES.map(([x, y]) => (
+            <Circle key={`w${x}`} cx={x} cy={y} r={1.7} fill={c.navyDark} opacity={0.4} />
+        ))}
+        <Path d='M18.8 27.5 A9.5 9.5 0 0 1 25.4 22.9' fill='none' stroke={c.surface} strokeWidth={1.5} opacity={0.4} />
+        <Circle cx={27} cy={32.2} r={4.2} fill={c.steelGrad} stroke={c.navy} strokeWidth={1} />
+        <Rect x={26.3} y={29.1} width={1.4} height={1.6} fill={c.navyDark} opacity={0.55} />
+        <Circle cx={27} cy={32.2} r={1.6} fill={c.navyDark} />
+        {GEAR_S.map(a => (
+            <Rect
+                key={`s${a}`}
+                x={44.9}
+                y={7.3}
+                width={3.2}
+                height={4.2}
+                rx={1}
+                fill={c.amberGrad}
+                rotation={a}
+                originX={46.5}
+                originY={17.5}
+            />
+        ))}
+        <Circle cx={46.5} cy={17.5} r={7} fill={c.amberGrad} stroke={c.amberDark} strokeWidth={1.3} />
+        <Circle cx={46.5} cy={17.5} r={4.6} fill='none' stroke={c.amberLt} strokeWidth={1} opacity={0.5} />
+        <Circle cx={46.5} cy={17.5} r={2.4} fill={c.steelGrad} stroke={c.navy} strokeWidth={0.9} />
+        <Circle cx={46.5} cy={17.5} r={0.9} fill={c.navyDark} />
     </G>
 )
 
-// Brakes — drilled steel rotor with hub, gripped by an amber caliper.
-const brakes: CategoryArtRenderer = (c: ArtColors) => (
-    <G strokeLinecap='round' strokeLinejoin='round'>
-        <Circle cx={30} cy={33} r={17} fill={c.steelGrad} stroke={c.navy} strokeWidth={1.5} />
-        <Circle cx={30} cy={33} r={13.5} fill='none' stroke={c.navy} strokeWidth={1} opacity={0.25} />
-        <Circle cx={40} cy={33} r={1.4} fill={c.navyDark} opacity={0.5} />
-        <Circle cx={37} cy={40} r={1.4} fill={c.navyDark} opacity={0.5} />
-        <Circle cx={30} cy={43} r={1.4} fill={c.navyDark} opacity={0.5} />
-        <Circle cx={23} cy={40} r={1.4} fill={c.navyDark} opacity={0.5} />
-        <Circle cx={20} cy={33} r={1.4} fill={c.navyDark} opacity={0.5} />
-        <Circle cx={23} cy={26} r={1.4} fill={c.navyDark} opacity={0.5} />
-        <Circle cx={30} cy={23} r={1.4} fill={c.navyDark} opacity={0.5} />
-        <Circle cx={37} cy={26} r={1.4} fill={c.navyDark} opacity={0.5} />
-        <Circle cx={30} cy={33} r={6.5} fill={c.navyGrad} stroke={c.navyDark} strokeWidth={1} />
-        <Circle cx={30} cy={33} r={1.8} fill={c.amberGrad} />
-        <Path d='M41 20 H45 Q49 20 49 24 V42 Q49 46 45 46 H41 Z' fill={c.amberGrad} stroke={c.amberDark} strokeWidth={1.4} />
-        <Rect x={40} y={26} width={3} height={14} rx={1.5} fill={c.navyDark} opacity={0.55} />
-        <Path d='M19 27 A17 17 0 0 1 28 18.5' fill='none' stroke={c.surface} strokeWidth={1.8} opacity={0.55} />
-    </G>
-)
-
-// Electrical — battery with +/- terminals and a lightning bolt.
-const electrical: CategoryArtRenderer = (c: ArtColors) => (
-    <G strokeLinecap='round' strokeLinejoin='round'>
-        <Rect x={14} y={23} width={36} height={25} rx={4} fill={c.navyGrad} stroke={c.navyDark} strokeWidth={1.5} />
-        <Path d='M14 29 Q14 23 18 23 H46 Q50 23 50 29 Z' fill={c.navyLt} />
-        <Rect x={20} y={15} width={7} height={9} rx={1.5} fill={c.steelGrad} stroke={c.navy} strokeWidth={1.2} />
-        <Rect x={37} y={15} width={7} height={9} rx={1.5} fill={c.amberGrad} stroke={c.amberDark} strokeWidth={1.2} />
-        <Line x1={21} y1={19.5} x2={26} y2={19.5} stroke={c.navyDark} strokeWidth={1.6} />
-        <Line x1={38} y1={19.5} x2={43} y2={19.5} stroke={c.surface} strokeWidth={1.6} />
-        <Line x1={40.5} y1={17} x2={40.5} y2={22} stroke={c.surface} strokeWidth={1.6} />
-        <Path d='M33 30 L25 41 L31 41 L29 49 L40 36 L33.5 36 Z' fill={c.amberGrad} stroke={c.amberDark} strokeWidth={1.2} />
-        <Line x1={18} y1={26} x2={30} y2={26} stroke={c.surface} strokeWidth={1.4} opacity={0.5} />
-    </G>
-)
-
-export const ART_A: Record<string, CategoryArtRenderer> = {engine, suspension, brakes, electrical}
+export const ART_A: Record<string, CategoryArtRenderer> = {engine, transmission}

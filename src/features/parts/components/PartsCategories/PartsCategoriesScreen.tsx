@@ -22,10 +22,10 @@ export const PartsCategoriesScreen = ({navigation}: PartsCategoriesScreenProps) 
     const goBrowseAll = () => navigation?.navigate('PartsList', {category: null})
     const goAddVehicle = () => navigation?.navigate('AddVehicle')
 
+    // The hero search bar is a press-through affordance — it always opens the
+    // parts list, where the real (focusable) search input lives.
     const handleSearchSubmit = () => {
-        if (search.trim()) {
-            navigation?.navigate('PartsList', {category: null})
-        }
+        navigation?.navigate('PartsList', {category: null})
     }
 
     return (

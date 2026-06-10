@@ -1,12 +1,14 @@
 import React, {useMemo} from 'react'
 import {ScrollView, StyleSheet, View} from 'react-native'
-import {ActivityIndicator, Text} from 'react-native-paper'
+import {Icon, Text} from 'react-native-paper'
 
+import {PressableScale} from '@/global/components'
 import {useCatalog} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 import type {Part, Vehicle} from '@/global/types'
 import {useRecommendedParts} from '../../hooks'
 import {RecommendedPartCard} from './RecommendedPartCard'
+import {RecommendedRailSkeleton} from './RecommendedRailSkeleton'
 
 interface RecommendedRailProps {
     vehicle: Partial<Vehicle>
@@ -19,10 +21,11 @@ const ARABIC_TEXT = {
     SUBTITLE_PREFIX: 'قطع متوافقة مع',
     VIEW_ALL: 'عرض الكل',
     EMPTY: 'لا توجد قطع موصى بها حالياً',
+    RETRY: 'إعادة المحاولة',
 }
 
 export const RecommendedRail = ({vehicle, onSelectPart, onViewAll}: RecommendedRailProps) => {
-    const {parts, loading, error} = useRecommendedParts(8)
+    const {parts, loading, error, refresh} = useRecommendedParts(8)
     const {categories} = useCatalog()
 
     const iconFor = useMemo(() => {
@@ -33,24 +36,28 @@ export const RecommendedRail = ({vehicle, onSelectPart, onViewAll}: RecommendedR
 
     const subtitle = `${ARABIC_TEXT.SUBTITLE_PREFIX} ${vehicle.make ?? ''} ${vehicle.model ?? ''}`.trim()
 
-    if (loading && parts.length === 0) {
-        return (
-            <View style={styles.container}>
-                <Header subtitle={subtitle} onViewAll={onViewAll} showViewAll={false} />
-                <View style={styles.state}>
-                    <ActivityIndicator size='small' color={themeColors.tertiary} />
-                </View>
+    if (parts.length === 0) {
+        let body = (
+            <View style={styles.state}>
+                <Text style={styles.emptyText}>{ARABIC_TEXT.EMPTY}</Text>
             </View>
         )
-    }
-
-    if (!loading && parts.length === 0) {
+        if (loading) {
+            body = <RecommendedRailSkeleton />
+        } else if (error) {
+            body = (
+                <View style={styles.state}>
+                    <PressableScale onPress={refresh} style={styles.retry} accessibilityRole='button'>
+                        <Icon source='refresh' size={16} color={themeColors.primary} />
+                        <Text style={styles.retryText}>{ARABIC_TEXT.RETRY}</Text>
+                    </PressableScale>
+                </View>
+            )
+        }
         return (
             <View style={styles.container}>
                 <Header subtitle={subtitle} onViewAll={onViewAll} showViewAll={false} />
-                <View style={styles.state}>
-                    <Text style={styles.emptyText}>{error ?? ARABIC_TEXT.EMPTY}</Text>
-                </View>
+                {body}
             </View>
         )
     }
@@ -104,4 +111,16 @@ const styles = StyleSheet.create({
     scrollContent: {paddingHorizontal: 18, paddingEnd: 6},
     state: {paddingHorizontal: 18, paddingVertical: 24, alignItems: 'center'},
     emptyText: {color: themeColors.onSurfaceVariant, fontSize: 12.5},
+    retry: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 999,
+        borderWidth: 1,
+        borderColor: themeColors.outlineVariant,
+        backgroundColor: themeColors.surface,
+    },
+    retryText: {fontSize: 12.5, fontWeight: '700', color: themeColors.primary},
 })

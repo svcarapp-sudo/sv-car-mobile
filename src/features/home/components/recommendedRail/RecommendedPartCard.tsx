@@ -1,16 +1,18 @@
 import React from 'react'
-import {Image, Pressable, StyleSheet, View} from 'react-native'
+import {Pressable, StyleSheet, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
+import {FadeInImage} from '@/global/components'
 import {shadows, themeColors} from '@/global/theme'
 import type {Part} from '@/global/types'
+import {formatPrice} from '@/global/utils'
+
+const ARABIC_TEXT = {
+    FRESH: 'جديد',
+    CURRENCY: 'ر.س',
+}
 
 const FRESH_WINDOW_MS = 48 * 60 * 60 * 1000
-
-const formatPrice = (price: number) => {
-    if (!Number.isFinite(price)) return '—'
-    return new Intl.NumberFormat('ar-SA', {maximumFractionDigits: 0}).format(price)
-}
 
 interface RecommendedPartCardProps {
     part: Part
@@ -20,15 +22,23 @@ interface RecommendedPartCardProps {
 
 export const RecommendedPartCard = ({part, onPress, icon}: RecommendedPartCardProps) => {
     const isFresh = part.createdAt != null && Date.now() - part.createdAt < FRESH_WINDOW_MS
+    const priceLabel = Number.isFinite(part.price) ? formatPrice(part.price) : '—'
 
     return (
         <Pressable
             onPress={onPress}
             style={({pressed}) => [styles.card, pressed && styles.cardPressed]}
-            accessibilityRole='button'>
+            accessibilityRole='button'
+            accessibilityLabel={`${part.name}، ${priceLabel} ${ARABIC_TEXT.CURRENCY}`}>
             <View style={styles.mediaBox}>
                 {part.imageUrl ? (
-                    <Image source={{uri: part.imageUrl}} style={styles.media} resizeMode='cover' />
+                    <FadeInImage
+                        source={{uri: part.imageUrl}}
+                        style={styles.media}
+                        resizeMode='cover'
+                        fallbackIcon={icon || 'package-variant'}
+                        fallbackIconSize={36}
+                    />
                 ) : (
                     <View style={styles.mediaPlaceholder}>
                         <Icon source={icon || 'package-variant'} size={36} color={themeColors.tertiary} />
@@ -37,7 +47,7 @@ export const RecommendedPartCard = ({part, onPress, icon}: RecommendedPartCardPr
 
                 {isFresh && (
                     <View style={styles.freshPill}>
-                        <Text style={styles.freshText}>جديد</Text>
+                        <Text style={styles.freshText}>{ARABIC_TEXT.FRESH}</Text>
                     </View>
                 )}
             </View>
@@ -57,8 +67,8 @@ export const RecommendedPartCard = ({part, onPress, icon}: RecommendedPartCardPr
                 )}
 
                 <View style={styles.priceRow}>
-                    <Text style={styles.price}>{formatPrice(part.price)}</Text>
-                    <Text style={styles.currency}>ر.س</Text>
+                    <Text style={styles.price}>{priceLabel}</Text>
+                    <Text style={styles.currency}>{ARABIC_TEXT.CURRENCY}</Text>
                 </View>
             </View>
         </Pressable>

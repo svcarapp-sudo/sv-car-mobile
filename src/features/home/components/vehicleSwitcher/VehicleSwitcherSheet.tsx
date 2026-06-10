@@ -5,6 +5,7 @@ import {Icon, Text} from 'react-native-paper'
 import {shadows, themeColors} from '@/global/theme'
 import {MAX_VEHICLES} from '@/global/store'
 import type {Vehicle} from '@/global/types'
+import {haptics} from '@/global/utils'
 import {VehicleSwitcherAddRow} from './VehicleSwitcherAddRow'
 import {VehicleSwitcherRow} from './VehicleSwitcherRow'
 
@@ -38,6 +39,7 @@ export const VehicleSwitcherSheet = ({
     const backdrop = useRef(new Animated.Value(0)).current
 
     useEffect(() => {
+        if (visible) haptics.light()
         Animated.parallel([
             Animated.timing(slide, {toValue: visible ? 1 : 0, duration: 280, useNativeDriver: true}),
             Animated.timing(backdrop, {toValue: visible ? 1 : 0, duration: 240, useNativeDriver: true}),
@@ -104,7 +106,7 @@ export const VehicleSwitcherSheet = ({
 
 const styles = StyleSheet.create({
     container: {flex: 1, justifyContent: 'flex-end'},
-    backdrop: {...StyleSheet.absoluteFillObject, backgroundColor: '#0F172A'},
+    backdrop: {...StyleSheet.absoluteFillObject, backgroundColor: themeColors.surfaceDark},
     sheet: {
         backgroundColor: themeColors.surface,
         borderTopStartRadius: 28,

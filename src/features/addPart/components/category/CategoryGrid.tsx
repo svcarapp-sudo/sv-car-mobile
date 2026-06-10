@@ -1,5 +1,7 @@
 import {StyleSheet, View} from 'react-native'
-import {Text, ActivityIndicator} from 'react-native-paper'
+import {Text} from 'react-native-paper'
+
+import {Skeleton} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import type {PartCategoryApi} from '@/global/types'
 
@@ -15,7 +17,6 @@ interface CategoryGridProps {
 }
 
 const ARABIC_TEXT = {
-    LOADING: 'جاري تحميل الفئات...',
     DEFAULT_TITLE: 'فئات قطع الغيار',
 }
 
@@ -41,11 +42,15 @@ export const CategoryGrid = ({
                         </Text>
                     </View>
                 )}
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size='small' />
-                    <Text variant='bodySmall' style={{color: theme.colors.onSurfaceVariant, marginTop: 8}}>
-                        {ARABIC_TEXT.LOADING}
-                    </Text>
+                <View style={styles.grid}>
+                    {[0, 1, 2, 3, 4, 5, 6, 7].map(tile => (
+                        <View key={tile} style={styles.skeletonWrap}>
+                            <View style={[styles.skeletonTile, {backgroundColor: theme.colors.surface}]}>
+                                <Skeleton width={36} height={36} radius={11} />
+                                <Skeleton width='48%' height={12} radius={6} />
+                            </View>
+                        </View>
+                    ))}
                 </View>
             </View>
         )
@@ -92,13 +97,21 @@ const styles = StyleSheet.create({
         letterSpacing: 0,
         lineHeight: 28,
     },
-    loadingContainer: {
-        paddingVertical: 24,
-        alignItems: 'center',
-    },
     grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginHorizontal: -4,
+    },
+    skeletonWrap: {
+        width: '50%',
+        padding: 4,
+    },
+    skeletonTile: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        borderRadius: 14,
     },
 })

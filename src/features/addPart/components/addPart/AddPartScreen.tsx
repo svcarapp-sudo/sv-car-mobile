@@ -1,6 +1,5 @@
 import {useRef, useState} from 'react'
 import {Animated, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View} from 'react-native'
-import {Snackbar} from 'react-native-paper'
 import type {NavigationProp} from '@react-navigation/native'
 
 import {useAddPartForm} from '../../hooks/useAddPartForm'
@@ -62,8 +61,6 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
     const translateY = headerVisible.interpolate({inputRange: [0, 1], outputRange: [-headerHeight, 0]})
     const opacity = headerVisible.interpolate({inputRange: [0, 1], outputRange: [0, 1]})
 
-    const snackbarBg = form.toast?.kind === 'success' ? theme.colors.success : theme.colors.error
-
     return (
         <SellerProfileGate>
             <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
@@ -122,13 +119,6 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
                         opacity={opacity}
                     />
                 </View>
-                <Snackbar
-                    visible={!!form.toast}
-                    onDismiss={form.clearToast}
-                    duration={form.toast?.kind === 'success' ? 1300 : 3000}
-                    style={{backgroundColor: snackbarBg}}>
-                    {form.toast?.message ?? ''}
-                </Snackbar>
             </View>
         </SellerProfileGate>
     )

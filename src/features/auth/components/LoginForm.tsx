@@ -1,4 +1,5 @@
-import {StyleSheet, View} from 'react-native'
+import {useRef, useState} from 'react'
+import {StyleSheet, View, type TextInput as RNTextInput} from 'react-native'
 import {Button, HelperText, Text, TextInput} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
@@ -12,6 +13,8 @@ const ARABIC_TEXT = {
     REGISTER: 'إنشاء حساب',
     LOADING: 'جاري الدخول...',
     FILL_TEST_CREDENTIALS: 'ملء بيانات الاختبار',
+    SHOW_PASSWORD: 'إظهار كلمة المرور',
+    HIDE_PASSWORD: 'إخفاء كلمة المرور',
 }
 
 interface LoginFormProps {
@@ -38,6 +41,9 @@ export const LoginForm = ({
     onGoToRegister,
 }: LoginFormProps) => {
     const theme = useAppTheme()
+    const passwordRef = useRef<RNTextInput>(null)
+    const [showPassword, setShowPassword] = useState(false)
+
     return (
         <View style={styles.content}>
             <Text variant='headlineMedium' style={[styles.title, {color: theme.colors.onSurface}]}>
@@ -51,16 +57,29 @@ export const LoginForm = ({
                 keyboardType='email-address'
                 autoCapitalize='none'
                 autoComplete='email'
+                returnKeyType='next'
+                submitBehavior='submit'
+                onSubmitEditing={() => passwordRef.current?.focus()}
                 style={styles.input}
                 error={!!error}
             />
             <TextInput
+                ref={passwordRef}
                 label={ARABIC_TEXT.PASSWORD}
                 value={password}
                 onChangeText={onPasswordChange}
                 mode='outlined'
-                secureTextEntry
+                secureTextEntry={!showPassword}
                 autoComplete='password'
+                returnKeyType='go'
+                onSubmitEditing={() => !loading && onLogin()}
+                right={
+                    <TextInput.Icon
+                        icon={showPassword ? 'eye-off' : 'eye'}
+                        onPress={() => setShowPassword(v => !v)}
+                        accessibilityLabel={showPassword ? ARABIC_TEXT.HIDE_PASSWORD : ARABIC_TEXT.SHOW_PASSWORD}
+                    />
+                }
                 style={styles.input}
                 error={!!error}
             />
@@ -69,14 +88,16 @@ export const LoginForm = ({
                     {error}
                 </HelperText>
             ) : null}
-            <Button
-                mode='outlined'
-                onPress={onFillTestCredentials}
-                disabled={loading}
-                style={styles.testButton}
-                labelStyle={styles.testLabel}>
-                {ARABIC_TEXT.FILL_TEST_CREDENTIALS}
-            </Button>
+            {__DEV__ && (
+                <Button
+                    mode='outlined'
+                    onPress={onFillTestCredentials}
+                    disabled={loading}
+                    style={styles.testButton}
+                    labelStyle={styles.testLabel}>
+                    {ARABIC_TEXT.FILL_TEST_CREDENTIALS}
+                </Button>
+            )}
             <Button mode='contained' onPress={onLogin} loading={loading} disabled={loading} style={styles.button}>
                 {loading ? ARABIC_TEXT.LOADING : ARABIC_TEXT.LOGIN}
             </Button>

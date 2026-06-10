@@ -3,6 +3,7 @@ import {StyleSheet, View, Animated, TouchableOpacity, I18nManager} from 'react-n
 import {Text, Icon} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
+import {haptics} from '@/global/utils'
 
 import {STEPS, TOTAL_STEPS, ARABIC_TEXT, type Step} from './addPartConstants'
 
@@ -25,6 +26,11 @@ export const AddPartProgress = ({currentStep, onStepPress}: AddPartProgressProps
         }).start()
     }, [currentStep, fillAnim])
 
+    const handleStepPress = (step: Step) => {
+        haptics.selection()
+        onStepPress?.(step)
+    }
+
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.outlineVariant}]}>
             <View style={styles.topRow}>
@@ -40,7 +46,10 @@ export const AddPartProgress = ({currentStep, onStepPress}: AddPartProgressProps
                 <View style={styles.spacer} />
             </View>
 
-            <View style={styles.segmentRow}>
+            <View
+                style={styles.segmentRow}
+                accessibilityRole='progressbar'
+                accessibilityValue={{min: 1, max: TOTAL_STEPS, now: currentStep + 1}}>
                 {STEPS.map((s, index) => {
                     const isCompleted = index < currentStep
                     const isActive = index === currentStep
@@ -73,7 +82,7 @@ export const AddPartProgress = ({currentStep, onStepPress}: AddPartProgressProps
                         <TouchableOpacity
                             key={s.step}
                             style={styles.segmentWrap}
-                            onPress={() => onStepPress?.(s.step)}
+                            onPress={() => handleStepPress(s.step)}
                             activeOpacity={0.6}
                             hitSlop={{top: 12, bottom: 12, left: 2, right: 2}}>
                             {segment}

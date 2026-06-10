@@ -1,9 +1,10 @@
 import {useState} from 'react'
 import {StyleSheet} from 'react-native'
 
-import {Screen} from '@/global/components'
+import {FadeSlideIn, Screen, showToast} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {useAuthStore} from '@/global/store'
+import {haptics} from '@/global/utils'
 import {authService} from '../services'
 import {RegisterForm} from './RegisterForm'
 
@@ -14,6 +15,7 @@ const ARABIC = {
     PASSWORD_HINT: 'كلمة المرور (6 أحرف على الأقل)',
     ERROR: 'يرجى تعبئة جميع الحقول بشكل صحيح',
     EMAIL_IN_USE: 'البريد الإلكتروني مستخدم مسبقاً',
+    SUCCESS: 'تم إنشاء الحساب بنجاح',
 }
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Register'>
@@ -35,16 +37,19 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
         setError(null)
         if (!name.trim() || !email.trim() || !password) {
             setError(ARABIC.ERROR)
+            haptics.error()
             return
         }
         if (password.length < 6) {
             setError(ARABIC.PASSWORD_HINT)
+            haptics.error()
             return
         }
         setLoading(true)
         try {
             const {user, token} = await authService.register({name: name.trim(), email: email.trim(), password})
             login(user, token)
+            showToast(ARABIC.SUCCESS, 'success')
             navigation.replace('Main')
         } catch (err: unknown) {
             const status = err && typeof err === 'object' && 'status' in err ? (err as {status: number}).status : 0
@@ -55,6 +60,7 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
                       ? String((err as {message: string}).message)
                       : ARABIC.ERROR
             setError(msg)
+            haptics.error()
         } finally {
             setLoading(false)
         }
@@ -64,18 +70,20 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
         <Screen
             style={[styles.container, {backgroundColor: theme.colors.background}]}
             contentContainerStyle={styles.scrollContent}>
-            <RegisterForm
-                name={name}
-                onNameChange={setName}
-                email={email}
-                onEmailChange={setEmail}
-                password={password}
-                onPasswordChange={setPassword}
-                error={error}
-                loading={loading}
-                onRegister={handleRegister}
-                onGoToLogin={() => navigation.navigate('Login')}
-            />
+            <FadeSlideIn delay={60}>
+                <RegisterForm
+                    name={name}
+                    onNameChange={setName}
+                    email={email}
+                    onEmailChange={setEmail}
+                    password={password}
+                    onPasswordChange={setPassword}
+                    error={error}
+                    loading={loading}
+                    onRegister={handleRegister}
+                    onGoToLogin={() => navigation.navigate('Login')}
+                />
+            </FadeSlideIn>
         </Screen>
     )
 }

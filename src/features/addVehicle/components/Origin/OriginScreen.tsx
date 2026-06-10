@@ -1,14 +1,10 @@
 import {StyleSheet, View, FlatList, type NativeScrollEvent, type NativeSyntheticEvent} from 'react-native'
-import {Text, ActivityIndicator} from 'react-native-paper'
 
+import {Skeleton} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import type {OriginApi} from '@/global/services'
 
 import {OriginCard} from './OriginCard'
-
-const ARABIC_TEXT = {
-    LOADING: 'جارٍ تحميل المنشأ…',
-}
 
 interface OriginScreenProps {
     origins: OriginApi[]
@@ -30,11 +26,17 @@ export const OriginScreen = ({origins, loading, value, onSelect, onNext, onScrol
 
     if (loading && origins.length === 0) {
         return (
-            <View style={[styles.centered, {paddingTop: contentTopInset}]}>
-                <ActivityIndicator size='large' color={theme.colors.tertiary} />
-                <Text variant='bodyMedium' style={[styles.loadingText, {color: theme.colors.onSurfaceVariant}]}>
-                    {ARABIC_TEXT.LOADING}
-                </Text>
+            <View style={[styles.listContent, {paddingTop: contentTopInset}]}>
+                {[0, 1, 2, 3, 4].map(row => (
+                    <View key={row} style={[styles.skeletonRow, {backgroundColor: theme.colors.surface}]}>
+                        <Skeleton width={44} height={44} radius={14} />
+                        <View style={styles.skeletonBody}>
+                            <Skeleton width='28%' height={9} radius={5} />
+                            <Skeleton width='55%' height={13} radius={7} />
+                        </View>
+                        <Skeleton width={30} circle />
+                    </View>
+                ))}
             </View>
         )
     }
@@ -58,12 +60,17 @@ const styles = StyleSheet.create({
     listContent: {
         paddingBottom: 24,
     },
-    centered: {
-        flex: 1,
-        justifyContent: 'center',
+    skeletonRow: {
+        flexDirection: 'row',
         alignItems: 'center',
+        gap: 14,
+        paddingVertical: 14,
+        paddingHorizontal: 14,
+        borderRadius: 18,
+        marginBottom: 10,
     },
-    loadingText: {
-        marginTop: 16,
+    skeletonBody: {
+        flex: 1,
+        gap: 7,
     },
 })

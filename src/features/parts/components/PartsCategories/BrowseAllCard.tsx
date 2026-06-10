@@ -1,6 +1,7 @@
-import {Pressable, StyleSheet, View} from 'react-native'
+import {StyleSheet, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
+import {PressableScale} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {shadows} from '@/global/theme'
 
@@ -8,6 +9,7 @@ const ARABIC_TEXT = {
     BROWSE_ALL: 'عرض جميع القطع',
     BROWSE_ALL_DESC: 'تصفّح المخزون الكامل المتاح لمركبتك',
     CTA: 'تصفّح',
+    A11Y_LABEL: 'تصفح جميع القطع',
 }
 
 interface BrowseAllCardProps {
@@ -23,15 +25,11 @@ export const BrowseAllCard = ({onPress, totalCount}: BrowseAllCardProps) => {
     const theme = useAppTheme()
 
     return (
-        <Pressable
+        <PressableScale
             onPress={onPress}
-            style={({pressed}) => [
-                styles.card,
-                shadows.md,
-                {backgroundColor: theme.colors.primary},
-                pressed && styles.cardPressed,
-            ]}
-            accessibilityRole='button'>
+            style={[styles.card, shadows.md, {backgroundColor: theme.colors.primary}]}
+            accessibilityRole='button'
+            accessibilityLabel={ARABIC_TEXT.A11Y_LABEL}>
             <View style={[styles.glow, {backgroundColor: theme.colors.tertiary}]} />
             <View style={[styles.glow2, {backgroundColor: theme.colors.accentMuted}]} />
 
@@ -52,7 +50,7 @@ export const BrowseAllCard = ({onPress, totalCount}: BrowseAllCardProps) => {
                 </Text>
                 <Icon source='chevron-left' size={14} color={theme.colors.onTertiary} />
             </View>
-        </Pressable>
+        </PressableScale>
     )
 }
 
@@ -66,7 +64,6 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         position: 'relative',
     },
-    cardPressed: {opacity: 0.92, transform: [{scale: 0.99}]},
     glow: {
         position: 'absolute',
         width: 140,

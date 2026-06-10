@@ -3,35 +3,44 @@ import {FlatList, StyleSheet, View} from 'react-native'
 import {ActivityIndicator} from 'react-native-paper'
 import type {NavigationProp} from '@react-navigation/native'
 
-import {PartCard} from '@/global/components'
+import {FadeSlideIn, PartCard, staggerDelay} from '@/global/components'
 import {useAppTheme, useCatalog} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 
 import {useSavedPartsList} from '../hooks'
 import {SavedPartsEmpty} from './SavedPartsEmpty'
+import {SavedPartsError} from './SavedPartsError'
 import {SavedPartsHeader} from './SavedPartsHeader'
+import {SavedPartsSkeleton} from './SavedPartsSkeleton'
 
 interface SavedPartsScreenProps {
     navigation?: NavigationProp<RootStackParamList>
 }
 
 export const SavedPartsScreen = ({navigation}: SavedPartsScreenProps) => {
-    const {parts, total, loading, loadingMore, hasMore, loadMore, refresh} = useSavedPartsList()
+    const {parts, total, loading, loadingMore, error, hasMore, loadMore, refresh} = useSavedPartsList()
     const {categories, getBySlug} = useCatalog()
     const theme = useAppTheme()
 
     const renderItem = useCallback(
-        ({item}: {item: (typeof parts)[0]}) => (
-            <View style={styles.gridItem}>
+        ({item, index}: {item: (typeof parts)[0]; index: number}) => (
+            <FadeSlideIn delay={index < 8 ? staggerDelay(index) : 0} style={styles.gridItem}>
                 <PartCard
                     part={item}
                     categoryInfo={getBySlug(item.category) ?? categories.find(c => c.id === item.categoryId)}
                     onPress={() => navigation?.navigate('PartDetail', {partId: item.id})}
                 />
-            </View>
+            </FadeSlideIn>
         ),
         [navigation, getBySlug, categories]
     )
+
+    let emptyState = <SavedPartsEmpty navigation={navigation} />
+    if (loading) {
+        emptyState = <SavedPartsSkeleton />
+    } else if (error) {
+        emptyState = <SavedPartsError onRetry={refresh} />
+    }
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
@@ -48,15 +57,7 @@ export const SavedPartsScreen = ({navigation}: SavedPartsScreenProps) => {
                 onRefresh={refresh}
                 onEndReached={hasMore ? loadMore : undefined}
                 onEndReachedThreshold={0.4}
-                ListEmptyComponent={
-                    loading ? (
-                        <View style={styles.loadingWrap}>
-                            <ActivityIndicator size='large' color={theme.colors.tertiary} />
-                        </View>
-                    ) : (
-                        <SavedPartsEmpty navigation={navigation} />
-                    )
-                }
+                ListEmptyComponent={emptyState}
                 ListFooterComponent={
                     loadingMore ? (
                         <View style={styles.footer}>
@@ -75,6 +76,5 @@ const styles = StyleSheet.create({
     emptyContent: {flexGrow: 1, paddingHorizontal: 0},
     gridRow: {gap: 0, marginHorizontal: -5, marginBottom: 10},
     gridItem: {flex: 1, paddingHorizontal: 5},
-    loadingWrap: {flex: 1, justifyContent: 'center', alignItems: 'center', minHeight: 280},
     footer: {paddingVertical: 20, alignItems: 'center'},
 })

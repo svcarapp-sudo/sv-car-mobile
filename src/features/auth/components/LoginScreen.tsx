@@ -1,9 +1,10 @@
 import {useState} from 'react'
 import {StyleSheet} from 'react-native'
 
-import {Screen} from '@/global/components'
+import {FadeSlideIn, Screen} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {useAuthStore} from '@/global/store'
+import {haptics} from '@/global/utils'
 import {authService} from '../services'
 import {LoginForm} from './LoginForm'
 
@@ -37,6 +38,7 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
         setError(null)
         if (!email.trim() || !password) {
             setError(ARABIC_ERROR)
+            haptics.error()
             return
         }
         setLoading(true)
@@ -48,6 +50,7 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
             const msg =
                 err && typeof err === 'object' && 'message' in err ? String((err as {message: string}).message) : ARABIC_ERROR
             setError(msg)
+            haptics.error()
         } finally {
             setLoading(false)
         }
@@ -57,17 +60,19 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
         <Screen
             style={[styles.container, {backgroundColor: theme.colors.background}]}
             contentContainerStyle={styles.scrollContent}>
-            <LoginForm
-                email={email}
-                onEmailChange={setEmail}
-                password={password}
-                onPasswordChange={setPassword}
-                error={error}
-                loading={loading}
-                onLogin={handleLogin}
-                onFillTestCredentials={handleFillTestCredentials}
-                onGoToRegister={() => navigation.navigate('Register')}
-            />
+            <FadeSlideIn delay={60}>
+                <LoginForm
+                    email={email}
+                    onEmailChange={setEmail}
+                    password={password}
+                    onPasswordChange={setPassword}
+                    error={error}
+                    loading={loading}
+                    onLogin={handleLogin}
+                    onFillTestCredentials={handleFillTestCredentials}
+                    onGoToRegister={() => navigation.navigate('Register')}
+                />
+            </FadeSlideIn>
         </Screen>
     )
 }

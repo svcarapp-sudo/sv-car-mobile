@@ -1,27 +1,19 @@
-import {StyleSheet, View, ScrollView} from 'react-native'
-
-import {Drawer, Text, Avatar, Divider} from 'react-native-paper'
+import {useEffect, useState} from 'react'
+import {Pressable, ScrollView, StyleSheet, View} from 'react-native'
+import {useSafeAreaInsets} from 'react-native-safe-area-context'
+import {Avatar, Divider, Drawer, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
 import {navigationRef} from '@/global/navigation/navigationRef'
-import {themeColors} from '@/global/theme'
 import {useAuthStore} from '@/global/store'
+import {themeColors} from '@/global/theme'
+import {haptics} from '@/global/utils'
+
+import {DRAWER_ACCOUNT_ITEMS, DRAWER_MAIN_ITEMS, DRAWER_TEXT} from './drawerMenu'
+import type {DrawerMenuItem} from './drawerMenu'
 import {useLayoutStore} from './layoutStore'
 
-const ARABIC_TEXT = {
-    HOME: 'الرئيسية',
-    MY_VEHICLE: 'مركبتي',
-    MY_ORDERS: 'طلباتي',
-    SERVICE_APPOINTMENTS: 'مواعيد الخدمة',
-    FAVORITES: 'المفضلة',
-    SETTINGS: 'الإعدادات',
-    HELP_SUPPORT: 'المساعدة والدعم',
-    MAIN_MENU: 'القائمة الرئيسية',
-    ACCOUNT: 'الحساب',
-    LOGOUT: 'تسجيل الخروج',
-    USER_NAME: 'مستخدم SV',
-    USER_STATUS: 'عضو مميز',
-}
+const readRoute = () => (navigationRef.isReady() ? (navigationRef.getCurrentRoute()?.name ?? 'Home') : 'Home')
 
 interface AppDrawerProps {
     onClose?: () => void
@@ -30,38 +22,55 @@ interface AppDrawerProps {
 
 export const AppDrawer = ({onClose, onLogout}: AppDrawerProps) => {
     const theme = useAppTheme()
+    const insets = useSafeAreaInsets()
     const {toggleDrawer} = useLayoutStore()
     const user = useAuthStore(s => s.user)
     const logout = useAuthStore(s => s.logout)
 
-    const menuItems = [
-        {id: 'home', label: ARABIC_TEXT.HOME, icon: 'home-outline'},
-        {id: 'my-vehicle', label: ARABIC_TEXT.MY_VEHICLE, icon: 'car-outline'},
-        {id: 'orders', label: ARABIC_TEXT.MY_ORDERS, icon: 'package-variant-closed'},
-        {id: 'appointments', label: ARABIC_TEXT.SERVICE_APPOINTMENTS, icon: 'calendar-check-outline'},
-        {id: 'favorites', label: ARABIC_TEXT.FAVORITES, icon: 'heart-outline'},
-        {id: 'settings', label: ARABIC_TEXT.SETTINGS, icon: 'cog-outline'},
-        {id: 'help', label: ARABIC_TEXT.HELP_SUPPORT, icon: 'help-circle-outline'},
-    ]
+    const [activeRoute, setActiveRoute] = useState(readRoute)
 
-    const handlePress = (id: string) => {
+    useEffect(() => {
+        const sync = () => setActiveRoute(readRoute())
+        sync()
+        return navigationRef.addListener('state', sync)
+    }, [])
+
+    const close = () => {
         onClose?.()
         toggleDrawer(false)
-        if (id === 'favorites' && navigationRef.isReady()) {
-            navigationRef.navigate('Main', {screen: 'SavedParts'})
+    }
+
+    const goTo = (screen: DrawerMenuItem['screen']) => {
+        haptics.selection()
+        close()
+        if (navigationRef.isReady()) {
+            navigationRef.navigate('Main', {screen})
         }
     }
 
     const handleLogout = () => {
         logout()
-        onClose?.()
-        toggleDrawer(false)
+        close()
         onLogout?.()
     }
 
+    const renderItem = (item: DrawerMenuItem) => (
+        <Drawer.Item
+            key={item.id}
+            label={item.label}
+            icon={item.icon}
+            active={activeRoute === item.screen}
+            onPress={() => goTo(item.screen)}
+        />
+    )
+
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.surface}]}>
-            <View style={[styles.header, {backgroundColor: theme.colors.primaryContainer}]}>
+            <Pressable
+                style={[styles.header, {backgroundColor: theme.colors.primaryContainer, paddingTop: insets.top + 28}]}
+                onPress={() => goTo('MyAccount')}
+                accessibilityRole='button'
+                accessibilityLabel={DRAWER_TEXT.OPEN_PROFILE}>
                 <Avatar.Text
                     size={64}
                     label={user?.name?.slice(0, 2).toUpperCase() ?? 'SV'}
@@ -69,32 +78,26 @@ export const AppDrawer = ({onClose, onLogout}: AppDrawerProps) => {
                 />
                 <View style={styles.headerInfo}>
                     <Text variant='titleLarge' style={{color: theme.colors.primary}} numberOfLines={1}>
-                        {user?.name ?? ARABIC_TEXT.USER_NAME}
+                        {user?.name ?? DRAWER_TEXT.USER_NAME}
                     </Text>
                     <Text variant='bodySmall' style={{color: theme.colors.onSurfaceVariant}} numberOfLines={1}>
-                        {user?.email ?? ARABIC_TEXT.USER_STATUS}
+                        {user?.email ?? DRAWER_TEXT.USER_STATUS}
                     </Text>
                 </View>
-            </View>
+            </Pressable>
 
             <ScrollView style={styles.content}>
-                <Drawer.Section title={ARABIC_TEXT.MAIN_MENU}>
-                    {menuItems.slice(0, 4).map(item => (
-                        <Drawer.Item key={item.id} label={item.label} icon={item.icon} onPress={() => handlePress(item.id)} />
-                    ))}
-                </Drawer.Section>
+                <Drawer.Section title={DRAWER_TEXT.MAIN_MENU}>{DRAWER_MAIN_ITEMS.map(renderItem)}</Drawer.Section>
 
                 <Divider />
 
-                <Drawer.Section title={ARABIC_TEXT.ACCOUNT}>
-                    {menuItems.slice(4).map(item => (
-                        <Drawer.Item key={item.id} label={item.label} icon={item.icon} onPress={() => handlePress(item.id)} />
-                    ))}
-                    <Drawer.Item label={ARABIC_TEXT.LOGOUT} icon='logout' onPress={handleLogout} />
+                <Drawer.Section title={DRAWER_TEXT.ACCOUNT}>
+                    {DRAWER_ACCOUNT_ITEMS.map(renderItem)}
+                    <Drawer.Item label={DRAWER_TEXT.LOGOUT} icon='logout' onPress={handleLogout} />
                 </Drawer.Section>
             </ScrollView>
 
-            <View style={styles.footer}>
+            <View style={[styles.footer, {paddingBottom: insets.bottom + 16}]}>
                 <Text variant='bodySmall' style={styles.version}>
                     v1.0.0
                 </Text>
@@ -109,12 +112,12 @@ const styles = StyleSheet.create({
     },
     header: {
         padding: 24,
-        paddingTop: 60,
         flexDirection: 'row',
         alignItems: 'center',
     },
     headerInfo: {
         marginStart: 16,
+        flexShrink: 1,
     },
     content: {
         flex: 1,

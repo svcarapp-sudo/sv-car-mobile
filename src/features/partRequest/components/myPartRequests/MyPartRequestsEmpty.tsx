@@ -1,6 +1,7 @@
 import {StyleSheet, View} from 'react-native'
 import {ActivityIndicator, Button, Icon, Text} from 'react-native-paper'
 
+import {FadeSlideIn} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 
@@ -29,7 +30,7 @@ export const MyPartRequestsEmpty = ({loading, onAdd}: MyPartRequestsEmptyProps) 
     }
 
     return (
-        <View style={styles.container}>
+        <FadeSlideIn style={styles.container}>
             <View style={[styles.card, {backgroundColor: theme.colors.surface}]}>
                 <View style={[styles.iconWrap, {backgroundColor: theme.colors.accentMuted}]}>
                     <Icon source='bullhorn-outline' size={42} color={theme.colors.tertiary} />
@@ -46,7 +47,7 @@ export const MyPartRequestsEmpty = ({loading, onAdd}: MyPartRequestsEmptyProps) 
                     {T.ACTION}
                 </Button>
             </View>
-        </View>
+        </FadeSlideIn>
     )
 }
 

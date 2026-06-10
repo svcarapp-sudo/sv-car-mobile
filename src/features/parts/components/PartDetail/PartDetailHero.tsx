@@ -1,11 +1,12 @@
-import {Image, StyleSheet, TouchableOpacity, View, I18nManager} from 'react-native'
+import {StyleSheet, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 import type {Part, PartCategoryApi} from '@/global/types'
 
-import {SaveButton} from '@/global/components'
+import {FadeInImage} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
-import {useSavedPartsStore} from '@/global/store'
 import {shadows} from '@/global/theme'
+
+import {PartDetailHeroNav} from './PartDetailHeroNav'
 
 interface PartDetailHeroProps {
     part: Part
@@ -16,19 +17,22 @@ interface PartDetailHeroProps {
 
 /**
  * Edge-to-edge hero with floating circular nav buttons (Airbnb pattern).
- * Image fills the top portion; placeholder shows category icon on a soft amber wash.
+ * Image fades in progressively; placeholder shows category icon on a soft amber wash.
  */
 export const PartDetailHero = ({part, categoryInfo, onBack, onShare}: PartDetailHeroProps) => {
     const theme = useAppTheme()
-    const saved = useSavedPartsStore(s => s.ids.includes(part.id))
-    const toggle = useSavedPartsStore(s => s.toggle)
-    const backIcon = I18nManager.isRTL ? 'arrow-left' : 'arrow-right'
 
     return (
         <View style={styles.wrapper}>
             <View style={[styles.imageBox, {backgroundColor: theme.colors.surfaceContainerLow}]}>
                 {part.imageUrl ? (
-                    <Image source={{uri: part.imageUrl}} style={styles.image} resizeMode='cover' />
+                    <FadeInImage
+                        source={{uri: part.imageUrl}}
+                        style={styles.image}
+                        resizeMode='cover'
+                        fallbackIcon={categoryInfo?.icon || 'package-variant'}
+                        fallbackIconSize={96}
+                    />
                 ) : (
                     <View style={[styles.placeholder, {backgroundColor: theme.colors.accentSubtle}]}>
                         <View style={[styles.placeholderGlow, {backgroundColor: theme.colors.accentMuted}]} />
@@ -36,33 +40,7 @@ export const PartDetailHero = ({part, categoryInfo, onBack, onShare}: PartDetail
                     </View>
                 )}
 
-                <View style={[styles.gradientTop, {backgroundColor: theme.colors.surface}]} />
-
-                <View style={[styles.navRow, {top: 12}]}>
-                    <TouchableOpacity
-                        onPress={onBack}
-                        style={[styles.circleBtn, shadows.sm, {backgroundColor: theme.colors.surface}]}
-                        accessibilityRole='button'>
-                        <Icon source={backIcon} size={22} color={theme.colors.onSurface} />
-                    </TouchableOpacity>
-                    <View style={styles.navEnd}>
-                        {onShare && (
-                            <TouchableOpacity
-                                onPress={onShare}
-                                style={[styles.circleBtn, shadows.sm, {backgroundColor: theme.colors.surface}]}
-                                accessibilityRole='button'>
-                                <Icon source='share-variant' size={20} color={theme.colors.onSurface} />
-                            </TouchableOpacity>
-                        )}
-                        <SaveButton
-                            saved={saved}
-                            onPress={() => {
-                                void toggle(part.id).catch(() => undefined)
-                            }}
-                            floating
-                        />
-                    </View>
-                </View>
+                <PartDetailHeroNav partId={part.id} onBack={onBack} onShare={onShare} />
 
                 {categoryInfo && (
                     <View
@@ -102,30 +80,6 @@ const styles = StyleSheet.create({
         height: 280,
         borderRadius: 140,
         opacity: 0.4,
-    },
-    gradientTop: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 24,
-        opacity: 0,
-    },
-    navRow: {
-        position: 'absolute',
-        left: 16,
-        right: 16,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    navEnd: {flexDirection: 'row', alignItems: 'center', gap: 10},
-    circleBtn: {
-        width: 42,
-        height: 42,
-        borderRadius: 999,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     categoryPill: {
         position: 'absolute',

@@ -1,4 +1,5 @@
 export {PartCard} from './PartCard'
 export {PartCardGrid} from './PartCardGrid'
+export {PartCardSkeleton} from './PartCardSkeleton'
 export {SaveButton} from './SaveButton'
 export {PriceTag} from './PriceTag'

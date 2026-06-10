@@ -3,6 +3,7 @@ import {FlatList, StyleSheet, View} from 'react-native'
 import {ActivityIndicator} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
+import {FadeSlideIn, staggerDelay} from '@/global/components'
 import {useAppTheme, useCatalog} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 
@@ -11,6 +12,7 @@ import {PartCardItem} from './PartCardItem'
 import {PartsListEmpty} from './PartsListEmpty'
 import {PartsListFilters} from './PartsListFilters'
 import {PartsListHeader} from './PartsListHeader'
+import {PartsListSkeleton} from './PartsListSkeleton'
 import {PartsListSortSheet, SORT_LABELS, type SortOption} from './PartsListSortSheet'
 
 interface PartsListScreenProps {
@@ -41,7 +43,11 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
     }, [parts, inStockOnly, sort])
 
     const renderItem = useCallback(
-        ({item}: {item: (typeof parts)[0]}) => <PartCardItem part={item} navigation={navigation} categories={categories} />,
+        ({item, index}: {item: (typeof parts)[0]; index: number}) => (
+            <FadeSlideIn delay={index < 8 ? staggerDelay(index) : 0} style={styles.itemSlot}>
+                <PartCardItem part={item} navigation={navigation} categories={categories} />
+            </FadeSlideIn>
+        ),
         [navigation, categories]
     )
 
@@ -77,7 +83,13 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
                 onRefresh={refresh}
                 onEndReached={hasMore ? loadMore : undefined}
                 onEndReachedThreshold={0.4}
-                ListEmptyComponent={<PartsListEmpty loading={loading} categoryName={categoryName} navigation={navigation} />}
+                ListEmptyComponent={
+                    loading ? (
+                        <PartsListSkeleton />
+                    ) : (
+                        <PartsListEmpty loading={false} categoryName={categoryName} navigation={navigation} />
+                    )
+                }
                 ListFooterComponent={
                     loadingMore ? (
                         <View style={styles.footer}>
@@ -98,5 +110,6 @@ const styles = StyleSheet.create({
     listContent: {paddingHorizontal: 16, paddingBottom: 28},
     emptyContent: {flexGrow: 1, paddingHorizontal: 0},
     gridRow: {gap: 0, marginHorizontal: -5, marginBottom: 10},
+    itemSlot: {flex: 1},
     footer: {paddingVertical: 20, alignItems: 'center'},
 })

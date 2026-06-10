@@ -1,13 +1,20 @@
 import React, {useCallback, useRef, useState} from 'react'
 import {FlatList, StyleSheet, View} from 'react-native'
+import {Button} from 'react-native-paper'
+import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack'
 
 import {useAppTheme} from '@/global/hooks'
 import {useAuthStore} from '@/global/store'
+import {haptics} from '@/global/utils'
 import type {RootStackParamList} from '@/global/navigation/types'
 import {ONBOARDING_SLIDES, type OnboardingSlideData} from '../constants/slides'
 import {OnboardingSlide} from './OnboardingSlide'
 import {OnboardingPagination} from './OnboardingPagination'
+
+const ARABIC_TEXT = {
+    SKIP: 'تخطي',
+}
 
 interface OnboardingScreenProps {
     navigation: NativeStackNavigationProp<RootStackParamList, 'Onboarding'>
@@ -15,9 +22,11 @@ interface OnboardingScreenProps {
 
 export const OnboardingScreen = ({navigation}: OnboardingScreenProps) => {
     const theme = useAppTheme()
+    const insets = useSafeAreaInsets()
     const completeOnboarding = useAuthStore(s => s.completeOnboarding)
     const [activeIndex, setActiveIndex] = useState(0)
     const flatListRef = useRef<FlatList<OnboardingSlideData>>(null)
+    const lastIndexRef = useRef(0)
 
     const handleDone = useCallback(() => {
         completeOnboarding()
@@ -33,12 +42,18 @@ export const OnboardingScreen = ({navigation}: OnboardingScreenProps) => {
     }, [activeIndex, handleDone])
 
     const onViewableItemsChanged = useRef(({viewableItems}: {viewableItems: {index: number | null}[]}) => {
-        if (viewableItems[0]?.index != null) {
-            setActiveIndex(viewableItems[0].index)
+        const index = viewableItems[0]?.index
+        if (index != null) {
+            if (index !== lastIndexRef.current) {
+                lastIndexRef.current = index
+                haptics.selection()
+            }
+            setActiveIndex(index)
         }
     }).current
 
     const viewabilityConfig = useRef({viewAreaCoveragePercentThreshold: 50}).current
+    const isLast = activeIndex === ONBOARDING_SLIDES.length - 1
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
@@ -55,10 +70,21 @@ export const OnboardingScreen = ({navigation}: OnboardingScreenProps) => {
                 viewabilityConfig={viewabilityConfig}
                 contentContainerStyle={styles.listContent}
             />
+            {!isLast && (
+                <Button
+                    mode='text'
+                    compact
+                    onPress={handleDone}
+                    accessibilityRole='button'
+                    textColor={theme.colors.onSurfaceVariant}
+                    style={[styles.skip, {top: insets.top + 8}]}>
+                    {ARABIC_TEXT.SKIP}
+                </Button>
+            )}
             <OnboardingPagination
                 total={ONBOARDING_SLIDES.length}
                 activeIndex={activeIndex}
-                isLast={activeIndex === ONBOARDING_SLIDES.length - 1}
+                isLast={isLast}
                 onNext={handleNext}
             />
         </View>
@@ -68,4 +94,5 @@ export const OnboardingScreen = ({navigation}: OnboardingScreenProps) => {
 const styles = StyleSheet.create({
     container: {flex: 1},
     listContent: {alignItems: 'center'},
+    skip: {position: 'absolute', end: 16, zIndex: 10},
 })

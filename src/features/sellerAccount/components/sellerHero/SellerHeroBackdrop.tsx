@@ -9,8 +9,9 @@ interface SellerHeroBackdropProps {
 }
 
 const NAVY_TOP = themeColors.primary
-const NAVY_BOTTOM = '#243558'
+const NAVY_BOTTOM = themeColors.navyMid
 const AMBER = themeColors.tertiary
+const SHEEN = themeColors.onPrimary
 
 /**
  * Layered navy hero backdrop with a whispered amber glow + glass sheen.
@@ -36,9 +37,9 @@ export const SellerHeroBackdrop = ({height}: SellerHeroBackdropProps) => {
                     </RadialGradient>
 
                     <RadialGradient id='sellerSheen' cx='20%' cy='-8%' r='60%' fx='20%' fy='-8%'>
-                        <Stop offset='0%' stopColor='#FFFFFF' stopOpacity={0.08} />
-                        <Stop offset='60%' stopColor='#FFFFFF' stopOpacity={0.02} />
-                        <Stop offset='100%' stopColor='#FFFFFF' stopOpacity={0} />
+                        <Stop offset='0%' stopColor={SHEEN} stopOpacity={0.08} />
+                        <Stop offset='60%' stopColor={SHEEN} stopOpacity={0.02} />
+                        <Stop offset='100%' stopColor={SHEEN} stopOpacity={0} />
                     </RadialGradient>
                 </Defs>
 

@@ -1,9 +1,10 @@
-import {StyleSheet, View, TouchableOpacity, I18nManager} from 'react-native'
+import {StyleSheet, View, I18nManager} from 'react-native'
 import {Text, Icon} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 import type {ModelApi} from '../../services/catalogService'
+import {PressableScale} from '../motion'
 
 interface ModelCardProps {
     item: ModelApi
@@ -17,9 +18,10 @@ export const ModelCard = ({item, isSelected, onPress}: ModelCardProps) => {
     const needsFlip = !isSelected && I18nManager.isRTL
 
     return (
-        <TouchableOpacity
+        <PressableScale
             onPress={() => onPress(item)}
-            activeOpacity={0.7}
+            withHaptic
+            containerStyle={styles.cardContainer}
             style={[styles.modelCard, {backgroundColor: theme.colors.surface}, isSelected && styles.modelCardSelected]}>
             {isSelected && <View style={styles.selectedAccent} />}
             <View style={styles.modelContent}>
@@ -42,18 +44,20 @@ export const ModelCard = ({item, isSelected, onPress}: ModelCardProps) => {
                     {item.name}
                 </Text>
             </View>
-        </TouchableOpacity>
+        </PressableScale>
     )
 }
 
 const styles = StyleSheet.create({
+    cardContainer: {
+        marginBottom: 8,
+    },
     modelCard: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 14,
         paddingHorizontal: 16,
         borderRadius: 14,
-        marginBottom: 8,
         borderWidth: 1.5,
         borderColor: 'transparent',
         overflow: 'hidden',

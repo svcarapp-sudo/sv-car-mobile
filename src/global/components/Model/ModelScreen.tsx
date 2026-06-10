@@ -1,16 +1,18 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View} from 'react-native'
-import {Text, ActivityIndicator} from 'react-native-paper'
+import {Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
+import {matchesSearch} from '@/global/utils'
 import type {ModelApi} from '../../services/catalogService'
-
+import {ListSearchBar} from '../listSearchBar'
+import {Skeleton} from '../skeleton'
 import {ModelCard} from './ModelCard'
 
 const ARABIC_TEXT = {
     SELECT_MODEL: 'اختر الموديل',
     FOR_MAKE: (makeName: string) => `لسيارة ${makeName}`,
-    LOADING: 'جاري تحميل الموديلات...',
+    SEARCH_PLACEHOLDER: 'ابحث عن الموديل...',
 }
 
 interface ModelScreenProps {
@@ -41,11 +43,11 @@ export const ModelScreen = ({
     const theme = useAppTheme()
     const [models, setModels] = useState<ModelApi[]>([])
     const [loading, setLoading] = useState(false)
+    const [query, setQuery] = useState('')
 
     useEffect(() => {
         if (makeId == null) {
             setModels([])
-
             return
         }
 
@@ -53,20 +55,18 @@ export const ModelScreen = ({
         setLoading(true)
         getModels(makeId)
             .then(list => {
-                if (!cancelled) {
-                    setModels(list)
-                }
+                if (!cancelled) setModels(list)
             })
             .finally(() => {
-                if (!cancelled) {
-                    setLoading(false)
-                }
+                if (!cancelled) setLoading(false)
             })
 
         return () => {
             cancelled = true
         }
     }, [makeId, getModels])
+
+    const filtered = useMemo(() => models.filter(model => matchesSearch(query, model.name)), [models, query])
 
     const handleSelect = (model: ModelApi) => {
         onSelect(model.name, model.id)
@@ -75,30 +75,38 @@ export const ModelScreen = ({
 
     if (loading && models.length === 0) {
         return (
-            <View style={styles.centered}>
-                <ActivityIndicator size='large' color={theme.colors.tertiary} />
-                <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant, marginTop: 16}}>
-                    {ARABIC_TEXT.LOADING}
-                </Text>
+            <View style={[styles.listContent, {paddingTop: contentTopInset}]}>
+                {[0, 1, 2, 3, 4, 5].map(row => (
+                    <View key={row} style={[styles.skeletonRow, {backgroundColor: theme.colors.surface}]}>
+                        <Skeleton width={38} circle />
+                        <Skeleton width='52%' height={14} radius={7} />
+                    </View>
+                ))}
             </View>
         )
     }
 
     return (
         <View style={styles.stepContent}>
-            {!hideHeader && (
-                <View style={styles.headerContainer}>
-                    <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                        {ARABIC_TEXT.SELECT_MODEL}
-                    </Text>
-                    <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
-                        {ARABIC_TEXT.FOR_MAKE(makeName)}
-                    </Text>
-                </View>
-            )}
             <FlatList
-                data={models}
+                data={filtered}
                 keyExtractor={item => item.id}
+                keyboardShouldPersistTaps='handled'
+                ListHeaderComponent={
+                    <View style={styles.listHeader}>
+                        {!hideHeader && (
+                            <View>
+                                <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
+                                    {ARABIC_TEXT.SELECT_MODEL}
+                                </Text>
+                                <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
+                                    {ARABIC_TEXT.FOR_MAKE(makeName)}
+                                </Text>
+                            </View>
+                        )}
+                        <ListSearchBar value={query} onChangeText={setQuery} placeholder={ARABIC_TEXT.SEARCH_PLACEHOLDER} />
+                    </View>
+                }
                 renderItem={({item}) => <ModelCard item={item} isSelected={valueId === item.id} onPress={handleSelect} />}
                 contentContainerStyle={[styles.listContent, {paddingTop: contentTopInset}]}
                 showsVerticalScrollIndicator={false}
@@ -113,8 +121,9 @@ const styles = StyleSheet.create({
     stepContent: {
         flex: 1,
     },
-    headerContainer: {
-        marginBottom: 20,
+    listHeader: {
+        gap: 14,
+        marginBottom: 16,
     },
     stepTitle: {
         fontWeight: '700',
@@ -127,9 +136,13 @@ const styles = StyleSheet.create({
     listContent: {
         paddingBottom: 24,
     },
-    centered: {
-        flex: 1,
-        justifyContent: 'center',
+    skeletonRow: {
+        flexDirection: 'row',
         alignItems: 'center',
+        gap: 14,
+        paddingVertical: 14,
+        paddingHorizontal: 16,
+        borderRadius: 14,
+        marginBottom: 8,
     },
 })

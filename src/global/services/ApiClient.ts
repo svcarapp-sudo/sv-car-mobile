@@ -1,7 +1,28 @@
 import axios from 'axios'
 
 import {useAuthStore} from '@/global/store/authStore'
+import {showToast} from '@/global/components/toast'
+import {navigationRef} from '@/global/navigation/navigationRef'
 import {API_BASE_URL} from '@/global/constants'
+
+const ARABIC_TEXT = {
+    SESSION_EXPIRED: 'انتهت صلاحية الجلسة، الرجاء تسجيل الدخول من جديد',
+}
+
+/**
+ * Expired/invalid token: log out once and land on Login instead of letting
+ * every screen fail silently with 401s. Skipped when no token is stored, so
+ * failed login attempts (also 401) never trigger it.
+ */
+const handleUnauthorized = () => {
+    const {token, logout} = useAuthStore.getState()
+    if (!token) return
+    logout()
+    showToast(ARABIC_TEXT.SESSION_EXPIRED, 'error')
+    if (navigationRef.isReady()) {
+        navigationRef.reset({index: 0, routes: [{name: 'Login'}]})
+    }
+}
 
 interface RequestOptions {
     params?: Record<string, string | number | boolean | undefined>
@@ -69,6 +90,10 @@ class ApiClient {
                     // Server responded with error status
                     const {status, data} = error.response
                     const message = (data as {message?: string})?.message || error.message || `HTTP error! status: ${status}`
+
+                    if (status === 401) {
+                        handleUnauthorized()
+                    }
 
                     return Promise.reject(new ApiError(message, status, data))
                 }

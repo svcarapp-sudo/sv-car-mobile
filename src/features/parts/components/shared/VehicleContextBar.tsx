@@ -10,6 +10,8 @@ const ARABIC_TEXT = {
     SHOPPING_FOR: 'تتسوق لـ',
     CHANGE: 'تغيير',
     ADD: 'إضافة مركبة',
+    A11Y_ADD: 'إضافة مركبة لرؤية القطع المتوافقة',
+    A11Y_CHANGE: 'تغيير المركبة المحددة',
 }
 
 interface VehicleContextBarProps {
@@ -30,6 +32,8 @@ export const VehicleContextBar = ({onChangeVehicle, onAddVehicle}: VehicleContex
             <TouchableOpacity
                 onPress={onAddVehicle}
                 activeOpacity={0.8}
+                accessibilityRole='button'
+                accessibilityLabel={ARABIC_TEXT.A11Y_ADD}
                 style={[styles.row, {backgroundColor: theme.colors.warningContainer, borderColor: theme.colors.warning}]}>
                 <View style={[styles.iconBox, {backgroundColor: theme.colors.warning}]}>
                     <Icon source='car-info' size={16} color={theme.colors.onPrimary} />
@@ -53,6 +57,8 @@ export const VehicleContextBar = ({onChangeVehicle, onAddVehicle}: VehicleContex
         <TouchableOpacity
             onPress={onChangeVehicle}
             activeOpacity={0.8}
+            accessibilityRole='button'
+            accessibilityLabel={`${ARABIC_TEXT.SHOPPING_FOR} ${vehicleLabel}، ${ARABIC_TEXT.A11Y_CHANGE}`}
             style={[styles.row, {backgroundColor: theme.colors.primary, borderColor: theme.colors.primary}]}>
             <View style={[styles.iconBox, {backgroundColor: theme.colors.onDarkContainer}]}>
                 <Icon source='check-decagram' size={16} color={theme.colors.tertiary} />

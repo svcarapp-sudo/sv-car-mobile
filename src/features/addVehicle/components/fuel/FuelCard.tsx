@@ -1,6 +1,7 @@
-import {StyleSheet, View, TouchableOpacity} from 'react-native'
+import {StyleSheet, View} from 'react-native'
 import {Text, Icon, ActivityIndicator} from 'react-native-paper'
 
+import {PressableScale} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {shadows} from '@/global/theme'
 
@@ -23,7 +24,7 @@ export const FuelCard = ({id, name, icon, isSelected, isPending, disabled, onPre
     const active = isSelected || isPending
 
     return (
-        <TouchableOpacity onPress={onPress} activeOpacity={0.82} disabled={disabled} style={styles.touch}>
+        <PressableScale onPress={onPress} withHaptic disabled={disabled} containerStyle={styles.touch}>
             <View
                 style={[
                     styles.card,
@@ -73,7 +74,7 @@ export const FuelCard = ({id, name, icon, isSelected, isPending, disabled, onPre
                     )}
                 </View>
             </View>
-        </TouchableOpacity>
+        </PressableScale>
     )
 }
 

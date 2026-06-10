@@ -1,15 +1,13 @@
-import {useEffect, useState} from 'react'
-import {FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View} from 'react-native'
-import {Text, ActivityIndicator} from 'react-native-paper'
+import {useEffect, useMemo, useState} from 'react'
+import {NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View} from 'react-native'
 
-import {useAppTheme} from '@/global/hooks'
-import {themeColors} from '@/global/theme'
+import {matchesSearch} from '@/global/utils'
 import type {MakeApi} from '../../services/catalogService'
-import {MakeCard} from './MakeCard'
+import {Skeleton} from '../skeleton'
+import {MakeList, type MakeSection} from './MakeList'
 
 const ARABIC_TEXT = {
-    SELECT_MAKE: 'اختر الشركة المصنعة',
-    LOADING: 'جاري تحميل الماركات...',
+    OTHER_ORIGIN: 'أخرى',
 }
 
 interface MakeScreenProps {
@@ -35,23 +33,19 @@ export const MakeScreen = ({
     hideHeader,
     contentTopInset = 0,
 }: MakeScreenProps) => {
-    const theme = useAppTheme()
     const [makes, setMakes] = useState<MakeApi[]>([])
     const [loading, setLoading] = useState(false)
+    const [query, setQuery] = useState('')
 
     useEffect(() => {
         let cancelled = false
         setLoading(true)
         getMakes(originId ?? undefined)
             .then((list: MakeApi[]) => {
-                if (!cancelled) {
-                    setMakes(list)
-                }
+                if (!cancelled) setMakes(list)
             })
             .finally(() => {
-                if (!cancelled) {
-                    setLoading(false)
-                }
+                if (!cancelled) setLoading(false)
             })
 
         return () => {
@@ -59,19 +53,17 @@ export const MakeScreen = ({
         }
     }, [originId, getMakes])
 
-    const groupedMakes = makes.reduce<Record<string, MakeApi[]>>((acc, curr) => {
-        const country = curr.originCountry ?? 'أخرى'
+    const sections = useMemo<MakeSection[]>(() => {
+        const grouped = makes.reduce<Record<string, MakeApi[]>>((acc, curr) => {
+            if (!matchesSearch(query, curr.name)) return acc
+            const country = curr.originCountry ?? ARABIC_TEXT.OTHER_ORIGIN
+            if (!acc[country]) acc[country] = []
+            acc[country].push(curr)
+            return acc
+        }, {})
 
-        if (!acc[country]) {
-            acc[country] = []
-        }
-
-        acc[country].push(curr)
-
-        return acc
-    }, {})
-
-    const sections = Object.keys(groupedMakes).map(title => ({title, data: groupedMakes[title]}))
+        return Object.keys(grouped).map(title => ({title, data: grouped[title]}))
+    }, [makes, query])
 
     const handleSelect = (make: MakeApi) => {
         onSelect(make.name, make.id, make.logoUrl ?? undefined)
@@ -80,100 +72,40 @@ export const MakeScreen = ({
 
     if (loading && makes.length === 0) {
         return (
-            <View style={styles.centered}>
-                <ActivityIndicator size='large' color={theme.colors.tertiary} />
-                <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant, marginTop: 16}}>
-                    {ARABIC_TEXT.LOADING}
-                </Text>
+            <View style={[styles.skeletonList, {paddingTop: contentTopInset}]}>
+                {[0, 1, 2, 3, 4, 5].map(row => (
+                    <View key={row} style={styles.skeletonRow}>
+                        <Skeleton width={44} circle />
+                        <Skeleton width='58%' height={14} radius={7} />
+                    </View>
+                ))}
             </View>
         )
     }
 
     return (
-        <View style={styles.stepContent}>
-            <FlatList
-                data={sections}
-                keyExtractor={item => item.title}
-                ListHeaderComponent={
-                    hideHeader ? null : (
-                        <View style={styles.headerContainer}>
-                            <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                                {ARABIC_TEXT.SELECT_MAKE}
-                            </Text>
-                        </View>
-                    )
-                }
-                renderItem={({item: section}) => (
-                    <View style={styles.sectionContainer}>
-                        <View style={styles.sectionHeader}>
-                            <View style={styles.sectionDot} />
-                            <Text variant='titleSmall' style={[styles.sectionTitle, {color: theme.colors.onSurfaceVariant}]}>
-                                {section.title}
-                            </Text>
-                        </View>
-                        <View style={styles.gridRow}>
-                            {section.data.map(item => (
-                                <View key={item.id} style={styles.gridItemContainer}>
-                                    <MakeCard item={item} isSelected={valueId === item.id} onPress={handleSelect} />
-                                </View>
-                            ))}
-                        </View>
-                    </View>
-                )}
-                contentContainerStyle={[styles.gridContainer, {paddingTop: contentTopInset}]}
-                showsVerticalScrollIndicator={false}
-                onScroll={onScroll}
-                scrollEventThrottle={16}
-            />
-        </View>
+        <MakeList
+            sections={sections}
+            valueId={valueId}
+            query={query}
+            onQueryChange={setQuery}
+            onSelect={handleSelect}
+            onScroll={onScroll}
+            hideHeader={hideHeader}
+            contentTopInset={contentTopInset}
+        />
     )
 }
 
 const styles = StyleSheet.create({
-    stepContent: {
-        flex: 1,
-    },
-    headerContainer: {
-        width: '100%',
-        marginBottom: 16,
-    },
-    stepTitle: {
-        fontWeight: '700',
-        width: '100%',
-    },
-    gridContainer: {
+    skeletonList: {
         paddingBottom: 24,
     },
-    sectionContainer: {
-        marginBottom: 24,
-    },
-    sectionHeader: {
+    skeletonRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 14,
+        gap: 14,
+        paddingVertical: 12,
         paddingHorizontal: 4,
-    },
-    sectionDot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: themeColors.tertiary,
-        marginEnd: 8,
-    },
-    sectionTitle: {
-        fontWeight: '600',
-        fontSize: 13,
-    },
-    gridRow: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
-    gridItemContainer: {
-        width: '33.33%',
-    },
-    centered: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
 })

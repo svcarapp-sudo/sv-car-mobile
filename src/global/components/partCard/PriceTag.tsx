@@ -2,11 +2,7 @@ import {StyleSheet, View} from 'react-native'
 import {Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
-
-const formatPrice = (price: number): string => {
-    if (!Number.isFinite(price)) return '—'
-    return new Intl.NumberFormat('en-US', {maximumFractionDigits: 0}).format(price)
-}
+import {formatPrice} from '@/global/utils'
 
 type PriceSize = 'sm' | 'md' | 'lg' | 'xl'
 
@@ -23,7 +19,9 @@ export const PriceTag = ({price, size = 'md', currency = 'ر.س', align = 'start
 
     return (
         <View style={[styles.row, align === 'end' && styles.rowEnd]}>
-            <Text style={[styles.amount, {fontSize: sizing.amount, color: theme.colors.tertiary}]}>{formatPrice(price)}</Text>
+            <Text style={[styles.amount, {fontSize: sizing.amount, color: theme.colors.tertiary}]}>
+                {Number.isFinite(price) ? formatPrice(price) : '—'}
+            </Text>
             <Text style={[styles.currency, {fontSize: sizing.currency, color: theme.colors.onSurfaceVariant}]}>{currency}</Text>
         </View>
     )

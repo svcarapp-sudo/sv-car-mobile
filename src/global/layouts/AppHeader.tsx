@@ -69,6 +69,7 @@ export const AppHeader = () => {
                         iconColor={theme.colors.onSurfaceVariant}
                         onPress={() => toggleDrawer(true)}
                         style={styles.iconBtn}
+                        accessibilityLabel='القائمة'
                     />
                 )}
             </View>
@@ -91,6 +92,7 @@ export const AppHeader = () => {
                             }
                         }}
                         style={styles.iconBtn}
+                        accessibilityLabel='رجوع'
                     />
                 ) : showFavorites ? (
                     <FavoritesButton count={savedCount} onPress={goToFavorites} />

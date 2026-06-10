@@ -1,10 +1,11 @@
-import {useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import {Animated, ScrollView, StyleSheet, View} from 'react-native'
-import {ActivityIndicator, Icon, Text} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
+import {showToast} from '@/global/components'
 import {useAppTheme, useCatalog} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
+import {ApiError} from '@/global/services'
 import {useSavedPartsStore} from '@/global/store'
 import type {Part} from '@/global/types'
 
@@ -13,14 +14,15 @@ import {partsListService} from '../../services'
 import {PartDetailActions} from './PartDetailActions'
 import {PartDetailCompatibility} from './PartDetailCompatibility'
 import {PartDetailDescription} from './PartDetailDescription'
+import {PartDetailFallback} from './PartDetailFallback'
 import {PartDetailHero} from './PartDetailHero'
 import {PartDetailInfo} from './PartDetailInfo'
 import {PartDetailSeller} from './PartDetailSeller'
+import {PartDetailSkeleton} from './PartDetailSkeleton'
 import {PartDetailSpecs} from './PartDetailSpecs'
 
 const ARABIC_TEXT = {
-    LOADING: 'جاري التحميل...',
-    NOT_FOUND: 'لم يتم العثور على القطعة',
+    SAVE_ERROR: 'تعذر تحديث المفضلة',
 }
 
 interface PartDetailScreenProps {
@@ -35,20 +37,28 @@ export const PartDetailScreen = ({route, navigation}: PartDetailScreenProps) => 
     const theme = useAppTheme()
     const [part, setPart] = useState<Part | null>(null)
     const [loading, setLoading] = useState(true)
+    const [failed, setFailed] = useState(false)
     const fadeIn = useRef(new Animated.Value(0)).current
     const saved = useSavedPartsStore(s => (part ? s.ids.includes(part.id) : false))
     const toggleSaved = useSavedPartsStore(s => s.toggle)
 
-    useEffect(() => {
-        if (!partId) return
+    const fetchPart = useCallback(() => {
+        if (!partId) {
+            setLoading(false)
+            return
+        }
         setLoading(true)
+        setFailed(false)
         getPartById(partId)
             .then(setPart)
-            .catch(err => console.error('Failed to fetch part:', err))
+            .catch(err => setFailed(!(err instanceof ApiError && err.status === 404)))
             .finally(() => setLoading(false))
-        void partsListService.recordView(partId).catch(() => undefined)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [partId])
+    }, [partId, getPartById])
+
+    useEffect(() => {
+        fetchPart()
+        if (partId) void partsListService.recordView(partId).catch(() => undefined)
+    }, [fetchPart, partId])
 
     useEffect(() => {
         if (!loading && part) {
@@ -56,24 +66,19 @@ export const PartDetailScreen = ({route, navigation}: PartDetailScreenProps) => 
         }
     }, [loading, part, fadeIn])
 
+    const goBack = () => navigation?.goBack()
+    const goBrowse = () => navigation?.navigate('PartsList', {category: null})
+
     if (loading) {
         return (
-            <View style={[styles.centered, {backgroundColor: theme.colors.background}]}>
-                <ActivityIndicator size='large' color={theme.colors.tertiary} />
-                <Text style={[styles.loadingLabel, {color: theme.colors.onSurfaceVariant}]}>{ARABIC_TEXT.LOADING}</Text>
+            <View style={[styles.root, {backgroundColor: theme.colors.background}]}>
+                <PartDetailSkeleton />
             </View>
         )
     }
 
-    if (!part) {
-        return (
-            <View style={[styles.centered, {backgroundColor: theme.colors.background}]}>
-                <View style={[styles.notFoundIcon, {backgroundColor: theme.colors.accentSubtle}]}>
-                    <Icon source='package-variant-closed-remove' size={40} color={theme.colors.tertiary} />
-                </View>
-                <Text style={[styles.notFoundText, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.NOT_FOUND}</Text>
-            </View>
-        )
+    if (failed || !part) {
+        return <PartDetailFallback kind={failed ? 'error' : 'notFound'} onBack={goBack} onBrowse={goBrowse} onRetry={fetchPart} />
     }
 
     const categoryInfo = getBySlug(part.category)
@@ -82,7 +87,7 @@ export const PartDetailScreen = ({route, navigation}: PartDetailScreenProps) => 
         <View style={[styles.root, {backgroundColor: theme.colors.background}]}>
             <Animated.View style={[styles.root, {opacity: fadeIn}]}>
                 <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-                    <PartDetailHero part={part} categoryInfo={categoryInfo} onBack={() => navigation?.goBack()} />
+                    <PartDetailHero part={part} categoryInfo={categoryInfo} onBack={goBack} />
 
                     <View style={styles.content}>
                         <PartDetailInfo part={part} />
@@ -96,11 +101,9 @@ export const PartDetailScreen = ({route, navigation}: PartDetailScreenProps) => 
 
             <PartDetailActions
                 price={part.price}
-                inStock={part.inStock}
                 isSaved={saved}
-                onContact={() => {}}
                 onSave={() => {
-                    void toggleSaved(part.id).catch(() => undefined)
+                    void toggleSaved(part.id).catch(() => showToast(ARABIC_TEXT.SAVE_ERROR, 'error'))
                 }}
             />
         </View>
@@ -111,15 +114,4 @@ const styles = StyleSheet.create({
     root: {flex: 1},
     scroll: {paddingBottom: 110},
     content: {paddingHorizontal: 16, gap: 12, marginTop: 0},
-    centered: {flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32},
-    loadingLabel: {marginTop: 16, fontSize: 14, letterSpacing: 0.1},
-    notFoundIcon: {
-        width: 80,
-        height: 80,
-        borderRadius: 24,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    notFoundText: {fontSize: 16, fontWeight: '700'},
 })

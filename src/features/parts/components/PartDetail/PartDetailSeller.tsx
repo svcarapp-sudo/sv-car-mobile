@@ -1,4 +1,4 @@
-import {StyleSheet, TouchableOpacity, View} from 'react-native'
+import {StyleSheet, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
@@ -6,7 +6,6 @@ import type {Part} from '@/global/types'
 
 const ARABIC_TEXT = {
     SECTION_TITLE: 'البائع',
-    VIEW_STORE: 'عرض المتجر',
     VERIFIED: 'موثّق',
     DEFAULT_SELLER: 'بائع خاص',
 }
@@ -17,7 +16,8 @@ interface PartDetailSellerProps {
 
 /**
  * Marketplace trust card — seller avatar (initial), name, city, verified pill.
- * Mercari/Haraj-inspired. Tappable to open seller's other listings (future).
+ * Mercari/Haraj-inspired. The old "view store" CTA had no handler (a dead
+ * tap), so it was removed until seller storefronts exist.
  */
 export const PartDetailSeller = ({part}: PartDetailSellerProps) => {
     const theme = useAppTheme()
@@ -55,14 +55,6 @@ export const PartDetailSeller = ({part}: PartDetailSellerProps) => {
                         </View>
                     )}
                 </View>
-
-                <TouchableOpacity
-                    style={[styles.cta, {borderColor: theme.colors.outline}]}
-                    activeOpacity={0.7}
-                    accessibilityRole='button'>
-                    <Text style={[styles.ctaText, {color: theme.colors.onSurface}]}>{ARABIC_TEXT.VIEW_STORE}</Text>
-                    <Icon source='chevron-left' size={14} color={theme.colors.onSurface} />
-                </TouchableOpacity>
             </View>
         </View>
     )
@@ -94,14 +86,4 @@ const styles = StyleSheet.create({
     verifiedText: {fontSize: 10, fontWeight: '700', letterSpacing: 0.2},
     metaItem: {flexDirection: 'row', alignItems: 'center', gap: 4},
     metaText: {fontSize: 12, fontWeight: '500', flexShrink: 1},
-    cta: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 3,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 999,
-        borderWidth: 1.2,
-    },
-    ctaText: {fontSize: 11.5, fontWeight: '700', letterSpacing: 0.1},
 })

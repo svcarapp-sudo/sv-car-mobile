@@ -1,9 +1,12 @@
-import {Image, StyleSheet, View} from 'react-native'
+import {useRef, type ComponentRef} from 'react'
+import {StyleSheet, View, type TextInput as NativeTextInput} from 'react-native'
 import {HelperText, TextInput} from 'react-native-paper'
 
-import {NumericTextInput, PartNameInput} from '@/global/components'
+import {FadeInImage, NumericTextInput, PartNameInput} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {AddPartFieldCard} from './AddPartFieldCard'
+
+type InputRef = NativeTextInput & ComponentRef<typeof TextInput>
 
 const ARABIC = {
     REQ_HEADER: 'المعلومات الأساسية',
@@ -36,6 +39,8 @@ interface AddPartFieldsProps {
 
 export const AddPartFields = (p: AddPartFieldsProps) => {
     const theme = useAppTheme()
+    const descriptionRef = useRef<InputRef>(null)
+    const skuRef = useRef<InputRef>(null)
     const priceNum = parseFloat(p.price)
     const priceValid = !p.price.trim() || (!isNaN(priceNum) && priceNum >= 0)
     const hasPreview = /^https?:\/\//i.test(p.imageUrl.trim())
@@ -59,6 +64,9 @@ export const AddPartFields = (p: AddPartFieldsProps) => {
                     mode='outlined'
                     keyboardType='decimal-pad'
                     error={!priceValid}
+                    returnKeyType='next'
+                    submitBehavior='submit'
+                    onSubmitEditing={() => descriptionRef.current?.focus()}
                     style={styles.input}
                     left={<TextInput.Icon icon='cash' />}
                     right={<TextInput.Affix text='$' />}
@@ -69,6 +77,7 @@ export const AddPartFields = (p: AddPartFieldsProps) => {
                     </HelperText>
                 )}
                 <TextInput
+                    ref={descriptionRef}
                     label={ARABIC.DESC}
                     value={p.description}
                     onChangeText={p.onDescriptionChange}
@@ -90,6 +99,9 @@ export const AddPartFields = (p: AddPartFieldsProps) => {
                     mode='outlined'
                     keyboardType='url'
                     autoCapitalize='none'
+                    returnKeyType='next'
+                    submitBehavior='submit'
+                    onSubmitEditing={() => skuRef.current?.focus()}
                     style={styles.input}
                     left={<TextInput.Icon icon='image-outline' />}
                 />
@@ -99,16 +111,18 @@ export const AddPartFields = (p: AddPartFieldsProps) => {
                             styles.preview,
                             {borderColor: theme.colors.outlineVariant, backgroundColor: theme.colors.surfaceVariant},
                         ]}>
-                        <Image source={{uri: p.imageUrl.trim()}} style={styles.previewImg} resizeMode='cover' />
+                        <FadeInImage source={{uri: p.imageUrl.trim()}} style={styles.previewImg} resizeMode='cover' />
                     </View>
                 )}
                 <TextInput
+                    ref={skuRef}
                     label={ARABIC.SKU}
                     value={p.sku}
                     onChangeText={p.onSkuChange}
                     placeholder={ARABIC.SKU_PH}
                     mode='outlined'
                     autoCapitalize='characters'
+                    returnKeyType='done'
                     style={styles.inputLast}
                     left={<TextInput.Icon icon='barcode' />}
                 />

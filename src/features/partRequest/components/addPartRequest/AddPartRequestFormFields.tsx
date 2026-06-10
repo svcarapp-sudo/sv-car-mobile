@@ -1,7 +1,10 @@
-import {StyleSheet, View} from 'react-native'
+import {useRef, type ComponentRef} from 'react'
+import {StyleSheet, View, type TextInput as NativeTextInput} from 'react-native'
 import {HelperText, Text, TextInput} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
+
+type InputRef = NativeTextInput & ComponentRef<typeof TextInput>
 
 const T = {
     TITLE_LABEL: 'عنوان الطلب *',
@@ -34,6 +37,10 @@ interface AddPartRequestFormFieldsProps {
 
 export const AddPartRequestFormFields = ({values, errors, onChange}: AddPartRequestFormFieldsProps) => {
     const theme = useAppTheme()
+    const budgetMinRef = useRef<InputRef>(null)
+    const budgetMaxRef = useRef<InputRef>(null)
+    const phoneRef = useRef<InputRef>(null)
+    const cityRef = useRef<InputRef>(null)
 
     return (
         <View style={styles.section}>
@@ -46,6 +53,9 @@ export const AddPartRequestFormFields = ({values, errors, onChange}: AddPartRequ
                     mode='outlined'
                     maxLength={200}
                     error={!!errors?.title}
+                    returnKeyType='next'
+                    submitBehavior='submit'
+                    onSubmitEditing={() => budgetMinRef.current?.focus()}
                 />
                 {errors?.title ? <HelperText type='error'>{errors.title}</HelperText> : null}
             </View>
@@ -65,21 +75,29 @@ export const AddPartRequestFormFields = ({values, errors, onChange}: AddPartRequ
                 <Text style={[styles.budgetLabel, {color: theme.colors.onSurface}]}>{T.BUDGET_LABEL}</Text>
                 <View style={styles.budgetRow}>
                     <TextInput
+                        ref={budgetMinRef}
                         label={T.MIN}
                         value={values.budgetMin}
                         onChangeText={t => onChange('budgetMin', t.replace(/[^0-9]/g, ''))}
                         mode='outlined'
                         keyboardType='numeric'
+                        returnKeyType='next'
+                        submitBehavior='submit'
+                        onSubmitEditing={() => budgetMaxRef.current?.focus()}
                         right={<TextInput.Affix text={T.CURRENCY} />}
                         style={styles.budgetInput}
                         error={!!errors?.budgetMin}
                     />
                     <TextInput
+                        ref={budgetMaxRef}
                         label={T.MAX}
                         value={values.budgetMax}
                         onChangeText={t => onChange('budgetMax', t.replace(/[^0-9]/g, ''))}
                         mode='outlined'
                         keyboardType='numeric'
+                        returnKeyType='next'
+                        submitBehavior='submit'
+                        onSubmitEditing={() => phoneRef.current?.focus()}
                         right={<TextInput.Affix text={T.CURRENCY} />}
                         style={styles.budgetInput}
                         error={!!errors?.budgetMax}
@@ -90,11 +108,15 @@ export const AddPartRequestFormFields = ({values, errors, onChange}: AddPartRequ
 
             <View>
                 <TextInput
+                    ref={phoneRef}
                     label={T.PHONE_LABEL}
                     value={values.contactPhone}
                     onChangeText={t => onChange('contactPhone', t)}
                     mode='outlined'
                     keyboardType='phone-pad'
+                    returnKeyType='next'
+                    submitBehavior='submit'
+                    onSubmitEditing={() => cityRef.current?.focus()}
                     left={<TextInput.Icon icon='phone-outline' />}
                     error={!!errors?.contactPhone}
                 />
@@ -106,10 +128,12 @@ export const AddPartRequestFormFields = ({values, errors, onChange}: AddPartRequ
             </View>
 
             <TextInput
+                ref={cityRef}
                 label={T.CITY_LABEL}
                 value={values.city}
                 onChangeText={t => onChange('city', t)}
                 mode='outlined'
+                returnKeyType='done'
                 left={<TextInput.Icon icon='map-marker-outline' />}
                 maxLength={100}
             />

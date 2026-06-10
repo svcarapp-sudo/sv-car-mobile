@@ -1,8 +1,9 @@
-import {FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, TouchableOpacity, View} from 'react-native'
+import {FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View} from 'react-native'
 import {Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
+import {PressableScale} from './motion'
 
 const ARABIC_TEXT = {
     PRODUCTION_YEAR: 'سنة الصنع',
@@ -47,13 +48,14 @@ export const YearScreen = ({years, value, onSelect, onNext, onScroll, hideHeader
                     const isSelected = value === item
 
                     return (
-                        <TouchableOpacity
+                        <PressableScale
+                            withHaptic
+                            containerStyle={styles.yearItemWrap}
                             style={[
                                 styles.yearItem,
                                 {backgroundColor: theme.colors.surface},
                                 isSelected && styles.yearItemSelected,
                             ]}
-                            activeOpacity={0.7}
                             onPress={() => handleSelect(item)}>
                             <Text
                                 variant='titleMedium'
@@ -64,7 +66,7 @@ export const YearScreen = ({years, value, onSelect, onNext, onScroll, hideHeader
                                 ]}>
                                 {item}
                             </Text>
-                        </TouchableOpacity>
+                        </PressableScale>
                     )
                 }}
                 contentContainerStyle={[styles.yearGrid, {paddingTop: contentTopInset}]}
@@ -94,10 +96,13 @@ const styles = StyleSheet.create({
     yearGrid: {
         paddingBottom: 24,
     },
-    yearItem: {
+    yearItemWrap: {
         flex: 1,
         aspectRatio: 2,
         margin: 5,
+    },
+    yearItem: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 12,

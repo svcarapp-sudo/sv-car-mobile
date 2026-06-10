@@ -1,6 +1,7 @@
-import {StyleSheet, View, TouchableOpacity} from 'react-native'
+import {StyleSheet, View} from 'react-native'
 import {Text, Icon} from 'react-native-paper'
 
+import {PressableScale} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import type {OriginApi} from '@/global/services'
 import {shadows} from '@/global/theme'
@@ -23,9 +24,10 @@ export const OriginCard = ({item, isSelected, onPress}: OriginCardProps) => {
     const initial = initialOf(item.name)
 
     return (
-        <TouchableOpacity
+        <PressableScale
             onPress={() => onPress(item)}
-            activeOpacity={0.75}
+            withHaptic
+            containerStyle={styles.cardContainer}
             style={[
                 styles.card,
                 {backgroundColor: theme.colors.surface, borderColor: theme.colors.outlineVariant},
@@ -70,18 +72,20 @@ export const OriginCard = ({item, isSelected, onPress}: OriginCardProps) => {
                     color={isSelected ? theme.colors.onPrimary : theme.colors.onSurfaceVariant}
                 />
             </View>
-        </TouchableOpacity>
+        </PressableScale>
     )
 }
 
 const styles = StyleSheet.create({
+    cardContainer: {
+        marginBottom: 10,
+    },
     card: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 14,
         paddingHorizontal: 14,
         borderRadius: 18,
-        marginBottom: 10,
         borderWidth: 1.5,
         gap: 14,
     },

@@ -1,6 +1,7 @@
 import {Pressable, StyleSheet, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
+import {PressableScale} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 
 interface FilterChipProps {
@@ -22,22 +23,26 @@ export const FilterChip = ({label, icon, active, onPress, onClear}: FilterChipPr
     const iconColor = active ? theme.colors.tertiary : theme.colors.onSurfaceVariant
 
     return (
-        <Pressable
+        <PressableScale
             onPress={onPress}
-            style={({pressed}) => [styles.chip, {backgroundColor: bg, borderColor: border}, pressed && styles.chipPressed]}
-            accessibilityRole='button'>
+            scaleTo={0.95}
+            withHaptic
+            style={[styles.chip, {backgroundColor: bg, borderColor: border}]}
+            accessibilityRole='button'
+            accessibilityLabel={label}
+            accessibilityState={{selected: Boolean(active)}}>
             {icon && <Icon source={icon} size={14} color={iconColor} />}
             <Text style={[styles.label, {color: text}]} numberOfLines={1}>
                 {label}
             </Text>
             {active && onClear && (
-                <Pressable onPress={onClear} hitSlop={6}>
+                <Pressable onPress={onClear} hitSlop={8} accessibilityRole='button'>
                     <View style={[styles.clearDot, {backgroundColor: theme.colors.onDarkContainer}]}>
                         <Icon source='close' size={10} color={theme.colors.onPrimary} />
                     </View>
                 </Pressable>
             )}
-        </Pressable>
+        </PressableScale>
     )
 }
 
@@ -52,7 +57,6 @@ const styles = StyleSheet.create({
         borderWidth: 1.2,
         minHeight: 34,
     },
-    chipPressed: {opacity: 0.75},
     label: {fontSize: 12.5, fontWeight: '700', letterSpacing: 0.1},
     clearDot: {
         width: 16,

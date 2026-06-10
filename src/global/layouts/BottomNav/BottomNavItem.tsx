@@ -1,4 +1,5 @@
-import {StyleSheet, View, TouchableOpacity} from 'react-native'
+import {useEffect, useRef} from 'react'
+import {Animated, Pressable, StyleSheet} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
@@ -13,16 +14,35 @@ interface BottomNavItemProps {
 
 export const BottomNavItem = ({icon, activeIcon, label, active, onPress}: BottomNavItemProps) => {
     const theme = useAppTheme()
+    const pop = useRef(new Animated.Value(1)).current
+
+    // Springy pill pop when the tab becomes active — small, fast, alive.
+    useEffect(() => {
+        if (!active) return
+        pop.setValue(0.8)
+        Animated.spring(pop, {toValue: 1, speed: 30, bounciness: 9, useNativeDriver: true}).start()
+    }, [active, pop])
 
     return (
-        <TouchableOpacity style={styles.navItem} onPress={onPress} activeOpacity={0.7}>
-            <View style={[styles.iconPill, active && [styles.iconPillActive, {backgroundColor: theme.colors.primaryContainer}]]}>
+        <Pressable
+            style={styles.navItem}
+            onPress={onPress}
+            hitSlop={{top: 8, bottom: 8}}
+            accessibilityRole='tab'
+            accessibilityLabel={label}
+            accessibilityState={{selected: active}}>
+            <Animated.View
+                style={[
+                    styles.iconPill,
+                    active && [styles.iconPillActive, {backgroundColor: theme.colors.primaryContainer}],
+                    {transform: [{scale: pop}]},
+                ]}>
                 <Icon
                     source={active ? activeIcon : icon}
                     size={22}
                     color={active ? theme.colors.primary : theme.colors.onSurfaceVariant}
                 />
-            </View>
+            </Animated.View>
             <Text
                 style={[
                     styles.label,
@@ -33,7 +53,7 @@ export const BottomNavItem = ({icon, activeIcon, label, active, onPress}: Bottom
                 ]}>
                 {label}
             </Text>
-        </TouchableOpacity>
+        </Pressable>
     )
 }
 
@@ -43,6 +63,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: 4,
+        minHeight: 48,
     },
     iconPill: {
         width: 52,

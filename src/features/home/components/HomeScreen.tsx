@@ -1,16 +1,27 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {Animated, ScrollView, StyleSheet, View} from 'react-native'
+import React, {useCallback, useEffect, useState} from 'react'
+import {Alert, ScrollView, StyleSheet, View} from 'react-native'
 import type {NavigationProp} from '@react-navigation/native'
 
+import {FadeSlideIn, showToast} from '@/global/components'
 import {useAppTheme, useVehicleApi} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import {MAX_VEHICLES, useAuthStore, useVehicleStore} from '@/global/store'
 import type {PartCategory} from '@/global/types'
+import {haptics} from '@/global/utils'
 
 import {CategoryGrid} from './categoryGrid'
 import {HomeHero} from './homeHero'
 import {RecommendedRail} from './recommendedRail'
 import {VehicleSwitcherSheet} from './vehicleSwitcher'
+
+const ARABIC_TEXT = {
+    DELETE_TITLE: 'حذف المركبة؟',
+    DELETE_MESSAGE: 'لا يمكن التراجع عن هذا الإجراء',
+    DELETE_CONFIRM: 'حذف',
+    DELETE_CANCEL: 'إلغاء',
+    DELETE_SUCCESS: 'تم حذف المركبة',
+    DELETE_ERROR: 'تعذر حذف المركبة',
+}
 
 interface HomeScreenProps {
     navigation?: NavigationProp<RootStackParamList>
@@ -25,19 +36,10 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
     const {fetchVehicles, setActiveVehicle, deleteVehicle} = useVehicleApi()
 
     const [switcherOpen, setSwitcherOpen] = useState(false)
-    const fade = useRef(new Animated.Value(0)).current
-    const slide = useRef(new Animated.Value(16)).current
 
     useEffect(() => {
         fetchVehicles().catch(() => {})
     }, [fetchVehicles])
-
-    useEffect(() => {
-        Animated.parallel([
-            Animated.timing(fade, {toValue: 1, duration: 480, useNativeDriver: true}),
-            Animated.timing(slide, {toValue: 0, duration: 480, useNativeDriver: true}),
-        ]).start()
-    }, [fade, slide])
 
     const goAddVehicle = useCallback(() => {
         setSwitcherOpen(false)
@@ -59,6 +61,7 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
 
     const handleSwitch = useCallback(
         (id: string) => {
+            haptics.selection()
             setActiveVehicle(id).catch(() => {})
             setSwitcherOpen(false)
         },
@@ -67,7 +70,18 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
 
     const handleDelete = useCallback(
         (id: string) => {
-            deleteVehicle(id).catch(() => {})
+            Alert.alert(ARABIC_TEXT.DELETE_TITLE, ARABIC_TEXT.DELETE_MESSAGE, [
+                {text: ARABIC_TEXT.DELETE_CANCEL, style: 'cancel'},
+                {
+                    text: ARABIC_TEXT.DELETE_CONFIRM,
+                    style: 'destructive',
+                    onPress: () => {
+                        deleteVehicle(id)
+                            .then(() => showToast(ARABIC_TEXT.DELETE_SUCCESS, 'success'))
+                            .catch(() => showToast(ARABIC_TEXT.DELETE_ERROR, 'error'))
+                    },
+                },
+            ])
         },
         [deleteVehicle]
     )
@@ -84,7 +98,7 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
                 bounces>
-                <Animated.View style={{opacity: fade, transform: [{translateY: slide}]}}>
+                <FadeSlideIn delay={0}>
                     <HomeHero
                         userName={userName}
                         vehicle={vehicle}
@@ -92,11 +106,17 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
                         onAddVehicle={goAddVehicle}
                         onManageVehicles={() => setSwitcherOpen(true)}
                     />
+                </FadeSlideIn>
 
+                <FadeSlideIn delay={90}>
                     <CategoryGrid onSelectCategory={goCategory} onViewAll={goBrowseAll} />
+                </FadeSlideIn>
 
-                    {vehicle && <RecommendedRail vehicle={vehicle} onSelectPart={goPart} onViewAll={goBrowseAll} />}
-                </Animated.View>
+                {vehicle && (
+                    <FadeSlideIn delay={180}>
+                        <RecommendedRail vehicle={vehicle} onSelectPart={goPart} onViewAll={goBrowseAll} />
+                    </FadeSlideIn>
+                )}
             </ScrollView>
 
             <VehicleSwitcherSheet

@@ -1,3 +1,6 @@
 export {toAsciiDigits} from './digits'
 export {mapPartModelToPart} from './partMapper'
 export type {PartModelResponse} from './partMapper'
+export {haptics} from './haptics'
+export {formatPrice} from './price'
+export {normalizeSearchText, matchesSearch} from './search'

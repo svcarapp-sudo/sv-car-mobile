@@ -1,7 +1,8 @@
 import {ScrollView, StyleSheet, View} from 'react-native'
-import {ActivityIndicator, Button, Text} from 'react-native-paper'
+import {Button, Text} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
+import {Skeleton} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {useAuthStore} from '@/global/store'
 import type {RootStackParamList} from '@/global/navigation/types'
@@ -31,8 +32,15 @@ export const PartRequestDetailScreen = ({route, navigation}: PartRequestDetailSc
 
     if (loading && !request) {
         return (
-            <View style={[styles.centered, {backgroundColor: theme.colors.background}]}>
-                <ActivityIndicator size='large' color={theme.colors.primary} />
+            <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+                <Skeleton height={190} radius={0} />
+                <View style={styles.skeletonBody}>
+                    <Skeleton width='70%' height={18} radius={9} />
+                    <Skeleton width='45%' height={12} radius={6} />
+                    <Skeleton height={128} radius={18} />
+                    <Skeleton height={96} radius={18} />
+                    <Skeleton height={120} radius={18} />
+                </View>
             </View>
         )
     }
@@ -68,6 +76,7 @@ export const PartRequestDetailScreen = ({route, navigation}: PartRequestDetailSc
 const styles = StyleSheet.create({
     container: {flex: 1},
     content: {paddingBottom: 32},
+    skeletonBody: {padding: 16, gap: 14},
     centered: {flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, gap: 8},
     errorTitle: {fontSize: 16, fontWeight: '800'},
     errorBody: {fontSize: 13, textAlign: 'center', marginBottom: 12},

@@ -9,8 +9,9 @@ interface HomeHeroBackdropProps {
 }
 
 const NAVY_TOP = themeColors.primary
-const NAVY_BOTTOM = '#243558'
+const NAVY_BOTTOM = themeColors.navyMid
 const AMBER = themeColors.tertiary
+const SHEEN = themeColors.onPrimary
 
 /**
  * Layered hero backdrop: navy gradient + soft amber glow + frosted glass sheen.
@@ -36,9 +37,9 @@ export const HomeHeroBackdrop = ({height}: HomeHeroBackdropProps) => {
                     </RadialGradient>
 
                     <RadialGradient id='heroSheen' cx='78%' cy='-6%' r='55%' fx='78%' fy='-6%'>
-                        <Stop offset='0%' stopColor='#FFFFFF' stopOpacity={0.07} />
-                        <Stop offset='60%' stopColor='#FFFFFF' stopOpacity={0.018} />
-                        <Stop offset='100%' stopColor='#FFFFFF' stopOpacity={0} />
+                        <Stop offset='0%' stopColor={SHEEN} stopOpacity={0.07} />
+                        <Stop offset='60%' stopColor={SHEEN} stopOpacity={0.018} />
+                        <Stop offset='100%' stopColor={SHEEN} stopOpacity={0} />
                     </RadialGradient>
 
                     <LinearGradient id='heroFade' x1='0%' y1='65%' x2='0%' y2='100%'>

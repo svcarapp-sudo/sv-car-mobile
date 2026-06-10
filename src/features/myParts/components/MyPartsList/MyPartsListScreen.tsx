@@ -3,6 +3,7 @@ import {FlatList, StyleSheet, View} from 'react-native'
 import {FAB} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
+import {FadeSlideIn, showToast, staggerDelay} from '@/global/components'
 import {useAppTheme, useCatalog} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {Part} from '@/global/types'
@@ -13,10 +14,11 @@ import {MyPartCardItem} from './MyPartCardItem'
 import {MyPartsDeleteDialog} from './MyPartsDeleteDialog'
 import {MyPartsFilterBar} from './MyPartsFilterBar'
 import {MyPartsListEmpty} from './MyPartsListEmpty'
+import {MyPartsListSkeleton} from './MyPartsListSkeleton'
 import {MyPartsSearchBar} from './MyPartsSearchBar'
 import {MyPartsStatsStrip} from './MyPartsStatsStrip'
 
-const ARABIC_TEXT = {ADD_PART: 'إضافة قطعة'}
+const ARABIC_TEXT = {ADD_PART: 'إضافة قطعة', DELETED: 'تم حذف الإعلان', DELETE_ERROR: 'تعذر الحذف'}
 
 interface MyPartsListScreenProps {
     route?: RouteProp<RootStackParamList, 'MyParts'>
@@ -53,6 +55,9 @@ export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
         try {
             await deletePart(pending.id)
             setPending(null)
+            showToast(ARABIC_TEXT.DELETED, 'success')
+        } catch {
+            showToast(ARABIC_TEXT.DELETE_ERROR, 'error')
         } finally {
             setDeleting(false)
         }
@@ -78,17 +83,27 @@ export const MyPartsListScreen = ({navigation}: MyPartsListScreenProps) => {
         )
     }
 
+    if (loading && parts.length === 0) {
+        return (
+            <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+                <MyPartsListSkeleton />
+            </View>
+        )
+    }
+
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
             <FlatList
                 data={filters.filtered}
-                renderItem={({item}) => (
-                    <MyPartCardItem
-                        part={item}
-                        onEdit={id => navigation?.navigate('EditPart', {partId: id})}
-                        onDelete={(id, name) => setPending({id, name})}
-                        categoryInfo={getCategoryInfo(item)}
-                    />
+                renderItem={({item, index}) => (
+                    <FadeSlideIn delay={index < 8 ? staggerDelay(index) : 0}>
+                        <MyPartCardItem
+                            part={item}
+                            onEdit={id => navigation?.navigate('EditPart', {partId: id})}
+                            onDelete={(id, name) => setPending({id, name})}
+                            categoryInfo={getCategoryInfo(item)}
+                        />
+                    </FadeSlideIn>
                 )}
                 keyExtractor={item => item.id}
                 contentContainerStyle={[styles.listContent, showEmpty && styles.emptyContent]}

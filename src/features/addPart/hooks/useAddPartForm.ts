@@ -1,6 +1,7 @@
 import {useCallback, useState} from 'react'
 import type {NavigationProp} from '@react-navigation/native'
 
+import {showToast} from '@/global/components'
 import {useCatalog} from '@/global/hooks'
 import {Step} from '../components/addPart/addPartConstants'
 import type {RootStackParamList} from '@/global/navigation/types'
@@ -8,12 +9,10 @@ import {useAddPart} from './useAddPart'
 
 const ARABIC_TEXT = {
     ERROR: 'فشل إضافة القطعة',
-    SUCCESS_MSG: 'تم إضافة القطعة بنجاح',
+    SUCCESS_MSG: 'تمت إضافة القطعة بنجاح',
     REQUIRED_FIELD: 'يرجى تعبئة اسم القطعة والسعر',
     INVALID_PRICE: 'يرجى إدخال سعر صحيح',
 }
-
-export type AddPartToast = {message: string; kind: 'success' | 'error'} | null
 
 export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) => {
     const {createPart, loading} = useAddPart()
@@ -34,9 +33,6 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
     const [price, setPrice] = useState('')
     const [imageUrl, setImageUrl] = useState('')
     const [sku, setSku] = useState('')
-    const [toast, setToast] = useState<AddPartToast>(null)
-
-    const clearToast = useCallback(() => setToast(null), [])
 
     const resetFrom = (step: Step) => {
         if (step <= Step.Details) {
@@ -101,12 +97,12 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
 
     const handleSubmit = useCallback(async () => {
         if (!makeId || !modelId || !year || !categoryId || !name.trim() || !price.trim()) {
-            setToast({message: ARABIC_TEXT.REQUIRED_FIELD, kind: 'error'})
+            showToast(ARABIC_TEXT.REQUIRED_FIELD, 'error')
             return
         }
         const priceNum = parseFloat(price)
         if (isNaN(priceNum) || priceNum < 0) {
-            setToast({message: ARABIC_TEXT.INVALID_PRICE, kind: 'error'})
+            showToast(ARABIC_TEXT.INVALID_PRICE, 'error')
             return
         }
         try {
@@ -119,10 +115,10 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
                 imageUrl: imageUrl.trim() || undefined,
                 sku: sku.trim() || undefined,
             })
-            setToast({message: ARABIC_TEXT.SUCCESS_MSG, kind: 'success'})
-            setTimeout(() => navigation?.navigate('MyParts'), 1400)
+            showToast(ARABIC_TEXT.SUCCESS_MSG, 'success')
+            navigation?.navigate('MyParts')
         } catch (err) {
-            setToast({message: err instanceof Error ? err.message : ARABIC_TEXT.ERROR, kind: 'error'})
+            showToast(err instanceof Error ? err.message : ARABIC_TEXT.ERROR, 'error')
         }
     }, [makeId, modelId, year, categoryId, name, description, price, imageUrl, sku, createPart, navigation])
 
@@ -151,8 +147,6 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
         getModels,
         years,
         canSubmit,
-        toast,
-        clearToast,
         setName,
         setDescription,
         setPrice,

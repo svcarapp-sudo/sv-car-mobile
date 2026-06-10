@@ -1,12 +1,19 @@
+import {useMemo, useState} from 'react'
 import {NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, View} from 'react-native'
 import {Text} from 'react-native-paper'
+
+import {ListSearchBar} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import type {PartCategoryApi} from '@/global/types'
+import {matchesSearch} from '@/global/utils'
 import {CategoryGrid} from './CategoryGrid'
 
 const ARABIC_TEXT = {
     SELECT_CATEGORY: 'اختر فئة القطعة',
+    SEARCH_PLACEHOLDER: 'ابحث عن الفئة...',
 }
+
+const SEARCH_THRESHOLD = 9
 
 interface CategoryScreenProps {
     categories: PartCategoryApi[]
@@ -30,6 +37,10 @@ export const CategoryScreen = ({
     contentTopInset = 0,
 }: CategoryScreenProps) => {
     const theme = useAppTheme()
+    const [query, setQuery] = useState('')
+
+    const filtered = useMemo(() => categories.filter(category => matchesSearch(query, category.name)), [categories, query])
+    const showSearch = categories.length > SEARCH_THRESHOLD
 
     const handleSelect = (category: PartCategoryApi) => {
         onSelect(category.id, category.name)
@@ -48,10 +59,16 @@ export const CategoryScreen = ({
             <ScrollView
                 style={styles.scrollContainer}
                 contentContainerStyle={[styles.scrollContent, {paddingTop: contentTopInset}]}
+                keyboardShouldPersistTaps='handled'
                 onScroll={onScroll}
                 scrollEventThrottle={16}>
+                {showSearch && (
+                    <View style={styles.searchWrap}>
+                        <ListSearchBar value={query} onChangeText={setQuery} placeholder={ARABIC_TEXT.SEARCH_PLACEHOLDER} />
+                    </View>
+                )}
                 <CategoryGrid
-                    categories={categories}
+                    categories={filtered}
                     loading={loading}
                     selectedId={valueId}
                     onSelect={handleSelect}
@@ -77,5 +94,8 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         paddingBottom: 16,
+    },
+    searchWrap: {
+        marginBottom: 12,
     },
 })

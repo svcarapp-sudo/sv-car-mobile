@@ -1,9 +1,10 @@
-import {StyleSheet, View, TouchableOpacity, Image} from 'react-native'
+import {StyleSheet, View, Image} from 'react-native'
 import {Text, Icon} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 import type {MakeApi} from '../../services/catalogService'
+import {PressableScale} from '../motion'
 
 interface MakeCardProps {
     item: MakeApi
@@ -16,7 +17,7 @@ export const MakeCard = ({item, isSelected, onPress}: MakeCardProps) => {
     const logoUrl = item.logoUrl ?? null
 
     return (
-        <TouchableOpacity onPress={() => onPress(item)} activeOpacity={0.7} style={styles.gridItem}>
+        <PressableScale onPress={() => onPress(item)} withHaptic containerStyle={styles.gridItem}>
             <View style={[styles.card, {backgroundColor: theme.colors.surface}, isSelected && styles.cardSelected]}>
                 {isSelected && (
                     <View style={styles.selectedBadge}>
@@ -35,7 +36,7 @@ export const MakeCard = ({item, isSelected, onPress}: MakeCardProps) => {
                     {item.name}
                 </Text>
             </View>
-        </TouchableOpacity>
+        </PressableScale>
     )
 }
 

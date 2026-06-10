@@ -1,8 +1,16 @@
 import {useState} from 'react'
 
+import {showToast} from '@/global/components'
 import {useVehicleApi} from '@/global/hooks'
+import {ApiError} from '@/global/services'
 
 import {Step} from './addVehicleConstants'
+
+const ARABIC_TEXT = {
+    VEHICLE_ADDED: 'تمت إضافة المركبة بنجاح',
+    VEHICLE_UPDATED: 'تم تحديث المركبة',
+    SAVE_ERROR: 'تعذر حفظ المركبة',
+}
 
 interface UseAddVehicleFormProps {
     editVehicleId?: string
@@ -58,8 +66,11 @@ export const useAddVehicleForm = ({editVehicleId, onSuccess}: UseAddVehicleFormP
             }
             if (editVehicleId) await updateVehicle(editVehicleId, data)
             else await createVehicle(data)
+            showToast(editVehicleId ? ARABIC_TEXT.VEHICLE_UPDATED : ARABIC_TEXT.VEHICLE_ADDED, 'success')
             onSuccess()
-        } catch {}
+        } catch (err) {
+            showToast(err instanceof ApiError ? err.message : ARABIC_TEXT.SAVE_ERROR, 'error')
+        }
     }
 
     const selectOrigin = (id: number, name: string) => {

@@ -17,6 +17,7 @@ export interface ArtColors {
     navyGrad: string
     amberGrad: string
     steelGrad: string
+    darkGrad: string
 }
 
 /** Renders a category's SVG glyph as children of a shared <Svg> (64×64 viewBox). */

@@ -1,8 +1,10 @@
 import {useMemo, useState} from 'react'
-import {Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet} from 'react-native'
+import {KeyboardAvoidingView, Platform, ScrollView, StyleSheet} from 'react-native'
 import type {NavigationProp} from '@react-navigation/native'
 
+import {showToast} from '@/global/components'
 import {useAppTheme, useCatalog} from '@/global/hooks'
+import {ApiError} from '@/global/services'
 import {useAuthStore, useVehicleStore} from '@/global/store'
 import type {RootStackParamList} from '@/global/navigation/types'
 
@@ -17,13 +19,12 @@ import {AddPartRequestVehicleCard} from './AddPartRequestVehicleCard'
 
 const T = {
     SUCCESS: 'تم نشر طلبك بنجاح',
-    SUCCESS_BODY: 'سيتمكن البائعون الآن من رؤية طلبك والتواصل معك.',
     ERR_VEHICLE: 'يجب اختيار مركبة أولاً',
     ERR_CATEGORY: 'الرجاء اختيار فئة القطعة',
     ERR_TITLE: 'العنوان مطلوب',
     ERR_PHONE: 'رقم التواصل مطلوب',
     ERR_BUDGET_RANGE: 'الحد الأعلى يجب أن يكون أكبر من الأدنى',
-    OK: 'حسناً',
+    ERR_SUBMIT: 'تعذر نشر الطلب',
 }
 
 const INITIAL: AddPartRequestFieldState = {title: '', description: '', budgetMin: '', budgetMax: '', contactPhone: '', city: ''}
@@ -62,7 +63,7 @@ export const AddPartRequestScreen = ({navigation}: AddPartRequestScreenProps) =>
 
     const handleSubmit = async () => {
         if (!vehicle) {
-            Alert.alert(T.ERR_VEHICLE)
+            showToast(T.ERR_VEHICLE, 'error')
             return
         }
         const nextErrors: typeof errors = {}
@@ -75,7 +76,7 @@ export const AddPartRequestScreen = ({navigation}: AddPartRequestScreenProps) =>
 
         if (Object.keys(nextErrors).length > 0) {
             setErrors(nextErrors)
-            if (nextErrors.categoryId) Alert.alert(nextErrors.categoryId)
+            if (nextErrors.categoryId) showToast(nextErrors.categoryId, 'error')
             return
         }
 
@@ -93,9 +94,10 @@ export const AddPartRequestScreen = ({navigation}: AddPartRequestScreenProps) =>
                 contactPhone: fields.contactPhone.trim(),
                 city: fields.city.trim() || undefined,
             })
-            Alert.alert(T.SUCCESS, T.SUCCESS_BODY, [{text: T.OK, onPress: () => navigation?.goBack()}])
-        } catch {
-            // error already surfaced in hook state
+            showToast(T.SUCCESS, 'success')
+            navigation?.goBack()
+        } catch (err) {
+            showToast(err instanceof ApiError ? err.message : T.ERR_SUBMIT, 'error')
         }
     }
 

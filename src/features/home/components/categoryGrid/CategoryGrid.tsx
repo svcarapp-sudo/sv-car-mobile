@@ -1,11 +1,12 @@
 import React from 'react'
 import {StyleSheet, View} from 'react-native'
-import {ActivityIndicator, Button, Text} from 'react-native-paper'
+import {Button, Text} from 'react-native-paper'
 
 import {useCatalog} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 import type {PartCategory} from '@/global/types'
 import {CategoryGridItem} from './CategoryGridItem'
+import {CategoryGridSkeleton} from './CategoryGridSkeleton'
 
 interface CategoryGridProps {
     onSelectCategory: (category: PartCategory) => void
@@ -18,7 +19,6 @@ const ARABIC_TEXT = {
     VIEW_ALL: 'عرض الكل',
     EMPTY_OR_ERROR: 'لم يتم تحميل الفئات',
     RETRY: 'إعادة المحاولة',
-    LOADING: 'جاري تحميل الفئات...',
 }
 
 const SectionHeader = ({onViewAll, showViewAll}: {onViewAll?: () => void; showViewAll?: boolean}) => (
@@ -68,10 +68,7 @@ export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) =
         return (
             <View style={styles.container}>
                 <SectionHeader />
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size='small' color={themeColors.tertiary} />
-                    <Text style={styles.loadingText}>{ARABIC_TEXT.LOADING}</Text>
-                </View>
+                <CategoryGridSkeleton />
             </View>
         )
     }
@@ -109,6 +106,4 @@ const styles = StyleSheet.create({
     emptyContainer: {paddingVertical: 24, paddingHorizontal: 16, alignItems: 'center'},
     emptyText: {color: themeColors.onSurfaceVariant, textAlign: 'center'},
     retryButton: {marginTop: 12},
-    loadingContainer: {paddingVertical: 24, alignItems: 'center'},
-    loadingText: {color: themeColors.onSurfaceVariant, marginTop: 8, fontSize: 12},
 })

@@ -1,10 +1,15 @@
 import {useEffect, useState, useCallback, useRef} from 'react'
 
+import {showToast} from '@/global/components'
 import type {PartCategory, Part} from '@/global/types'
 
 import {useVehicleStore} from '@/global/store'
 
 import {partsListService} from '../services'
+
+const ARABIC_TEXT = {
+    LOAD_MORE_ERROR: 'تعذر تحميل المزيد',
+}
 
 const PAGE_SIZE = 20
 
@@ -90,6 +95,7 @@ export const useParts = (initialCategory?: PartCategory | null) => {
             setHasMore(nextPage + 1 < response.totalPages)
         } catch (err) {
             setError((err as Error).message || 'Failed to load more parts')
+            showToast(ARABIC_TEXT.LOAD_MORE_ERROR, 'error')
         } finally {
             setLoadingMore(false)
         }

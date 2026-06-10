@@ -3,8 +3,10 @@ import {FlatList, StyleSheet, View} from 'react-native'
 import {FAB} from 'react-native-paper'
 import type {NavigationProp} from '@react-navigation/native'
 
+import {showToast} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
+import {haptics} from '@/global/utils'
 
 import {useMyPartRequests} from '../../hooks'
 import type {PartRequest, PartRequestStatus} from '../../types'
@@ -12,7 +14,7 @@ import {MyPartRequestCardItem} from './MyPartRequestCardItem'
 import {MyPartRequestsDeleteDialog} from './MyPartRequestsDeleteDialog'
 import {MyPartRequestsEmpty} from './MyPartRequestsEmpty'
 
-const T = {ADD: 'طلب جديد'}
+const T = {ADD: 'طلب جديد', DELETED: 'تم حذف الطلب', DELETE_ERROR: 'تعذر الحذف', STATUS_ERROR: 'تعذر تحديث حالة الطلب'}
 
 interface MyPartRequestsListScreenProps {
     navigation?: NavigationProp<RootStackParamList>
@@ -38,6 +40,9 @@ export const MyPartRequestsListScreen = ({navigation}: MyPartRequestsListScreenP
         try {
             await remove(pending.id)
             setPending(null)
+            showToast(T.DELETED, 'success')
+        } catch {
+            showToast(T.DELETE_ERROR, 'error')
         } finally {
             setDeleting(false)
         }
@@ -45,7 +50,9 @@ export const MyPartRequestsListScreen = ({navigation}: MyPartRequestsListScreenP
 
     const handleStatusChange = useCallback(
         (id: string, status: PartRequestStatus) => {
-            setStatus(id, status).catch(() => {})
+            setStatus(id, status)
+                .then(() => haptics.selection())
+                .catch(() => showToast(T.STATUS_ERROR, 'error'))
         },
         [setStatus]
     )

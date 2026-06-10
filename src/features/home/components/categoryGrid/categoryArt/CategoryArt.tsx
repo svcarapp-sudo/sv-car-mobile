@@ -6,9 +6,12 @@ import {useAppTheme} from '@/global/hooks'
 import {ART_A} from './artA'
 import {ART_B} from './artB'
 import {ART_C} from './artC'
+import {ART_D} from './artD'
+import {ART_E} from './artE'
+import {ART_F} from './artF'
 import type {ArtColors, CategoryArtRenderer} from './types'
 
-const RENDERERS: Record<string, CategoryArtRenderer> = {...ART_A, ...ART_B, ...ART_C}
+const RENDERERS: Record<string, CategoryArtRenderer> = {...ART_A, ...ART_B, ...ART_C, ...ART_D, ...ART_E, ...ART_F}
 
 interface CategoryArtProps {
     slug: string
@@ -35,6 +38,7 @@ export const CategoryArt = ({slug, size = 64}: CategoryArtProps) => {
         navyGrad: `url(#${gid('nv')})`,
         amberGrad: `url(#${gid('am')})`,
         steelGrad: `url(#${gid('st')})`,
+        darkGrad: `url(#${gid('dk')})`,
     }
     const render = RENDERERS[slug] ?? RENDERERS.other
 
@@ -52,6 +56,10 @@ export const CategoryArt = ({slug, size = 64}: CategoryArtProps) => {
                 <LinearGradient id={gid('st')} x1='0' y1='0' x2='0' y2='1'>
                     <Stop offset='0' stopColor={c.surface} />
                     <Stop offset='1' stopColor={c.navyLt} />
+                </LinearGradient>
+                <LinearGradient id={gid('dk')} x1='0' y1='0' x2='0' y2='1'>
+                    <Stop offset='0' stopColor={c.navy} />
+                    <Stop offset='1' stopColor={c.navyDark} />
                 </LinearGradient>
                 <RadialGradient id={gid('bg')} cx='50%' cy='42%' r='55%'>
                     <Stop offset='0' stopColor={c.amberLt} stopOpacity={0.55} />

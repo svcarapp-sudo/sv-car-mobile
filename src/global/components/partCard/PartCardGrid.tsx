@@ -1,4 +1,4 @@
-import {Image, StyleSheet, View} from 'react-native'
+import {StyleSheet, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
@@ -6,8 +6,15 @@ import {useSavedPartsStore} from '@/global/store'
 import {shadows} from '@/global/theme'
 import type {Part, PartCategoryApi} from '@/global/types'
 
+import {FadeInImage} from '../motion'
+import {showToast} from '../toast'
 import {PriceTag} from './PriceTag'
 import {SaveButton} from './SaveButton'
+
+const ARABIC_TEXT = {
+    OUT_OF_STOCK: 'غير متوفر',
+    SAVE_ERROR: 'تعذر تحديث المفضلة',
+}
 
 interface PartCardGridProps {
     part: Part
@@ -24,7 +31,13 @@ export const PartCardGrid = ({part, categoryInfo}: PartCardGridProps) => {
             style={[styles.card, shadows.sm, {backgroundColor: theme.colors.surface, borderColor: theme.colors.outlineVariant}]}>
             <View style={[styles.mediaBox, {backgroundColor: theme.colors.surfaceContainerLow}]}>
                 {part.imageUrl ? (
-                    <Image source={{uri: part.imageUrl}} style={styles.media} resizeMode='cover' />
+                    <FadeInImage
+                        source={{uri: part.imageUrl}}
+                        style={styles.media}
+                        resizeMode='cover'
+                        fallbackIcon={categoryInfo?.icon || 'package-variant'}
+                        fallbackIconSize={42}
+                    />
                 ) : (
                     <View style={[styles.placeholder, {backgroundColor: theme.colors.accentSubtle}]}>
                         <Icon source={categoryInfo?.icon || 'package-variant'} size={42} color={theme.colors.tertiary} />
@@ -35,7 +48,7 @@ export const PartCardGrid = ({part, categoryInfo}: PartCardGridProps) => {
                     <SaveButton
                         saved={saved}
                         onPress={() => {
-                            void toggle(part.id).catch(() => undefined)
+                            void toggle(part.id).catch(() => showToast(ARABIC_TEXT.SAVE_ERROR, 'error'))
                         }}
                         size='sm'
                         floating
@@ -45,7 +58,7 @@ export const PartCardGrid = ({part, categoryInfo}: PartCardGridProps) => {
                 {!part.inStock && (
                     <View style={[styles.soldOverlay, {backgroundColor: theme.colors.backdrop}]}>
                         <View style={[styles.soldPill, {backgroundColor: theme.colors.errorContainer}]}>
-                            <Text style={[styles.soldText, {color: theme.colors.errorDark}]}>غير متوفر</Text>
+                            <Text style={[styles.soldText, {color: theme.colors.errorDark}]}>{ARABIC_TEXT.OUT_OF_STOCK}</Text>
                         </View>
                     </View>
                 )}

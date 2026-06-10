@@ -1,6 +1,7 @@
-import {StyleSheet, TouchableOpacity, View} from 'react-native'
+import {StyleSheet, View} from 'react-native'
 import {Icon, Text} from 'react-native-paper'
 
+import {PressableScale} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {shadows} from '@/global/theme'
 import type {PartCategoryApi} from '@/global/types'
@@ -22,7 +23,7 @@ export const CategoryGridCard = ({category, isSelected, onPress}: CategoryGridCa
     const trailingColor = isSelected ? theme.colors.primary : theme.colors.onSurfaceVariant
 
     return (
-        <TouchableOpacity style={styles.wrapper} onPress={() => onPress(category)} activeOpacity={0.65}>
+        <PressableScale containerStyle={styles.wrapper} onPress={() => onPress(category)} withHaptic>
             <View
                 style={[
                     styles.tile,
@@ -45,7 +46,7 @@ export const CategoryGridCard = ({category, isSelected, onPress}: CategoryGridCa
                     <Icon source={trailingIcon} size={14} color={trailingColor} />
                 </View>
             </View>
-        </TouchableOpacity>
+        </PressableScale>
     )
 }
 

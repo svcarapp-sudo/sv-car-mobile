@@ -48,6 +48,7 @@ const customColors = {
 
     // Semantic — Error extended
     errorDark: '#B91C1C',
+    errorBright: '#F87171',
     errorContainer: '#FEE2E2',
     onErrorContainer: '#7F1D1D',
 
@@ -58,11 +59,15 @@ const customColors = {
 
     // Semantic — Info
     info: '#2563EB',
+    infoBright: '#60A5FA',
     infoContainer: '#DBEAFE',
     onInfoContainer: '#1E3A5F',
 
     // Dark surface (stepper, dark cards)
     surfaceDark: '#0F172A',
+
+    // Navy gradient mid-stop (hero backdrops)
+    navyMid: '#243558',
 
     // Illustration gradient shades (category art)
     primaryTint: '#34466B',

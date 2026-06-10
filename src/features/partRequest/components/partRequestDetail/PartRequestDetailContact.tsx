@@ -1,8 +1,10 @@
-import {Alert, Linking, StyleSheet, View} from 'react-native'
+import {Linking, StyleSheet, View} from 'react-native'
 import {Button, Icon, Text} from 'react-native-paper'
 
+import {showToast} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {shadows, themeColors} from '@/global/theme'
+import {haptics} from '@/global/utils'
 
 import type {PartRequest} from '../../types'
 
@@ -11,6 +13,7 @@ const T = {
     SUBTITLE: 'هل لديك هذه القطعة؟ تواصل الآن لإغلاق الصفقة',
     WHATSAPP: 'محادثة واتساب',
     CALL: 'مكالمة هاتفية',
+    CALL_A11Y: 'الاتصال بصاحب الطلب',
     OWNER_NOTICE: 'هذا طلبك. الأزرار أعلاه ستظهر للمشترين الآخرين.',
     FAILED: 'تعذّر فتح التطبيق',
 }
@@ -26,21 +29,32 @@ export const PartRequestDetailContact = ({request, isOwner}: PartRequestDetailCo
     const theme = useAppTheme()
     const phone = normalisePhone(request.contactPhone)
 
+    const hasPhone = phone.length > 0
+
     const openLink = async (url: string) => {
         try {
             const supported = await Linking.canOpenURL(url)
             if (supported) {
                 await Linking.openURL(url)
             } else {
-                Alert.alert(T.FAILED)
+                showToast(T.FAILED, 'error')
             }
         } catch {
-            Alert.alert(T.FAILED)
+            showToast(T.FAILED, 'error')
         }
     }
 
-    const handleWhatsApp = () => openLink(`https://wa.me/${phone.replace(/^\+/, '')}`)
-    const handleCall = () => openLink(`tel:${phone}`)
+    const handleWhatsApp = () => {
+        if (!hasPhone) return
+        haptics.light()
+        void openLink(`https://wa.me/${phone.replace(/^\+/, '')}`)
+    }
+
+    const handleCall = () => {
+        if (!hasPhone) return
+        haptics.light()
+        void openLink(`tel:${phone}`)
+    }
 
     return (
         <View style={[styles.card, {backgroundColor: theme.colors.surface}]}>
@@ -66,6 +80,7 @@ export const PartRequestDetailContact = ({request, isOwner}: PartRequestDetailCo
                     <Button
                         mode='contained'
                         onPress={handleWhatsApp}
+                        disabled={!hasPhone}
                         buttonColor={theme.colors.success}
                         textColor={theme.colors.onPrimary}
                         icon='whatsapp'
@@ -76,6 +91,8 @@ export const PartRequestDetailContact = ({request, isOwner}: PartRequestDetailCo
                     <Button
                         mode='contained'
                         onPress={handleCall}
+                        disabled={!hasPhone}
+                        accessibilityLabel={T.CALL_A11Y}
                         buttonColor={theme.colors.primary}
                         textColor={theme.colors.onPrimary}
                         icon='phone-outline'

@@ -1,15 +1,18 @@
 import {useEffect, useMemo} from 'react'
-
-import {StyleSheet, View, Animated, Easing} from 'react-native'
-
+import {Animated, Easing, StyleSheet, View} from 'react-native'
 import {Text} from 'react-native-paper'
+
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
-
 import {useAuthStore} from '@/global/store'
 
-import type {RootStackParamList} from '../navigation/types'
+import type {RootStackParamList} from '../../navigation/types'
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack'
+
+import {LaunchGear} from './LaunchGear'
+
+/** Brand moment, kept short — content beats splash time (Apple HIG). */
+const LAUNCH_DURATION_MS = 1600
 
 interface LaunchScreenProps {
     navigation: NativeStackNavigationProp<RootStackParamList, 'Launch'>
@@ -20,18 +23,15 @@ export const LaunchScreen = ({navigation}: LaunchScreenProps) => {
     const isAuthenticated = useAuthStore(s => s.isAuthenticated)
     const hasSeenOnboarding = useAuthStore(s => s.hasSeenOnboarding)
 
-    // Animation values
     const fadeAnim = useMemo(() => new Animated.Value(0), [])
     const scaleAnim = useMemo(() => new Animated.Value(0.85), [])
     const translateYAnim = useMemo(() => new Animated.Value(20), [])
-    const rotateAnim = useMemo(() => new Animated.Value(0), [])
 
     useEffect(() => {
-        // Main entrance sequence
         Animated.parallel([
             Animated.timing(fadeAnim, {
                 toValue: 1,
-                duration: 1200,
+                duration: 900,
                 useNativeDriver: true,
             }),
             Animated.spring(scaleAnim, {
@@ -42,21 +42,11 @@ export const LaunchScreen = ({navigation}: LaunchScreenProps) => {
             }),
             Animated.timing(translateYAnim, {
                 toValue: 0,
-                duration: 1000,
+                duration: 800,
                 easing: Easing.out(Easing.back(1.5)),
                 useNativeDriver: true,
             }),
         ]).start()
-
-        // Rotating gear/loader animation
-        Animated.loop(
-            Animated.timing(rotateAnim, {
-                toValue: 1,
-                duration: 3000,
-                easing: Easing.linear,
-                useNativeDriver: true,
-            })
-        ).start()
 
         const timer = setTimeout(() => {
             if (isAuthenticated) {
@@ -66,15 +56,10 @@ export const LaunchScreen = ({navigation}: LaunchScreenProps) => {
             } else {
                 navigation.replace('Login')
             }
-        }, 3000)
+        }, LAUNCH_DURATION_MS)
 
         return () => clearTimeout(timer)
-    }, [fadeAnim, scaleAnim, translateYAnim, rotateAnim, navigation, isAuthenticated])
-
-    const spin = rotateAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['0deg', '360deg'],
-    })
+    }, [fadeAnim, scaleAnim, translateYAnim, navigation, isAuthenticated, hasSeenOnboarding])
 
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.primary}]}>
@@ -96,20 +81,7 @@ export const LaunchScreen = ({navigation}: LaunchScreenProps) => {
                 <Text style={[styles.tagline, {color: theme.colors.onPrimary}]}>ULTIMATE PARTS & SERVICES</Text>
             </Animated.View>
 
-            {/* Custom Automotive Loader */}
-            <View style={styles.loaderContainer}>
-                <Animated.View style={{transform: [{rotate: spin}]}}>
-                    <View style={[styles.gear, {borderColor: theme.colors.tertiary}]}>
-                        {['0deg', '45deg', '90deg', '135deg'].map(deg => (
-                            <View
-                                key={deg}
-                                style={[styles.gearTooth, {backgroundColor: theme.colors.tertiary, transform: [{rotate: deg}]}]}
-                            />
-                        ))}
-                    </View>
-                </Animated.View>
-                <Text style={[styles.loadingText, {color: theme.colors.onPrimary}]}>INITIALIZING SYSTEMS...</Text>
-            </View>
+            <LaunchGear caption='INITIALIZING SYSTEMS...' />
         </View>
     )
 }
@@ -149,31 +121,5 @@ const styles = StyleSheet.create({
         letterSpacing: 6,
         marginTop: 16,
         opacity: 0.9,
-    },
-    loaderContainer: {
-        position: 'absolute',
-        bottom: 80,
-        alignItems: 'center',
-    },
-    gear: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        borderWidth: 2,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    gearTooth: {
-        position: 'absolute',
-        width: 4,
-        height: 36,
-        borderRadius: 2,
-    },
-    loadingText: {
-        fontSize: 10,
-        fontWeight: '700',
-        letterSpacing: 2,
-        marginTop: 20,
-        opacity: 0.6,
     },
 })

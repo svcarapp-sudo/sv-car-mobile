@@ -1,6 +1,7 @@
 import {StyleSheet, View} from 'react-native'
 import {Text} from 'react-native-paper'
 
+import {PressableScale} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 
 import {PartsSearchBar, VehicleContextBar} from '../shared'
@@ -22,6 +23,8 @@ interface CategoriesHeroProps {
 /**
  * Hero block: greeting + persistent search bar + vehicle context.
  * Search-first like Noon / Airbnb 2025; vehicle pinned per eBay Motors.
+ * The search bar here is an affordance — pressing it opens the parts list
+ * where the real search input lives.
  */
 export const CategoriesHero = ({search, onSearchChange, onSearchFocus, onChangeVehicle, onAddVehicle}: CategoriesHeroProps) => {
     const theme = useAppTheme()
@@ -33,9 +36,15 @@ export const CategoriesHero = ({search, onSearchChange, onSearchFocus, onChangeV
                 <Text style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>{ARABIC_TEXT.SUBTITLE}</Text>
             </View>
 
-            <View onTouchStart={onSearchFocus} style={styles.search}>
-                <PartsSearchBar value={search} onChangeText={onSearchChange} placeholder={ARABIC_TEXT.SEARCH_PLACEHOLDER} />
-            </View>
+            <PressableScale
+                onPress={onSearchFocus}
+                scaleTo={0.98}
+                accessibilityRole='search'
+                accessibilityLabel={ARABIC_TEXT.SEARCH_PLACEHOLDER}>
+                <View pointerEvents='none'>
+                    <PartsSearchBar value={search} onChangeText={onSearchChange} placeholder={ARABIC_TEXT.SEARCH_PLACEHOLDER} />
+                </View>
+            </PressableScale>
 
             <VehicleContextBar onChangeVehicle={onChangeVehicle} onAddVehicle={onAddVehicle} />
         </View>
@@ -62,5 +71,4 @@ const styles = StyleSheet.create({
         letterSpacing: 0.1,
         opacity: 0.85,
     },
-    search: {},
 })

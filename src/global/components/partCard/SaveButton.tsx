@@ -4,6 +4,12 @@ import {Icon} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
 import {shadows} from '@/global/theme'
+import {haptics} from '@/global/utils'
+
+const ARABIC_TEXT = {
+    SAVE: 'حفظ في المفضلة',
+    UNSAVE: 'إزالة من المفضلة',
+}
 
 interface SaveButtonProps {
     saved: boolean
@@ -30,8 +36,18 @@ export const SaveButton = ({saved, onPress, size = 'md', floating}: SaveButtonPr
         ]).start()
     }, [saved, scale])
 
+    const handlePress = () => {
+        haptics.light()
+        onPress()
+    }
+
     return (
-        <TouchableOpacity onPress={onPress} activeOpacity={0.7} hitSlop={6} accessibilityRole='button'>
+        <TouchableOpacity
+            onPress={handlePress}
+            activeOpacity={0.7}
+            hitSlop={8}
+            accessibilityRole='button'
+            accessibilityLabel={saved ? ARABIC_TEXT.UNSAVE : ARABIC_TEXT.SAVE}>
             <Animated.View
                 style={[
                     styles.btn,

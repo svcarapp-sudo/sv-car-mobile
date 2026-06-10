@@ -1,7 +1,8 @@
 import {useState} from 'react'
-import {Image, Pressable, StyleSheet, View} from 'react-native'
+import {Pressable, StyleSheet, View} from 'react-native'
 import {Icon, Menu, Text, TouchableRipple} from 'react-native-paper'
 
+import {FadeInImage} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {shadows, themeColors} from '@/global/theme'
 import type {Part, PartCategoryApi} from '@/global/types'
@@ -37,7 +38,13 @@ export const MyPartCardItem = ({part, onEdit, onDelete, categoryInfo}: MyPartCar
                 <View style={styles.body}>
                     <View style={styles.mediaBox}>
                         {part.imageUrl ? (
-                            <Image source={{uri: part.imageUrl}} style={styles.image} resizeMode='cover' />
+                            <FadeInImage
+                                source={{uri: part.imageUrl}}
+                                style={styles.image}
+                                resizeMode='cover'
+                                fallbackIcon={categoryInfo?.icon || 'package-variant'}
+                                fallbackIconSize={32}
+                            />
                         ) : (
                             <View style={[styles.imagePlaceholder, {backgroundColor: theme.colors.accentSubtle}]}>
                                 <Icon source={categoryInfo?.icon || 'package-variant'} size={32} color={theme.colors.tertiary} />

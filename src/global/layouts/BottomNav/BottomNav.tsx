@@ -6,6 +6,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context'
 
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
+import {haptics} from '@/global/utils'
 import type {RootStackParamList} from '@/global/navigation/types'
 
 import {BottomNavItem} from './BottomNavItem'
@@ -75,6 +76,7 @@ export const BottomNav = React.memo(() => {
         (item: NavItem) => {
             if (activeRoute === item.key) return
 
+            haptics.selection()
             navigation.dispatch(state => {
                 const mainRoute = state.routes.find(r => r.name === 'Main')
                 const innerState = mainRoute?.state

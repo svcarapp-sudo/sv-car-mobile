@@ -1,7 +1,8 @@
 import React from 'react'
-import {Pressable, StyleSheet, View} from 'react-native'
+import {StyleSheet, View} from 'react-native'
 import {Text} from 'react-native-paper'
 
+import {PressableScale} from '@/global/components'
 import {shadows, themeColors} from '@/global/theme'
 import type {PartCategoryApi} from '@/global/types'
 
@@ -18,21 +19,21 @@ interface CategoryGridItemProps {
  */
 export const CategoryGridItem = ({category, onPress}: CategoryGridItemProps) => {
     return (
-        <View style={styles.wrapper}>
-            <Pressable
-                onPress={onPress}
-                style={({pressed}) => [styles.tile, pressed && styles.tilePressed]}
-                accessibilityRole='button'
-                accessibilityLabel={category.name}>
-                <View style={styles.art}>
-                    <CategoryArt slug={category.slug} size={64} />
-                </View>
+        <PressableScale
+            onPress={onPress}
+            withHaptic
+            containerStyle={styles.wrapper}
+            style={styles.tile}
+            accessibilityRole='button'
+            accessibilityLabel={category.name}>
+            <View style={styles.art}>
+                <CategoryArt slug={category.slug} size={64} />
+            </View>
 
-                <Text style={styles.name} numberOfLines={2} ellipsizeMode='tail'>
-                    {category.name}
-                </Text>
-            </Pressable>
-        </View>
+            <Text style={styles.name} numberOfLines={2} ellipsizeMode='tail'>
+                {category.name}
+            </Text>
+        </PressableScale>
     )
 }
 
@@ -53,10 +54,6 @@ const styles = StyleSheet.create({
         borderColor: themeColors.outlineVariant,
         minHeight: 128,
         ...shadows.sm,
-    },
-    tilePressed: {
-        opacity: 0.85,
-        transform: [{scale: 0.97}],
     },
     art: {
         marginBottom: 4,

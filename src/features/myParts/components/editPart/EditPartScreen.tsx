@@ -1,23 +1,22 @@
 import {useState, useEffect, useCallback} from 'react'
 import {StyleSheet, View, Alert} from 'react-native'
-import {Text, ActivityIndicator, Icon} from 'react-native-paper'
+import {Text, Icon} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
 import {useMyParts} from '../../hooks/useMyParts'
-import {Screen} from '@/global/components'
+import {Screen, showToast} from '@/global/components'
 import {useCatalog, useAppTheme} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import {EditPartVehicleBanner} from './EditPartVehicleBanner'
 import {EditPartFormFields} from './EditPartFormFields'
+import {EditPartFormSkeleton} from './EditPartFormSkeleton'
 
 const ARABIC_TEXT = {
-    LOADING: 'جاري التحميل...',
     SUCCESS: 'تم تحديث القطعة بنجاح',
     ERROR: 'فشل تحديث القطعة',
     NOT_FOUND: 'القطعة غير موجودة',
     REQUIRED: 'يرجى تعبئة اسم القطعة والسعر',
     INVALID_PRICE: 'يرجى إدخال سعر صحيح',
-    OK: 'موافق',
 }
 
 interface EditPartScreenProps {
@@ -73,9 +72,10 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
                 imageUrl: imageUrl.trim() || undefined,
                 sku: sku.trim() || undefined,
             })
-            Alert.alert(ARABIC_TEXT.SUCCESS, '', [{text: ARABIC_TEXT.OK, onPress: () => navigation?.goBack()}])
+            showToast(ARABIC_TEXT.SUCCESS, 'success')
+            navigation?.goBack()
         } catch (err) {
-            Alert.alert(ARABIC_TEXT.ERROR, err instanceof Error ? err.message : ARABIC_TEXT.ERROR)
+            showToast(err instanceof Error ? err.message : ARABIC_TEXT.ERROR, 'error')
         } finally {
             setSaving(false)
         }
@@ -83,11 +83,8 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
 
     if (partsLoading && !part) {
         return (
-            <View style={[styles.container, styles.centered, {backgroundColor: theme.colors.background}]}>
-                <ActivityIndicator size='large' />
-                <Text variant='bodyMedium' style={{color: theme.colors.onSurfaceVariant, marginTop: 16}}>
-                    {ARABIC_TEXT.LOADING}
-                </Text>
+            <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+                <EditPartFormSkeleton />
             </View>
         )
     }
