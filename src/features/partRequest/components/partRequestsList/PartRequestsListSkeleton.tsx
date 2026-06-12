@@ -30,6 +30,7 @@ export const PartRequestsListSkeleton = () => {
 const styles = StyleSheet.create({
     container: {
         paddingTop: 4,
+        paddingHorizontal: 12,
     },
     card: {
         flexDirection: 'row',

@@ -104,8 +104,8 @@ export const PartRequestsListScreen = ({navigation}: PartRequestsListScreenProps
 
 const styles = StyleSheet.create({
     container: {flex: 1},
-    listContent: {paddingHorizontal: 12, paddingBottom: 96},
-    emptyContent: {flexGrow: 1, paddingHorizontal: 0},
+    listContent: {paddingBottom: 96},
+    emptyContent: {flexGrow: 1},
     footer: {paddingVertical: 20, alignItems: 'center'},
     fab: {position: 'absolute', margin: 16, end: 0, bottom: 0, borderRadius: 16},
 })

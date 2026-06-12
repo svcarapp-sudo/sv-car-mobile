@@ -108,7 +108,7 @@ export const PartRequestCardItem = ({request, onPress}: PartRequestCardItemProps
 }
 
 const styles = StyleSheet.create({
-    cardContainer: {marginBottom: 12},
+    cardContainer: {marginHorizontal: 12, marginBottom: 12},
     card: {borderRadius: 16, ...shadows.md},
     cardInner: {borderRadius: 16, overflow: 'hidden'},
     body: {flexDirection: 'row', padding: 12, gap: 12},
