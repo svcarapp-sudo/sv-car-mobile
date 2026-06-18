@@ -1,3 +1,5 @@
+import type {SellerSpecialization} from '@/global/types'
+
 /**
  * Aggregated seller account details + summary KPIs.
  * Mirrors the backend `SellerSummaryResponse` (GET /api/seller/summary).
@@ -25,6 +27,10 @@ export interface SellerSummary {
     favoritesReceived: number
     partRequestsTotal: number
     partRequestsOpen: number
+
+    /** Makes the seller specializes in, and how many open requests currently match them. */
+    specializations: SellerSpecialization[]
+    matchedRequestsCount: number
 
     hasActiveSubscription: boolean
     subscriptionPlanName: string | null

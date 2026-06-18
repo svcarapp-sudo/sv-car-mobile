@@ -1,4 +1,10 @@
-export {PartRequestsListScreen, PartRequestDetailScreen, AddPartRequestScreen, MyPartRequestsListScreen} from './components'
+export {
+    PartRequestsListScreen,
+    MatchedPartRequestsScreen,
+    PartRequestDetailScreen,
+    AddPartRequestScreen,
+    MyPartRequestsListScreen,
+} from './components'
 export type {
     PartRequest,
     PartRequestStatus,

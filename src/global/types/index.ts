@@ -60,6 +60,13 @@ export interface SellerType {
     sortOrder: number
 }
 
+/** A car make a seller specializes in providing parts for. */
+export interface SellerSpecialization {
+    id: number
+    name: string
+    logoUrl: string | null
+}
+
 export interface SellerProfile {
     id: number
     userId: number
@@ -72,6 +79,7 @@ export interface SellerProfile {
     description: string | null
     profileImageUrl: string | null
     workingHours: string | null
+    specializations: SellerSpecialization[]
 }
 
 export interface CreateSellerProfileRequest {
@@ -82,6 +90,7 @@ export interface CreateSellerProfileRequest {
     description?: string
     profileImageUrl?: string
     workingHours?: string
+    specializationMakeIds?: number[]
 }
 
 export interface UpdateSellerProfileRequest {
@@ -92,6 +101,7 @@ export interface UpdateSellerProfileRequest {
     description?: string
     profileImageUrl?: string
     workingHours?: string
+    specializationMakeIds?: number[]
 }
 
 /** Auth API request/response (register, login) */

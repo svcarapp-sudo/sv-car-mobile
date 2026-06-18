@@ -9,6 +9,9 @@ import type {
     PartRequestApiResponse,
     PartRequestListApiResponse,
     PartRequestStatus,
+    MatchedPartRequestsApiResponse,
+    MatchedPartRequestsParams,
+    MatchedPartRequestsResult,
 } from '../types'
 
 const BASE_PATH = '/api/part-requests'
@@ -66,6 +69,25 @@ class PartRequestService {
             page: response.page,
             limit: response.limit,
             totalPages: response.totalPages,
+        }
+    }
+
+    /** OPEN requests matching the authenticated seller's specializations. */
+    async listMatched(params: MatchedPartRequestsParams = {}): Promise<MatchedPartRequestsResult> {
+        const query: Record<string, string | number> = {}
+        if (params.conditionPreference) query.conditionPreference = params.conditionPreference
+        if (params.search) query.search = params.search
+        if (params.page != null) query.page = params.page
+        if (params.limit != null) query.limit = params.limit
+
+        const response = await apiClient.get<MatchedPartRequestsApiResponse>(`${BASE_PATH}/matched`, {params: query})
+        return {
+            requests: response.requests.map(mapApiToPartRequest),
+            total: response.total,
+            page: response.page,
+            limit: response.limit,
+            totalPages: response.totalPages,
+            specializations: response.specializations ?? [],
         }
     }
 

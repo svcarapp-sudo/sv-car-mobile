@@ -1,4 +1,5 @@
 export {usePartRequestsList} from './usePartRequestsList'
+export {usePartRequestsMatched} from './usePartRequestsMatched'
 export {useMyPartRequests} from './useMyPartRequests'
 export {usePartRequestDetail} from './usePartRequestDetail'
 export {useAddPartRequest} from './useAddPartRequest'

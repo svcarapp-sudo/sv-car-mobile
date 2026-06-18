@@ -1,4 +1,4 @@
-import type {PartCategory} from '@/global/types'
+import type {PartCategory, SellerSpecialization} from '@/global/types'
 
 export type PartRequestStatus = 'OPEN' | 'FULFILLED' | 'CLOSED'
 
@@ -101,4 +101,20 @@ export interface PartRequestListResult {
     page: number
     limit: number
     totalPages: number
+}
+
+export interface MatchedPartRequestsApiResponse extends PartRequestListApiResponse {
+    specializations: SellerSpecialization[]
+}
+
+export interface MatchedPartRequestsParams {
+    conditionPreference?: PartRequestCondition | null
+    search?: string
+    page?: number
+    limit?: number
+}
+
+export interface MatchedPartRequestsResult extends PartRequestListResult {
+    /** The seller's specialization makes; empty when none are picked yet. */
+    specializations: SellerSpecialization[]
 }

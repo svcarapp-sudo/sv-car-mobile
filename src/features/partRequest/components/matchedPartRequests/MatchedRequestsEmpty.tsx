@@ -5,38 +5,49 @@ import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 
 const T = {
-    TITLE: 'لا توجد طلبات الآن',
-    SUBTITLE: 'كن أول من يبدأ بنشر طلب لقطعة غيار تحتاجها',
-    FILTER_TITLE: 'لا نتائج للبحث',
-    FILTER_SUBTITLE: 'حاول تغيير المرشحات أو كلمات البحث',
+    SETUP_TITLE: 'حدد ماركات تخصصك',
+    SETUP_SUBTITLE: 'أخبرنا بالماركات التي توفّر قطعها لنعرض لك طلبات العملاء المطابقة',
+    SETUP_ACTION: 'تحديد الماركات',
+    NONE_TITLE: 'لا توجد طلبات مطابقة الآن',
+    NONE_SUBTITLE: 'سنعرض هنا طلبات العملاء فور توفّرها على ماركات تخصصك',
     ERROR_TITLE: 'تعذر تحميل الطلبات',
     ERROR_SUBTITLE: 'تحقق من اتصالك بالإنترنت ثم أعد المحاولة',
-    ADD_ACTION: 'انشر طلباً الآن',
-    RESET: 'إعادة الضبط',
     RETRY: 'إعادة المحاولة',
 }
 
-interface PartRequestsListEmptyProps {
-    isFiltered?: boolean
-    error?: string | null
-    onAdd: () => void
-    onReset?: () => void
-    onRetry?: () => void
+type Mode = 'setup' | 'none' | 'error'
+
+interface MatchedRequestsEmptyProps {
+    mode: Mode
+    onSetup: () => void
+    onRetry: () => void
 }
 
-/** Empty / no-results / load-error states of the requests list. */
-export const PartRequestsListEmpty = ({isFiltered, error, onAdd, onReset, onRetry}: PartRequestsListEmptyProps) => {
+/** Empty states for the matched feed: pick-specializations, no-matches, and load-error. */
+export const MatchedRequestsEmpty = ({mode, onSetup, onRetry}: MatchedRequestsEmptyProps) => {
     const theme = useAppTheme()
 
-    const getVariant = () => {
-        if (error) return {icon: 'cloud-alert', title: T.ERROR_TITLE, subtitle: T.ERROR_SUBTITLE}
-        if (isFiltered) return {icon: 'filter-remove-outline', title: T.FILTER_TITLE, subtitle: T.FILTER_SUBTITLE}
-        return {icon: 'clipboard-list-outline', title: T.TITLE, subtitle: T.SUBTITLE}
-    }
-    const variant = getVariant()
+    const variant = {
+        setup: {icon: 'car-multiple', title: T.SETUP_TITLE, subtitle: T.SETUP_SUBTITLE},
+        none: {icon: 'radar', title: T.NONE_TITLE, subtitle: T.NONE_SUBTITLE},
+        error: {icon: 'cloud-alert', title: T.ERROR_TITLE, subtitle: T.ERROR_SUBTITLE},
+    }[mode]
 
     const renderAction = () => {
-        if (error && onRetry) {
+        if (mode === 'setup') {
+            return (
+                <Button
+                    mode='contained'
+                    onPress={onSetup}
+                    buttonColor={theme.colors.primary}
+                    style={styles.button}
+                    contentStyle={styles.buttonContent}
+                    icon='car-multiple'>
+                    {T.SETUP_ACTION}
+                </Button>
+            )
+        }
+        if (mode === 'error') {
             return (
                 <Button
                     mode='contained'
@@ -48,24 +59,7 @@ export const PartRequestsListEmpty = ({isFiltered, error, onAdd, onReset, onRetr
                 </Button>
             )
         }
-        if (isFiltered && onReset) {
-            return (
-                <Button mode='outlined' onPress={onReset} style={styles.button} icon='filter-off-outline'>
-                    {T.RESET}
-                </Button>
-            )
-        }
-        return (
-            <Button
-                mode='contained'
-                onPress={onAdd}
-                buttonColor={theme.colors.primary}
-                style={styles.button}
-                contentStyle={styles.buttonContent}
-                icon='plus-circle-outline'>
-                {T.ADD_ACTION}
-            </Button>
-        )
+        return null
     }
 
     return (

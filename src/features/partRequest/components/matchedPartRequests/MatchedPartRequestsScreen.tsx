@@ -1,41 +1,33 @@
 import {useCallback, useEffect} from 'react'
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native'
-import {ActivityIndicator, FAB} from 'react-native-paper'
+import {ActivityIndicator} from 'react-native-paper'
 import type {NavigationProp} from '@react-navigation/native'
 
 import {FadeSlideIn, showToast, staggerDelay} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 
-import {usePartRequestsList} from '../../hooks'
+import {usePartRequestsMatched} from '../../hooks'
 import type {PartRequest} from '../../types'
-import {PartRequestCardItem} from './PartRequestCardItem'
-import {PartRequestsListEmpty} from './PartRequestsListEmpty'
-import {PartRequestsListFilters} from './PartRequestsListFilters'
-import {PartRequestsListHeader} from './PartRequestsListHeader'
-import {PartRequestsListSkeleton} from './PartRequestsListSkeleton'
+import {PartRequestCardItem} from '../partRequestsList/PartRequestCardItem'
+import {PartRequestsListFilters} from '../partRequestsList/PartRequestsListFilters'
+import {PartRequestsListSkeleton} from '../partRequestsList/PartRequestsListSkeleton'
+import {MatchedRequestsEmpty} from './MatchedRequestsEmpty'
+import {MatchedRequestsHeader} from './MatchedRequestsHeader'
 
-const T = {ADD_PART_REQUEST: 'انشر طلباً', REFRESH_ERROR: 'تعذر تحديث القائمة'}
+const T = {REFRESH_ERROR: 'تعذر تحديث القائمة', SECTION: 'الطلبات المطابقة'}
 
-interface PartRequestsListScreenProps {
+interface MatchedPartRequestsScreenProps {
     navigation?: NavigationProp<RootStackParamList>
 }
 
-export const PartRequestsListScreen = ({navigation}: PartRequestsListScreenProps) => {
+export const MatchedPartRequestsScreen = ({navigation}: MatchedPartRequestsScreenProps) => {
     const theme = useAppTheme()
-    const list = usePartRequestsList()
-
-    const isFiltered = list.search.trim().length > 0 || list.condition !== null
+    const list = usePartRequestsMatched()
+    const hasSpecializations = list.specializations.length > 0
 
     const goDetail = useCallback((id: string) => navigation?.navigate('PartRequestDetail', {requestId: id}), [navigation])
-
-    const goAdd = useCallback(() => navigation?.navigate('AddPartRequest'), [navigation])
-    const goMyRequests = useCallback(() => navigation?.navigate('MyPartRequests'), [navigation])
-
-    const resetFilters = useCallback(() => {
-        list.setSearch('')
-        list.setCondition(null)
-    }, [list])
+    const goSetup = useCallback(() => navigation?.navigate('MyAccount'), [navigation])
 
     useEffect(() => {
         if (list.error && list.requests.length > 0) showToast(T.REFRESH_ERROR, 'error')
@@ -51,6 +43,15 @@ export const PartRequestsListScreen = ({navigation}: PartRequestsListScreenProps
         [goDetail]
     )
 
+    const renderEmpty = () => {
+        if (list.loading) return <PartRequestsListSkeleton />
+        if (list.error && list.requests.length === 0) {
+            return <MatchedRequestsEmpty mode='error' onSetup={goSetup} onRetry={list.refresh} />
+        }
+        if (!hasSpecializations) return <MatchedRequestsEmpty mode='setup' onSetup={goSetup} onRetry={list.refresh} />
+        return <MatchedRequestsEmpty mode='none' onSetup={goSetup} onRetry={list.refresh} />
+    }
+
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
             <FlatList
@@ -59,33 +60,24 @@ export const PartRequestsListScreen = ({navigation}: PartRequestsListScreenProps
                 keyExtractor={item => item.id}
                 contentContainerStyle={[styles.listContent, list.requests.length === 0 && styles.emptyContent]}
                 ListHeaderComponent={
-                    <>
-                        <PartRequestsListHeader
-                            total={list.total}
-                            search={list.search}
-                            onSearchChange={list.setSearch}
-                            onOpenMyRequests={goMyRequests}
-                        />
-                        <PartRequestsListFilters
-                            condition={list.condition}
-                            onConditionChange={list.setCondition}
-                            hasResults={list.requests.length > 0}
-                        />
-                    </>
+                    hasSpecializations ? (
+                        <>
+                            <MatchedRequestsHeader
+                                total={list.total}
+                                specializations={list.specializations}
+                                search={list.search}
+                                onSearchChange={list.setSearch}
+                            />
+                            <PartRequestsListFilters
+                                condition={list.condition}
+                                onConditionChange={list.setCondition}
+                                hasResults={list.requests.length > 0}
+                                sectionLabel={T.SECTION}
+                            />
+                        </>
+                    ) : null
                 }
-                ListEmptyComponent={
-                    list.loading ? (
-                        <PartRequestsListSkeleton />
-                    ) : (
-                        <PartRequestsListEmpty
-                            isFiltered={isFiltered}
-                            error={list.error}
-                            onAdd={goAdd}
-                            onReset={resetFilters}
-                            onRetry={list.refresh}
-                        />
-                    )
-                }
+                ListEmptyComponent={renderEmpty()}
                 ListFooterComponent={
                     list.loadingMore ? (
                         <View style={styles.footer}>
@@ -107,21 +99,13 @@ export const PartRequestsListScreen = ({navigation}: PartRequestsListScreenProps
                 initialNumToRender={8}
                 showsVerticalScrollIndicator={false}
             />
-            <FAB
-                icon='plus'
-                label={T.ADD_PART_REQUEST}
-                style={[styles.fab, {backgroundColor: theme.colors.primary}]}
-                color={theme.colors.onPrimary}
-                onPress={goAdd}
-            />
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {flex: 1},
-    listContent: {paddingBottom: 96},
+    listContent: {paddingBottom: 28},
     emptyContent: {flexGrow: 1},
     footer: {paddingVertical: 20, alignItems: 'center'},
-    fab: {position: 'absolute', margin: 16, end: 0, bottom: 0, borderRadius: 16},
 })

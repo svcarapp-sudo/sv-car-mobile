@@ -1,7 +1,14 @@
 import {useCallback, useEffect, useState} from 'react'
 
 import {showToast} from '@/global/components'
-import type {CreateSellerProfileRequest, SellerProfile, SellerType, UpdateSellerProfileRequest} from '@/global/types'
+import {useAuthStore} from '@/global/store'
+import type {
+    CreateSellerProfileRequest,
+    SellerProfile,
+    SellerSpecialization,
+    SellerType,
+    UpdateSellerProfileRequest,
+} from '@/global/types'
 import {profileService} from '../services/profileService'
 
 const ARABIC = {
@@ -18,6 +25,7 @@ export interface SellerProfileFormState {
     city: string
     description: string
     workingHours: string
+    specializations: SellerSpecialization[]
 }
 
 const EMPTY_FORM: SellerProfileFormState = {
@@ -27,6 +35,7 @@ const EMPTY_FORM: SellerProfileFormState = {
     city: '',
     description: '',
     workingHours: '',
+    specializations: [],
 }
 
 /**
@@ -34,6 +43,9 @@ const EMPTY_FORM: SellerProfileFormState = {
  * load → display / empty → create / edit → save (with toast feedback).
  */
 export const useSellerProfileCard = () => {
+    // The seller's contact phone is their account phone — pre-fill from it so the
+    // form is valid by default (the backend keeps phone on the user, not the profile).
+    const accountPhone = useAuthStore(s => s.user?.phone ?? '')
     const [loading, setLoading] = useState(true)
     const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(null)
     const [sellerTypes, setSellerTypes] = useState<SellerType[]>([])
@@ -57,24 +69,25 @@ export const useSellerProfileCard = () => {
     }, [])
 
     const startCreate = useCallback(() => {
-        setForm(EMPTY_FORM)
+        setForm({...EMPTY_FORM, phone: accountPhone})
         setError(null)
         setCreating(true)
-    }, [])
+    }, [accountPhone])
 
     const startEdit = useCallback(() => {
         if (!sellerProfile) return
         setForm({
             sellerTypeId: sellerProfile.sellerType.id,
-            phone: sellerProfile.phone ?? '',
+            phone: sellerProfile.phone || accountPhone,
             storeName: sellerProfile.storeName ?? '',
             city: sellerProfile.city ?? '',
             description: sellerProfile.description ?? '',
             workingHours: sellerProfile.workingHours ?? '',
+            specializations: sellerProfile.specializations ?? [],
         })
         setError(null)
         setEditing(true)
-    }, [sellerProfile])
+    }, [sellerProfile, accountPhone])
 
     const cancelForm = useCallback(() => {
         setEditing(false)
@@ -97,6 +110,7 @@ export const useSellerProfileCard = () => {
                 city: form.city.trim() || undefined,
                 description: form.description.trim() || undefined,
                 workingHours: form.workingHours.trim() || undefined,
+                specializationMakeIds: form.specializations.map(s => s.id),
             }
             const result = creating
                 ? await profileService.createSellerProfile(payload)

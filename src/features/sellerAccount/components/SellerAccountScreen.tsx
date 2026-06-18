@@ -6,6 +6,7 @@ import {FadeSlideIn, showToast} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 
 import {useSellerAccount} from '../hooks'
+import {MatchedRequestsCard} from './matched'
 import {SellerHero} from './sellerHero'
 import {SellerOverviewCard} from './overview'
 import {SellerPlanCard} from './subscription'
@@ -54,6 +55,7 @@ export const SellerAccountScreen = () => {
                 <FadeSlideIn>
                     <SellerHero summary={summary} />
                     <View style={styles.body}>
+                        <MatchedRequestsCard count={summary.matchedRequestsCount} specializations={summary.specializations} />
                         <SellerOverviewCard summary={summary} />
                         <SellerPlanCard summary={summary} />
                     </View>

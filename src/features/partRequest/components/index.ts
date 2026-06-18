@@ -1,4 +1,5 @@
 export {PartRequestsListScreen} from './partRequestsList'
+export {MatchedPartRequestsScreen} from './matchedPartRequests'
 export {PartRequestDetailScreen} from './partRequestDetail'
 export {AddPartRequestScreen} from './addPartRequest'
 export {MyPartRequestsListScreen} from './myPartRequests'

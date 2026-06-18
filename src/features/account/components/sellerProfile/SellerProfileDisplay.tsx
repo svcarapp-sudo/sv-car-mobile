@@ -7,6 +7,8 @@ import {navigationRef} from '@/global/navigation/navigationRef'
 import {themeColors} from '@/global/theme'
 import type {SellerProfile} from '@/global/types'
 
+import {SellerSpecializationsRow} from './SellerSpecializationsRow'
+
 const ARABIC = {
     SELLER_PROFILE: 'الملف التجاري',
     EDIT: 'تعديل',
@@ -80,6 +82,13 @@ export const SellerProfileDisplay = ({sellerProfile, onEditPress}: SellerProfile
                         />
                     )}
                 </View>
+
+                {sellerProfile.specializations.length > 0 && (
+                    <>
+                        <Divider />
+                        <SellerSpecializationsRow specializations={sellerProfile.specializations} />
+                    </>
+                )}
 
                 <Divider />
 

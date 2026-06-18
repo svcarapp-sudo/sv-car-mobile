@@ -2,11 +2,9 @@ import React from 'react'
 import {StyleSheet, View} from 'react-native'
 import {Text} from 'react-native-paper'
 
-import {PressableScale} from '@/global/components'
+import {CategoryArt, PressableScale} from '@/global/components'
 import {shadows, themeColors} from '@/global/theme'
 import type {PartCategoryApi} from '@/global/types'
-
-import {CategoryArt} from './categoryArt'
 
 interface CategoryGridItemProps {
     category: PartCategoryApi

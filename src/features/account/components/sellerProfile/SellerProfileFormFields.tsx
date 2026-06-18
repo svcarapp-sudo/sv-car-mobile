@@ -5,6 +5,7 @@ import {TextInput} from 'react-native-paper'
 import {NumericTextInput, SellerTypePicker, getSellerTypeFieldConfig} from '@/global/components'
 import type {SellerType} from '@/global/types'
 import type {SellerProfileFormState} from '../../hooks'
+import {SpecializationField} from './SpecializationField'
 
 const ARABIC = {
     PHONE: 'رقم الهاتف',
@@ -87,6 +88,13 @@ export const SellerProfileFormFields = ({form, sellerTypes, onFormChange}: Selle
                     numberOfLines={3}
                     style={styles.input}
                     left={<TextInput.Icon icon='text-box-outline' />}
+                />
+            )}
+
+            {form.sellerTypeId != null && (
+                <SpecializationField
+                    value={form.specializations}
+                    onChange={specializations => onFormChange(f => ({...f, specializations}))}
                 />
             )}
         </>

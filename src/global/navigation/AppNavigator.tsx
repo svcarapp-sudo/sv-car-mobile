@@ -18,6 +18,7 @@ import {
     PartRequestDetailScreen,
     AddPartRequestScreen,
     MyPartRequestsListScreen,
+    MatchedPartRequestsScreen,
 } from '@/features/partRequest'
 import {MainLayout} from '@/global/layouts'
 import {useSavedPartsStore, useVehicleStore} from '@/global/store'
@@ -43,6 +44,7 @@ const ARABIC_TEXT = {
     PART_REQUEST_DETAIL: 'تفاصيل الطلب',
     ADD_PART_REQUEST: 'انشر طلباً',
     MY_PART_REQUESTS: 'طلباتي',
+    MATCHED_PART_REQUESTS: 'طلبات تطابق تخصصك',
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -177,6 +179,13 @@ const MainFlow = () => {
                     component={MyPartRequestsListScreen}
                     options={{
                         title: ARABIC_TEXT.MY_PART_REQUESTS,
+                    }}
+                />
+                <Stack.Screen
+                    name='MatchedPartRequests'
+                    component={MatchedPartRequestsScreen}
+                    options={{
+                        title: ARABIC_TEXT.MATCHED_PART_REQUESTS,
                     }}
                 />
             </Stack.Navigator>
