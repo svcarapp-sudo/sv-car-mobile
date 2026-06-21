@@ -16,7 +16,7 @@ interface YearModeToggleProps {
     onChange: (mode: YearMode) => void
 }
 
-/** Segmented switch between picking a single model year and a year span. */
+/** Segmented switch: a single model year vs a span of compatible years. */
 export const YearModeToggle = ({mode, onChange}: YearModeToggleProps) => {
     const theme = useAppTheme()
 

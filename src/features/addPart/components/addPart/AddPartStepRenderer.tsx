@@ -88,7 +88,6 @@ export const AddPartStepRenderer = (props: AddPartStepRendererProps) => {
                     yearTo={props.yearTo}
                     onChange={props.onYearChange}
                     onNext={props.onYearNext}
-                    onScroll={props.onScroll}
                     contentTopInset={props.contentTopInset}
                 />
             )

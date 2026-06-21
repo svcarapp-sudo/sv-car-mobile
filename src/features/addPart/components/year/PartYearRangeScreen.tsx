@@ -1,19 +1,14 @@
-import {useState} from 'react'
-import {FlatList, StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent} from 'react-native'
-import {Button, Text} from 'react-native-paper'
+import {useEffect, useMemo, useRef, useState} from 'react'
+import {StyleSheet, View} from 'react-native'
+import {Button} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
 
-import {YearChip, type YearRole} from './YearChip'
 import {YearModeToggle, type YearMode} from './YearModeToggle'
-import {YearRangeSummary, type ActiveBound} from './YearRangeSummary'
+import {YearSelectionSummary} from './YearSelectionSummary'
+import {YearWheel, type YearWheelHandle} from './YearWheel'
 
-const T = {
-    CONTINUE: 'متابعة',
-    HINT_START: 'اضغط على سنة البداية',
-    HINT_END: 'اضغط على سنة النهاية',
-    HINT_EDIT: 'اضغط على سنة لتعديل النطاق',
-}
+const T = {CONTINUE: 'متابعة', FROM: 'من سنة', TO: 'إلى سنة', YEAR: 'السنة'}
 
 interface PartYearRangeScreenProps {
     years: number[]
@@ -21,106 +16,80 @@ interface PartYearRangeScreenProps {
     yearTo: number | null
     onChange: (from: number | null, to: number | null) => void
     onNext: () => void
-    onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
     contentTopInset?: number
 }
 
 const deriveMode = (from: number | null, to: number | null): YearMode => (to != null && to !== from ? 'range' : 'single')
 
-const roleFor = (year: number, from: number | null, to: number | null, mode: YearMode): YearRole => {
-    if (from == null) return 'idle'
-    if (mode === 'single') return year === from ? 'single' : 'idle'
-    if (to == null || from === to) return year === from ? 'start' : 'idle'
-    if (year === from) return 'start'
-    if (year === to) return 'end'
-    return year > from && year < to ? 'middle' : 'idle'
-}
-
+/** Compatible model years: a single snap wheel, or two (From/To) for a span. */
 export const PartYearRangeScreen = ({
     years,
     yearFrom,
     yearTo,
     onChange,
     onNext,
-    onScroll,
     contentTopInset = 0,
 }: PartYearRangeScreenProps) => {
     const theme = useAppTheme()
+    const fromRef = useRef<YearWheelHandle>(null)
+    const toRef = useRef<YearWheelHandle>(null)
+    const sorted = useMemo(() => [...years].sort((a, b) => b - a), [years])
+    const newest = sorted[0]
     const [mode, setMode] = useState<YearMode>(() => deriveMode(yearFrom, yearTo))
+
+    useEffect(() => {
+        if (yearFrom == null && newest != null) onChange(newest, newest)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [newest])
+
+    if (sorted.length === 0) return null
+
+    const from = yearFrom ?? newest
+    const to = yearTo ?? newest
 
     const changeMode = (next: YearMode) => {
         setMode(next)
-        // Collapsing a real span back to single keeps the start as the chosen year.
-        if (next === 'single' && yearTo != null && yearTo !== yearFrom) onChange(yearFrom, null)
+        if (next === 'single') onChange(from, from)
     }
 
-    const handleTap = (y: number) => {
-        if (mode === 'single') {
-            onChange(y, null)
-        } else if (yearFrom == null) {
-            onChange(y, null)
-        } else if (yearTo == null) {
-            // Second tap closes the span, auto-ordered so the end never precedes the start.
-            if (y < yearFrom) onChange(y, yearFrom)
-            else onChange(yearFrom, y)
-        } else if (y <= yearFrom) {
-            onChange(y, yearTo)
-        } else if (y >= yearTo) {
-            onChange(yearFrom, y)
-        } else if (y - yearFrom <= yearTo - y) {
-            // Tap inside a finished span: nudge the nearer end — never wipe the selection.
-            onChange(y, yearTo)
-        } else {
-            onChange(yearFrom, y)
-        }
+    const handleSingle = (y: number) => onChange(y, y)
+
+    const handleFrom = (f: number) => {
+        const nextTo = Math.max(f, to)
+        onChange(f, nextTo)
+        if (nextTo !== to) toRef.current?.scrollToYear(nextTo)
     }
 
-    let active: ActiveBound = 'none'
-    let hint = ''
-    if (mode === 'range') {
-        if (yearFrom == null) {
-            active = 'start'
-            hint = T.HINT_START
-        } else if (yearTo == null) {
-            active = 'end'
-            hint = T.HINT_END
-        } else {
-            hint = T.HINT_EDIT
-        }
+    const handleTo = (t: number) => {
+        const nextFrom = Math.min(t, from)
+        onChange(nextFrom, t)
+        if (nextFrom !== from) fromRef.current?.scrollToYear(nextFrom)
     }
 
     return (
-        <View style={styles.container}>
-            <FlatList
-                style={styles.list}
-                data={years}
-                numColumns={3}
-                keyExtractor={y => String(y)}
-                ListHeaderComponent={
-                    <View style={styles.header}>
-                        <YearModeToggle mode={mode} onChange={changeMode} />
-                        <YearRangeSummary
-                            mode={mode}
-                            yearFrom={yearFrom}
-                            yearTo={yearTo}
-                            active={active}
-                            onClear={() => onChange(null, null)}
-                        />
-                        {hint ? <Text style={[styles.hint, {color: theme.colors.onSurfaceVariant}]}>{hint}</Text> : null}
+        <View style={[styles.container, {paddingTop: contentTopInset}]}>
+            <YearModeToggle mode={mode} onChange={changeMode} />
+            <YearSelectionSummary mode={mode} from={from} to={to} />
+
+            {mode === 'single' ? (
+                <View style={styles.singleWheel}>
+                    <YearWheel label={T.YEAR} years={sorted} value={from} onChange={handleSingle} />
+                </View>
+            ) : (
+                <View style={styles.wheels}>
+                    <View style={styles.slot}>
+                        <YearWheel ref={fromRef} label={T.FROM} years={sorted} value={from} onChange={handleFrom} />
                     </View>
-                }
-                renderItem={({item}) => (
-                    <YearChip year={item} role={roleFor(item, yearFrom, yearTo, mode)} onPress={() => handleTap(item)} />
-                )}
-                contentContainerStyle={[styles.grid, {paddingTop: contentTopInset}]}
-                showsVerticalScrollIndicator={false}
-                onScroll={onScroll}
-                scrollEventThrottle={16}
-            />
+                    <View style={styles.slot}>
+                        <YearWheel ref={toRef} label={T.TO} years={sorted} value={to} onChange={handleTo} />
+                    </View>
+                </View>
+            )}
+
+            <View style={styles.spacer} />
             <Button
                 mode='contained'
                 onPress={onNext}
-                disabled={yearFrom == null}
                 buttonColor={theme.colors.primary}
                 icon='arrow-left'
                 style={styles.continue}
@@ -132,11 +101,11 @@ export const PartYearRangeScreen = ({
 }
 
 const styles = StyleSheet.create({
-    container: {flex: 1},
-    list: {flex: 1},
-    header: {gap: 12, marginBottom: 14},
-    hint: {fontSize: 12.5, fontWeight: '600', textAlign: 'center', marginTop: -2},
-    grid: {paddingBottom: 16},
-    continue: {borderRadius: 14, marginTop: 8, marginBottom: 12},
+    container: {flex: 1, paddingHorizontal: 4, gap: 14},
+    wheels: {flexDirection: 'row', gap: 16, paddingHorizontal: 8},
+    slot: {flex: 1},
+    singleWheel: {width: '60%', alignSelf: 'center'},
+    spacer: {flex: 1},
+    continue: {borderRadius: 14, marginBottom: 12},
     continueContent: {paddingVertical: 6},
 })
