@@ -2,17 +2,15 @@ import React, {useCallback, useEffect, useState} from 'react'
 import {Alert, ScrollView, StyleSheet, View} from 'react-native'
 import type {NavigationProp} from '@react-navigation/native'
 
-import {FadeSlideIn, showToast} from '@/global/components'
+import {FadeSlideIn, VehiclePickerSheet, notifyVehicleSwitched, showToast} from '@/global/components'
 import {useAppTheme, useVehicleApi} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import {MAX_VEHICLES, useAuthStore, useVehicleStore} from '@/global/store'
 import type {PartCategory} from '@/global/types'
-import {haptics} from '@/global/utils'
 
 import {CategoryGrid} from './categoryGrid'
 import {HomeHero} from './homeHero'
 import {RecommendedRail} from './recommendedRail'
-import {VehicleSwitcherSheet} from './vehicleSwitcher'
 
 const ARABIC_TEXT = {
     DELETE_TITLE: 'حذف المركبة؟',
@@ -61,11 +59,13 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
 
     const handleSwitch = useCallback(
         (id: string) => {
-            haptics.selection()
-            setActiveVehicle(id).catch(() => {})
+            if (id !== activeVehicleId) {
+                setActiveVehicle(id).catch(() => {})
+                notifyVehicleSwitched(vehicles.find(v => v.id === id))
+            }
             setSwitcherOpen(false)
         },
-        [setActiveVehicle]
+        [setActiveVehicle, activeVehicleId, vehicles]
     )
 
     const handleDelete = useCallback(
@@ -119,7 +119,7 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
                 )}
             </ScrollView>
 
-            <VehicleSwitcherSheet
+            <VehiclePickerSheet
                 visible={switcherOpen}
                 onClose={() => setSwitcherOpen(false)}
                 vehicles={vehicles}
@@ -128,6 +128,7 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
                 onEdit={goEditVehicle}
                 onDelete={handleDelete}
                 onAdd={handleAddFromSwitcher}
+                maxVehicles={MAX_VEHICLES}
             />
         </View>
     )

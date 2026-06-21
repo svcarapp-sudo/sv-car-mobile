@@ -14,7 +14,6 @@ const T = {
     WHATSAPP: 'محادثة واتساب',
     CALL: 'مكالمة هاتفية',
     CALL_A11Y: 'الاتصال بصاحب الطلب',
-    OWNER_NOTICE: 'هذا طلبك. الأزرار أعلاه ستظهر للمشترين الآخرين.',
     FAILED: 'تعذّر فتح التطبيق',
 }
 
@@ -22,13 +21,11 @@ const normalisePhone = (raw: string): string => raw.replace(/[^\d+]/g, '')
 
 interface PartRequestDetailContactProps {
     request: PartRequest
-    isOwner: boolean
 }
 
-export const PartRequestDetailContact = ({request, isOwner}: PartRequestDetailContactProps) => {
+export const PartRequestDetailContact = ({request}: PartRequestDetailContactProps) => {
     const theme = useAppTheme()
     const phone = normalisePhone(request.contactPhone)
-
     const hasPhone = phone.length > 0
 
     const openLink = async (url: string) => {
@@ -70,38 +67,31 @@ export const PartRequestDetailContact = ({request, isOwner}: PartRequestDetailCo
                 </View>
             </View>
 
-            {isOwner ? (
-                <View style={[styles.ownerNotice, {backgroundColor: theme.colors.warningContainer}]}>
-                    <Icon source='information-outline' size={14} color={theme.colors.warning} />
-                    <Text style={[styles.ownerText, {color: theme.colors.onWarningContainer}]}>{T.OWNER_NOTICE}</Text>
-                </View>
-            ) : (
-                <View style={styles.actions}>
-                    <Button
-                        mode='contained'
-                        onPress={handleWhatsApp}
-                        disabled={!hasPhone}
-                        buttonColor={theme.colors.success}
-                        textColor={theme.colors.onPrimary}
-                        icon='whatsapp'
-                        style={styles.btn}
-                        contentStyle={styles.btnContent}>
-                        {T.WHATSAPP}
-                    </Button>
-                    <Button
-                        mode='contained'
-                        onPress={handleCall}
-                        disabled={!hasPhone}
-                        accessibilityLabel={T.CALL_A11Y}
-                        buttonColor={theme.colors.primary}
-                        textColor={theme.colors.onPrimary}
-                        icon='phone-outline'
-                        style={styles.btn}
-                        contentStyle={styles.btnContent}>
-                        {T.CALL}
-                    </Button>
-                </View>
-            )}
+            <View style={styles.actions}>
+                <Button
+                    mode='contained'
+                    onPress={handleWhatsApp}
+                    disabled={!hasPhone}
+                    buttonColor={theme.colors.success}
+                    textColor={theme.colors.onPrimary}
+                    icon='whatsapp'
+                    style={styles.btn}
+                    contentStyle={styles.btnContent}>
+                    {T.WHATSAPP}
+                </Button>
+                <Button
+                    mode='contained'
+                    onPress={handleCall}
+                    disabled={!hasPhone}
+                    accessibilityLabel={T.CALL_A11Y}
+                    buttonColor={theme.colors.primary}
+                    textColor={theme.colors.onPrimary}
+                    icon='phone-outline'
+                    style={styles.btn}
+                    contentStyle={styles.btnContent}>
+                    {T.CALL}
+                </Button>
+            </View>
         </View>
     )
 }
@@ -116,6 +106,4 @@ const styles = StyleSheet.create({
     actions: {gap: 8},
     btn: {borderRadius: 12},
     btnContent: {paddingVertical: 6},
-    ownerNotice: {flexDirection: 'row', alignItems: 'center', gap: 6, padding: 10, borderRadius: 10},
-    ownerText: {fontSize: 11.5, fontWeight: '600', flex: 1},
 })

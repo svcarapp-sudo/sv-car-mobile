@@ -5,6 +5,7 @@ import type {NavigationProp} from '@react-navigation/native'
 
 import {FadeSlideIn, showToast, staggerDelay} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
+import {resetMainTo} from '@/global/navigation/navActions'
 import type {RootStackParamList} from '@/global/navigation/types'
 
 import {usePartRequestsMatched} from '../../hooks'
@@ -27,7 +28,8 @@ export const MatchedPartRequestsScreen = ({navigation}: MatchedPartRequestsScree
     const hasSpecializations = list.specializations.length > 0
 
     const goDetail = useCallback((id: string) => navigation?.navigate('PartRequestDetail', {requestId: id}), [navigation])
-    const goSetup = useCallback(() => navigation?.navigate('MyAccount'), [navigation])
+    // MyAccount is a top-level section — reset to it so it's a clean root.
+    const goSetup = useCallback(() => resetMainTo('MyAccount'), [])
 
     useEffect(() => {
         if (list.error && list.requests.length > 0) showToast(T.REFRESH_ERROR, 'error')

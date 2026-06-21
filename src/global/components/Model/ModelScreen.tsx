@@ -1,19 +1,12 @@
 import {useEffect, useMemo, useState} from 'react'
 import {FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View} from 'react-native'
-import {Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
 import {matchesSearch} from '@/global/utils'
 import type {ModelApi} from '../../services/catalogService'
-import {ListSearchBar} from '../listSearchBar'
 import {Skeleton} from '../skeleton'
 import {ModelCard} from './ModelCard'
-
-const ARABIC_TEXT = {
-    SELECT_MODEL: 'اختر الموديل',
-    FOR_MAKE: (makeName: string) => `لسيارة ${makeName}`,
-    SEARCH_PLACEHOLDER: 'ابحث عن الموديل...',
-}
+import {ModelListHeader} from './ModelListHeader'
 
 interface ModelScreenProps {
     makeId: number | null
@@ -25,6 +18,7 @@ interface ModelScreenProps {
     onNext: () => void
     onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
     hideHeader?: boolean
+    hideSearch?: boolean
     contentTopInset?: number
 }
 
@@ -38,6 +32,7 @@ export const ModelScreen = ({
     onNext,
     onScroll,
     hideHeader,
+    hideSearch,
     contentTopInset = 0,
 }: ModelScreenProps) => {
     const theme = useAppTheme()
@@ -93,19 +88,13 @@ export const ModelScreen = ({
                 keyExtractor={item => item.id}
                 keyboardShouldPersistTaps='handled'
                 ListHeaderComponent={
-                    <View style={styles.listHeader}>
-                        {!hideHeader && (
-                            <View>
-                                <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                                    {ARABIC_TEXT.SELECT_MODEL}
-                                </Text>
-                                <Text variant='bodyMedium' style={[styles.stepSubtitle, {color: theme.colors.onSurfaceVariant}]}>
-                                    {ARABIC_TEXT.FOR_MAKE(makeName)}
-                                </Text>
-                            </View>
-                        )}
-                        <ListSearchBar value={query} onChangeText={setQuery} placeholder={ARABIC_TEXT.SEARCH_PLACEHOLDER} />
-                    </View>
+                    <ModelListHeader
+                        makeName={makeName}
+                        query={query}
+                        onQueryChange={setQuery}
+                        hideHeader={hideHeader}
+                        hideSearch={hideSearch}
+                    />
                 }
                 renderItem={({item}) => <ModelCard item={item} isSelected={valueId === item.id} onPress={handleSelect} />}
                 contentContainerStyle={[styles.listContent, {paddingTop: contentTopInset}]}
@@ -118,24 +107,8 @@ export const ModelScreen = ({
 }
 
 const styles = StyleSheet.create({
-    stepContent: {
-        flex: 1,
-    },
-    listHeader: {
-        gap: 14,
-        marginBottom: 16,
-    },
-    stepTitle: {
-        fontWeight: '700',
-        marginBottom: 4,
-    },
-    stepSubtitle: {
-        opacity: 0.6,
-        fontSize: 14,
-    },
-    listContent: {
-        paddingBottom: 24,
-    },
+    stepContent: {flex: 1},
+    listContent: {paddingBottom: 24},
     skeletonRow: {
         flexDirection: 'row',
         alignItems: 'center',

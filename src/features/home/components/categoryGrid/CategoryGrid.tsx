@@ -2,10 +2,10 @@ import React from 'react'
 import {StyleSheet, View} from 'react-native'
 import {Button, Text} from 'react-native-paper'
 
+import {CategoryTile} from '@/global/components'
 import {useCatalog} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 import type {PartCategory} from '@/global/types'
-import {CategoryGridItem} from './CategoryGridItem'
 import {CategoryGridSkeleton} from './CategoryGridSkeleton'
 
 interface CategoryGridProps {
@@ -78,7 +78,7 @@ export const CategoryGrid = ({onSelectCategory, onViewAll}: CategoryGridProps) =
             <SectionHeader showViewAll onViewAll={onViewAll} />
             <View style={styles.grid}>
                 {categories.map(category => (
-                    <CategoryGridItem
+                    <CategoryTile
                         key={category.id}
                         category={category}
                         onPress={() => onSelectCategory(category.slug as PartCategory)}

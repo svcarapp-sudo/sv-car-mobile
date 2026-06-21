@@ -1,9 +1,9 @@
 import {useCallback, useState} from 'react'
-import {FlatList, StyleSheet, View} from 'react-native'
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native'
 import {FAB} from 'react-native-paper'
 import type {NavigationProp} from '@react-navigation/native'
 
-import {showToast} from '@/global/components'
+import {FadeSlideIn, showToast, staggerDelay} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import {haptics} from '@/global/utils'
@@ -13,6 +13,9 @@ import type {PartRequest, PartRequestStatus} from '../../types'
 import {MyPartRequestCardItem} from './MyPartRequestCardItem'
 import {MyPartRequestsDeleteDialog} from './MyPartRequestsDeleteDialog'
 import {MyPartRequestsEmpty} from './MyPartRequestsEmpty'
+import {MyPartRequestsFilters} from './MyPartRequestsFilters'
+import {MyPartRequestsHeader} from './MyPartRequestsHeader'
+import {MyPartRequestsSkeleton} from './MyPartRequestsSkeleton'
 
 const T = {ADD: 'طلب جديد', DELETED: 'تم حذف الطلب', DELETE_ERROR: 'تعذر الحذف', STATUS_ERROR: 'تعذر تحديث حالة الطلب'}
 
@@ -27,12 +30,15 @@ interface PendingDelete {
 
 export const MyPartRequestsListScreen = ({navigation}: MyPartRequestsListScreenProps) => {
     const theme = useAppTheme()
-    const {requests, loading, fetchMine, remove, setStatus} = useMyPartRequests()
+    const {visibleRequests, counts, statusFilter, setStatusFilter, loading, fetchMine, remove, setStatus} = useMyPartRequests()
     const [pending, setPending] = useState<PendingDelete | null>(null)
     const [deleting, setDeleting] = useState(false)
 
+    const isInitialLoading = loading && counts.all === 0
+
     const goAdd = useCallback(() => navigation?.navigate('AddPartRequest'), [navigation])
     const goDetail = useCallback((id: string) => navigation?.navigate('PartRequestDetail', {requestId: id}), [navigation])
+    const goBrowseAll = useCallback(() => navigation?.navigate('PartRequestsList'), [navigation])
 
     const handleConfirmDelete = async () => {
         if (!pending) return
@@ -58,13 +64,15 @@ export const MyPartRequestsListScreen = ({navigation}: MyPartRequestsListScreenP
     )
 
     const renderItem = useCallback(
-        ({item}: {item: PartRequest}) => (
-            <MyPartRequestCardItem
-                request={item}
-                onPress={() => goDetail(item.id)}
-                onDelete={() => setPending({id: item.id, title: item.title})}
-                onStatusChange={status => handleStatusChange(item.id, status)}
-            />
+        ({item, index}: {item: PartRequest; index: number}) => (
+            <FadeSlideIn delay={index < 8 ? staggerDelay(index) : 0}>
+                <MyPartRequestCardItem
+                    request={item}
+                    onPress={() => goDetail(item.id)}
+                    onDelete={() => setPending({id: item.id, title: item.title})}
+                    onStatusChange={status => handleStatusChange(item.id, status)}
+                />
+            </FadeSlideIn>
         ),
         [goDetail, handleStatusChange]
     )
@@ -72,13 +80,39 @@ export const MyPartRequestsListScreen = ({navigation}: MyPartRequestsListScreenP
     return (
         <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
             <FlatList
-                data={requests}
+                data={visibleRequests}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
-                contentContainerStyle={[styles.listContent, requests.length === 0 && styles.emptyContent]}
-                refreshing={loading && requests.length > 0}
-                onRefresh={fetchMine}
-                ListEmptyComponent={<MyPartRequestsEmpty loading={loading && requests.length === 0} onAdd={goAdd} />}
+                contentContainerStyle={[styles.listContent, visibleRequests.length === 0 && styles.emptyContent]}
+                ListHeaderComponent={
+                    <>
+                        <MyPartRequestsHeader onBrowseAll={goBrowseAll} />
+                        {counts.all > 0 ? (
+                            <MyPartRequestsFilters status={statusFilter} counts={counts} onChange={setStatusFilter} />
+                        ) : null}
+                    </>
+                }
+                ListEmptyComponent={
+                    isInitialLoading ? (
+                        <MyPartRequestsSkeleton />
+                    ) : (
+                        <MyPartRequestsEmpty
+                            isFiltered={statusFilter != null}
+                            onAdd={goAdd}
+                            onReset={() => setStatusFilter(null)}
+                        />
+                    )
+                }
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading && counts.all > 0}
+                        onRefresh={fetchMine}
+                        tintColor={theme.colors.tertiary}
+                        colors={[theme.colors.tertiary]}
+                        progressBackgroundColor={theme.colors.surface}
+                    />
+                }
+                initialNumToRender={8}
                 showsVerticalScrollIndicator={false}
             />
             <FAB
@@ -101,7 +135,7 @@ export const MyPartRequestsListScreen = ({navigation}: MyPartRequestsListScreenP
 
 const styles = StyleSheet.create({
     container: {flex: 1},
-    listContent: {padding: 16, paddingBottom: 96},
-    emptyContent: {flexGrow: 1, padding: 0},
+    listContent: {paddingTop: 6, paddingBottom: 96},
+    emptyContent: {flexGrow: 1},
     fab: {position: 'absolute', margin: 16, end: 0, bottom: 0, borderRadius: 16},
 })

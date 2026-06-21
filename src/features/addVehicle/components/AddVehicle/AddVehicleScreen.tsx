@@ -3,6 +3,7 @@ import {Animated, StyleSheet, View, type NativeScrollEvent, type NativeSynthetic
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
 import type {RootStackParamList} from '@/global/navigation/types'
+import {resetMainTo} from '@/global/navigation/navActions'
 import {useAppTheme, useCatalog} from '@/global/hooks'
 
 import {AddVehicleProgress} from './AddVehicleProgress'
@@ -20,11 +21,13 @@ const HIDE_DY = 6
 const SHOW_DY = 4
 const TOP_PIN = 24
 
-export const AddVehicleScreen = ({navigation, route}: AddVehicleScreenProps) => {
+export const AddVehicleScreen = ({route}: AddVehicleScreenProps) => {
     const theme = useAppTheme()
     const vehicleInfo = useCatalog()
     const editVehicleId = route?.params?.vehicleId
-    const form = useAddVehicleForm({editVehicleId, onSuccess: () => navigation?.navigate('Home')})
+    // Reset to Home so the vehicle screen lands on a clean root (menu + favorites),
+    // even when Add Vehicle was reached from a flow that cleared Home off the stack.
+    const form = useAddVehicleForm({editVehicleId, onSuccess: () => resetMainTo('Home')})
 
     const meta = STEPS[form.currentStep]
     const [headerHeight, setHeaderHeight] = useState(0)

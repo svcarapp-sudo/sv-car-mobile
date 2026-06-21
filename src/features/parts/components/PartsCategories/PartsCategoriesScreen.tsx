@@ -2,6 +2,7 @@ import {useState} from 'react'
 import {ScrollView, StyleSheet, View} from 'react-native'
 import type {NavigationProp} from '@react-navigation/native'
 
+import {VehiclePickerSheet, useVehiclePicker} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 import type {PartCategory} from '@/global/types'
@@ -21,6 +22,7 @@ export const PartsCategoriesScreen = ({navigation}: PartsCategoriesScreenProps) 
     const goCategory = (slug: PartCategory) => navigation?.navigate('PartsList', {category: slug})
     const goBrowseAll = () => navigation?.navigate('PartsList', {category: null})
     const goAddVehicle = () => navigation?.navigate('AddVehicle')
+    const {openPicker, sheetProps} = useVehiclePicker(goAddVehicle)
 
     // The hero search bar is a press-through affordance — it always opens the
     // parts list, where the real (focusable) search input lives.
@@ -29,25 +31,29 @@ export const PartsCategoriesScreen = ({navigation}: PartsCategoriesScreenProps) 
     }
 
     return (
-        <ScrollView
-            style={[styles.container, {backgroundColor: theme.colors.background}]}
-            contentContainerStyle={styles.content}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps='handled'>
-            <CategoriesHero
-                search={search}
-                onSearchChange={setSearch}
-                onSearchFocus={handleSearchSubmit}
-                onChangeVehicle={goAddVehicle}
-                onAddVehicle={goAddVehicle}
-            />
+        <>
+            <ScrollView
+                style={[styles.container, {backgroundColor: theme.colors.background}]}
+                contentContainerStyle={styles.content}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps='handled'>
+                <CategoriesHero
+                    search={search}
+                    onSearchChange={setSearch}
+                    onSearchFocus={handleSearchSubmit}
+                    onChangeVehicle={openPicker}
+                    onAddVehicle={goAddVehicle}
+                />
 
-            <BrowseAllCard onPress={goBrowseAll} />
+                <BrowseAllCard onPress={goBrowseAll} />
 
-            <CategoriesGrid onSelectCategory={goCategory} />
+                <CategoriesGrid onSelectCategory={goCategory} />
 
-            <View style={styles.bottomSpacer} />
-        </ScrollView>
+                <View style={styles.bottomSpacer} />
+            </ScrollView>
+
+            <VehiclePickerSheet {...sheetProps} />
+        </>
     )
 }
 

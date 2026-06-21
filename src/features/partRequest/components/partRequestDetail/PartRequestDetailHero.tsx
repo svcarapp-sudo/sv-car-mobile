@@ -6,9 +6,15 @@ import {useAppTheme} from '@/global/hooks'
 import type {PartRequest} from '../../types'
 import {PartRequestStatusBadge} from '../partRequestsList/PartRequestStatusBadge'
 
+const DAY = 24 * 60 * 60 * 1000
+const EXPIRING_WINDOW_DAYS = 7
+
 const T = {
     POSTED_BY: 'نُشر بواسطة',
     NO_IMAGE: 'لا توجد صورة',
+    EXPIRED: 'انتهت صلاحية الطلب',
+    EXPIRES_TODAY: 'ينتهي اليوم',
+    EXPIRES_IN: (n: number) => `ينتهي خلال ${n} يوم`,
 }
 
 const formatRelativeTime = (timestamp: number): string => {
@@ -22,6 +28,12 @@ const formatRelativeTime = (timestamp: number): string => {
     if (weeks < 4) return `منذ ${weeks} أسبوع`
     const months = Math.floor(days / 30)
     return `منذ ${months} شهر`
+}
+
+const expiryLabelFor = (days: number): string => {
+    if (days < 0) return T.EXPIRED
+    if (days === 0) return T.EXPIRES_TODAY
+    return T.EXPIRES_IN(days)
 }
 
 interface PartRequestDetailHeroProps {
@@ -45,6 +57,12 @@ export const PartRequestDetailHero = ({request}: PartRequestDetailHeroProps) => 
     const theme = useAppTheme()
     const hasImages = request.imageUrls && request.imageUrls.length > 0
 
+    const expiryDays =
+        request.status === 'OPEN' && request.expiresAt != null ? Math.ceil((request.expiresAt - Date.now()) / DAY) : null
+    const expiringSoon = expiryDays != null && expiryDays >= 0 && expiryDays <= EXPIRING_WINDOW_DAYS
+    const expiryTone = expiringSoon ? theme.colors.tertiary : theme.colors.onSurfaceVariant
+    const expiryBg = expiringSoon ? theme.colors.accentSoft : theme.colors.surfaceContainerHigh
+
     return (
         <View>
             {hasImages ? (
@@ -58,7 +76,17 @@ export const PartRequestDetailHero = ({request}: PartRequestDetailHeroProps) => 
 
             <View style={styles.headerBlock}>
                 <View style={styles.badgeRow}>
-                    <PartRequestStatusBadge status={request.status} size='md' />
+                    <View style={styles.badgeGroup}>
+                        <PartRequestStatusBadge status={request.status} size='md' />
+                        {expiryDays != null ? (
+                            <View style={[styles.expiry, {backgroundColor: expiryBg}]}>
+                                <Icon source='clock-alert-outline' size={11} color={expiryTone} />
+                                <Text style={[styles.expiryText, {color: expiryTone}]} numberOfLines={1}>
+                                    {expiryLabelFor(expiryDays)}
+                                </Text>
+                            </View>
+                        ) : null}
+                    </View>
                     <View style={styles.metaRow}>
                         <Icon source='clock-outline' size={12} color={theme.colors.onSurfaceVariant} />
                         <Text style={[styles.meta, {color: theme.colors.onSurfaceVariant}]}>
@@ -85,7 +113,18 @@ const styles = StyleSheet.create({
     placeholder: {width: '100%', height: 200, justifyContent: 'center', alignItems: 'center', gap: 6},
     placeholderText: {fontSize: 12, fontWeight: '700'},
     headerBlock: {paddingHorizontal: 16, paddingTop: 16, gap: 8},
-    badgeRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
+    badgeRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8},
+    badgeGroup: {flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1},
+    expiry: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 3,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
+        borderRadius: 999,
+        flexShrink: 1,
+    },
+    expiryText: {fontSize: 10.5, fontWeight: '800', letterSpacing: 0.2},
     metaRow: {flexDirection: 'row', alignItems: 'center', gap: 4},
     meta: {fontSize: 11.5, fontWeight: '600'},
     title: {fontSize: 22, fontWeight: '800', letterSpacing: -0.4, lineHeight: 30},

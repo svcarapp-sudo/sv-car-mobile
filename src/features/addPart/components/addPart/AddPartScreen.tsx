@@ -7,7 +7,7 @@ import {useAppTheme} from '@/global/hooks'
 import {SellerProfileGate} from '../sellerProfileGate'
 import {AddPartScrollHeader} from './AddPartScrollHeader'
 import {AddPartProgress} from './AddPartProgress'
-import {STEPS} from './addPartConstants'
+import {STEPS, formatYearRange} from './addPartConstants'
 import {AddPartStepRenderer} from './AddPartStepRenderer'
 import type {RootStackParamList} from '@/global/navigation/types'
 
@@ -23,6 +23,7 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
     const theme = useAppTheme()
     const form = useAddPartForm(navigation)
     const meta = STEPS[form.currentStep]
+    const yearLabel = formatYearRange(form.yearFrom, form.yearTo)
 
     const [headerHeight, setHeaderHeight] = useState(0)
     const headerVisible = useRef(new Animated.Value(1)).current
@@ -74,7 +75,8 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
                             makeName={form.makeName}
                             modelId={form.modelId}
                             modelName={form.modelName}
-                            year={form.year}
+                            yearFrom={form.yearFrom}
+                            yearTo={form.yearTo}
                             categoryId={form.categoryId}
                             categories={form.categories}
                             categoriesLoading={form.categoriesLoading}
@@ -89,7 +91,8 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
                             years={form.years}
                             onMakeSelect={form.handleMakeSelect}
                             onModelSelect={form.handleModelSelect}
-                            onYearSelect={form.handleYearSelect}
+                            onYearChange={form.handleYearChange}
+                            onYearNext={form.handleYearNext}
                             onCategorySelect={form.handleCategorySelect}
                             onNameChange={form.setName}
                             onDescriptionChange={form.setDescription}
@@ -108,10 +111,11 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
                         currentStep={form.currentStep}
                         title={meta.title}
                         subtitle={meta.subtitle}
+                        showTitle={meta.showTitle}
                         makeName={form.makeName}
                         makeLogoUrl={form.makeLogoUrl}
                         modelName={form.modelName}
-                        year={form.year}
+                        yearLabel={yearLabel}
                         categoryName={form.categoryName}
                         onStepPress={form.handleStepChange}
                         onLayout={e => setHeaderHeight(e.nativeEvent.layout.height)}

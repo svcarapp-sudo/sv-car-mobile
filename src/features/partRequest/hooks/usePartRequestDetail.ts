@@ -3,7 +3,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {ApiError} from '@/global/services'
 
 import {partRequestService} from '../services'
-import type {PartRequest} from '../types'
+import type {PartRequest, PartRequestStatus} from '../types'
 
 export const usePartRequestDetail = (id: string | undefined) => {
     const [request, setRequest] = useState<PartRequest | null>(null)
@@ -24,9 +24,19 @@ export const usePartRequestDetail = (id: string | undefined) => {
         }
     }, [id])
 
+    const setStatus = useCallback(
+        async (status: PartRequestStatus) => {
+            if (!id) return
+            const updated = await partRequestService.updateStatus(id, status)
+            setRequest(updated)
+            return updated
+        },
+        [id]
+    )
+
     useEffect(() => {
         fetchDetail().catch(() => {})
     }, [fetchDetail])
 
-    return {request, loading, error, refresh: fetchDetail}
+    return {request, loading, error, refresh: fetchDetail, setStatus}
 }

@@ -3,7 +3,7 @@ import {StyleSheet, View} from 'react-native'
 import {Button, Chip, Divider, Icon, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
-import {navigationRef} from '@/global/navigation/navigationRef'
+import {resetMainTo} from '@/global/navigation/navActions'
 import {themeColors} from '@/global/theme'
 import type {SellerProfile} from '@/global/types'
 
@@ -19,9 +19,7 @@ const ARABIC = {
     VIEW_DASHBOARD: 'عرض لوحة البائع والملخص',
 }
 
-const goToDashboard = () => {
-    if (navigationRef.isReady()) navigationRef.navigate('Main', {screen: 'SellerAccount'})
-}
+const goToDashboard = () => resetMainTo('SellerAccount')
 
 interface SellerProfileDisplayProps {
     sellerProfile: SellerProfile

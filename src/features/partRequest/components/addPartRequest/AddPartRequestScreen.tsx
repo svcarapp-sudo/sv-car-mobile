@@ -1,33 +1,15 @@
-import {useMemo, useState} from 'react'
-import {KeyboardAvoidingView, Platform, ScrollView, StyleSheet} from 'react-native'
+import {KeyboardAvoidingView, Platform, StyleSheet, View} from 'react-native'
 import type {NavigationProp} from '@react-navigation/native'
 
-import {showToast} from '@/global/components'
 import {useAppTheme, useCatalog} from '@/global/hooks'
-import {ApiError} from '@/global/services'
-import {useAuthStore, useVehicleStore} from '@/global/store'
 import type {RootStackParamList} from '@/global/navigation/types'
 
-import {useAddPartRequest} from '../../hooks'
-import type {PartRequestCondition} from '../../types'
-import {AddPartRequestActions} from './AddPartRequestActions'
-import {AddPartRequestCategoryStrip} from './AddPartRequestCategoryStrip'
-import {AddPartRequestConditionRow} from './AddPartRequestConditionRow'
-import {AddPartRequestFormFields, type AddPartRequestFieldState} from './AddPartRequestFormFields'
-import {AddPartRequestHero} from './AddPartRequestHero'
-import {AddPartRequestVehicleCard} from './AddPartRequestVehicleCard'
-
-const T = {
-    SUCCESS: 'تم نشر طلبك بنجاح',
-    ERR_VEHICLE: 'يجب اختيار مركبة أولاً',
-    ERR_CATEGORY: 'الرجاء اختيار فئة القطعة',
-    ERR_TITLE: 'العنوان مطلوب',
-    ERR_PHONE: 'رقم التواصل مطلوب',
-    ERR_BUDGET_RANGE: 'الحد الأعلى يجب أن يكون أكبر من الأدنى',
-    ERR_SUBMIT: 'تعذر نشر الطلب',
-}
-
-const INITIAL: AddPartRequestFieldState = {title: '', description: '', budgetMin: '', budgetMax: '', contactPhone: '', city: ''}
+import {AddPartRequestFooter} from './AddPartRequestFooter'
+import {AddPartRequestProgress} from './AddPartRequestProgress'
+import {AddPartRequestStepContent} from './AddPartRequestStepContent'
+import {AddPartRequestStepHeader} from './AddPartRequestStepHeader'
+import {STEPS, Step} from './addPartRequestSteps'
+import {useAddPartRequestForm} from './useAddPartRequestForm'
 
 interface AddPartRequestScreenProps {
     navigation?: NavigationProp<RootStackParamList>
@@ -35,95 +17,44 @@ interface AddPartRequestScreenProps {
 
 export const AddPartRequestScreen = ({navigation}: AddPartRequestScreenProps) => {
     const theme = useAppTheme()
-    const vehicle = useVehicleStore(s => s.vehicle)
-    const user = useAuthStore(s => s.user)
     const {categories} = useCatalog()
-    const {submitting, create} = useAddPartRequest()
+    const form = useAddPartRequestForm({onSuccess: () => navigation?.goBack()})
+    const meta = STEPS[form.currentStep]
 
-    const [fields, setFields] = useState<AddPartRequestFieldState>({
-        ...INITIAL,
-        contactPhone: user?.phone ?? '',
-        city: user?.city ?? '',
-    })
-    const [categoryId, setCategoryId] = useState<number | null>(null)
-    const [condition, setCondition] = useState<PartRequestCondition>('ANY')
-    const [errors, setErrors] = useState<Partial<Record<keyof AddPartRequestFieldState | 'categoryId', string>>>({})
-
-    const canSubmit = useMemo(
-        () => !!vehicle && categoryId != null && fields.title.trim().length > 0 && fields.contactPhone.trim().length >= 5,
-        [vehicle, categoryId, fields.title, fields.contactPhone]
-    )
-
-    const handleChange = <K extends keyof AddPartRequestFieldState>(key: K, value: AddPartRequestFieldState[K]) => {
-        setFields(prev => ({...prev, [key]: value}))
-        if (errors[key]) setErrors(prev => ({...prev, [key]: undefined}))
-    }
-
-    const goAddVehicle = () => navigation?.navigate('AddVehicle')
-
-    const handleSubmit = async () => {
-        if (!vehicle) {
-            showToast(T.ERR_VEHICLE, 'error')
-            return
-        }
-        const nextErrors: typeof errors = {}
-        if (!fields.title.trim()) nextErrors.title = T.ERR_TITLE
-        if (!fields.contactPhone.trim()) nextErrors.contactPhone = T.ERR_PHONE
-        if (categoryId == null) nextErrors.categoryId = T.ERR_CATEGORY
-        const minNum = fields.budgetMin ? Number(fields.budgetMin) : undefined
-        const maxNum = fields.budgetMax ? Number(fields.budgetMax) : undefined
-        if (minNum != null && maxNum != null && minNum > maxNum) nextErrors.budgetMax = T.ERR_BUDGET_RANGE
-
-        if (Object.keys(nextErrors).length > 0) {
-            setErrors(nextErrors)
-            if (nextErrors.categoryId) showToast(nextErrors.categoryId, 'error')
-            return
-        }
-
-        try {
-            await create({
-                categoryId: categoryId as number,
-                makeId: vehicle.makeId ?? 0,
-                modelId: vehicle.modelId ?? 0,
-                year: vehicle.year,
-                title: fields.title.trim(),
-                description: fields.description.trim() || undefined,
-                budgetMin: minNum,
-                budgetMax: maxNum,
-                conditionPreference: condition,
-                contactPhone: fields.contactPhone.trim(),
-                city: fields.city.trim() || undefined,
-            })
-            showToast(T.SUCCESS, 'success')
-            navigation?.goBack()
-        } catch (err) {
-            showToast(err instanceof ApiError ? err.message : T.ERR_SUBMIT, 'error')
-        }
+    const onBack = () => {
+        if (form.currentStep === Step.Vehicle) navigation?.goBack()
+        else form.handleStepChange((form.currentStep - 1) as Step)
     }
 
     return (
-        <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-            <ScrollView
-                style={[styles.flex, {backgroundColor: theme.colors.background}]}
-                contentContainerStyle={styles.content}
-                keyboardShouldPersistTaps='handled'>
-                <AddPartRequestHero />
-                <AddPartRequestVehicleCard vehicle={vehicle} onAddVehicle={goAddVehicle} onChangeVehicle={goAddVehicle} />
-                <AddPartRequestCategoryStrip categories={categories} selectedId={categoryId} onSelect={setCategoryId} />
-                <AddPartRequestConditionRow value={condition} onChange={setCondition} />
-                <AddPartRequestFormFields values={fields} errors={errors} onChange={handleChange} />
-                <AddPartRequestActions
-                    submitting={submitting}
-                    canSubmit={canSubmit}
-                    onCancel={() => navigation?.goBack()}
-                    onSubmit={handleSubmit}
+        <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+            <AddPartRequestProgress currentStep={form.currentStep} onStepPress={form.handleStepChange} />
+            <KeyboardAvoidingView
+                style={styles.flex}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                keyboardVerticalOffset={8}>
+                <View style={styles.content}>
+                    <AddPartRequestStepHeader title={meta.title} subtitle={meta.subtitle} />
+                    <AddPartRequestStepContent
+                        form={form}
+                        categories={categories}
+                        onAddVehicle={() => navigation?.navigate('AddVehicle')}
+                    />
+                </View>
+                <AddPartRequestFooter
+                    currentStep={form.currentStep}
+                    canProceed={form.canProceed}
+                    submitting={form.submitting}
+                    onBack={onBack}
+                    onNext={form.handleNext}
                 />
-            </ScrollView>
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
+    container: {flex: 1},
     flex: {flex: 1},
-    content: {padding: 16, gap: 14, paddingBottom: 32},
+    content: {flex: 1, paddingHorizontal: 18, paddingTop: 16},
 })

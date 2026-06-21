@@ -39,7 +39,7 @@ interface PartsListSortSheetProps {
 
 /**
  * Bottom sheet with real enter/exit motion: backdrop fade + sheet slide
- * (decelerated in, accelerated out) — mirrors VehicleSwitcherSheet.
+ * (decelerated in, accelerated out) — mirrors VehiclePickerSheet.
  */
 export const PartsListSortSheet = ({visible, selected, onSelect, onDismiss}: PartsListSortSheetProps) => {
     const theme = useAppTheme()

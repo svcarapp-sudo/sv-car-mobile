@@ -1,22 +1,33 @@
+import {useState} from 'react'
 import {ScrollView, StyleSheet, View} from 'react-native'
 import {Button, Text} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
-import {Skeleton} from '@/global/components'
+import {Skeleton, showToast} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {useAuthStore} from '@/global/store'
 import type {RootStackParamList} from '@/global/navigation/types'
+import {haptics} from '@/global/utils'
 
 import {usePartRequestDetail} from '../../hooks'
+import type {PartRequestStatus} from '../../types'
 import {PartRequestDetailBudget} from './PartRequestDetailBudget'
 import {PartRequestDetailContact} from './PartRequestDetailContact'
 import {PartRequestDetailDescription} from './PartRequestDetailDescription'
 import {PartRequestDetailHero} from './PartRequestDetailHero'
+import {PartRequestDetailOwnerActions} from './PartRequestDetailOwnerActions'
 import {PartRequestDetailVehicle} from './PartRequestDetailVehicle'
 
 const T = {
     BACK: 'العودة',
     ERROR_TITLE: 'تعذّر تحميل الطلب',
+    STATUS_ERROR: 'تعذر تحديث حالة الطلب',
+}
+
+const STATUS_DONE: Record<PartRequestStatus, string> = {
+    FULFILLED: 'تم تحديد الطلب كمكتمل',
+    CLOSED: 'تم إغلاق الطلب',
+    OPEN: 'تم إعادة فتح الطلب',
 }
 
 interface PartRequestDetailScreenProps {
@@ -28,7 +39,21 @@ export const PartRequestDetailScreen = ({route, navigation}: PartRequestDetailSc
     const theme = useAppTheme()
     const currentUserId = useAuthStore(s => s.user?.id)
     const requestId = route?.params?.requestId
-    const {request, loading, error} = usePartRequestDetail(requestId)
+    const {request, loading, error, setStatus} = usePartRequestDetail(requestId)
+    const [busy, setBusy] = useState(false)
+
+    const handleStatus = async (status: PartRequestStatus) => {
+        setBusy(true)
+        try {
+            await setStatus(status)
+            haptics.success()
+            showToast(STATUS_DONE[status], 'success')
+        } catch {
+            showToast(T.STATUS_ERROR, 'error')
+        } finally {
+            setBusy(false)
+        }
+    }
 
     if (loading && !request) {
         return (
@@ -65,7 +90,11 @@ export const PartRequestDetailScreen = ({route, navigation}: PartRequestDetailSc
             contentContainerStyle={styles.content}
             showsVerticalScrollIndicator={false}>
             <PartRequestDetailHero request={request} />
-            <PartRequestDetailContact request={request} isOwner={isOwner} />
+            {isOwner ? (
+                <PartRequestDetailOwnerActions request={request} busy={busy} onStatusChange={handleStatus} />
+            ) : (
+                <PartRequestDetailContact request={request} />
+            )}
             <PartRequestDetailBudget request={request} />
             <PartRequestDetailVehicle request={request} />
             <PartRequestDetailDescription description={request.description} />

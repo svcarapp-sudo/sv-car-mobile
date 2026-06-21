@@ -1,11 +1,10 @@
 import {useEffect, useRef} from 'react'
 import {Animated, StyleSheet, View} from 'react-native'
 import {Button, Text} from 'react-native-paper'
-import type {NavigationProp} from '@react-navigation/native'
 
 import {IllustrationEmptyParts} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
-import type {RootStackParamList} from '@/global/navigation/types'
+import {resetMainTo} from '@/global/navigation/navActions'
 import {themeColors} from '@/global/theme'
 
 const ARABIC_TEXT = {
@@ -14,11 +13,7 @@ const ARABIC_TEXT = {
     BROWSE: 'تصفح القطع',
 }
 
-interface SavedPartsEmptyProps {
-    navigation?: NavigationProp<RootStackParamList>
-}
-
-export const SavedPartsEmpty = ({navigation}: SavedPartsEmptyProps) => {
+export const SavedPartsEmpty = () => {
     const theme = useAppTheme()
     const fadeIn = useRef(new Animated.Value(0)).current
 
@@ -34,7 +29,7 @@ export const SavedPartsEmpty = ({navigation}: SavedPartsEmptyProps) => {
                 <Text style={[styles.subtitle, {color: theme.colors.onSurfaceVariant}]}>{ARABIC_TEXT.SUBTITLE}</Text>
                 <Button
                     mode='contained'
-                    onPress={() => navigation?.navigate('PartsCategories')}
+                    onPress={() => resetMainTo('PartsCategories')}
                     icon='compass-outline'
                     style={styles.actionButton}
                     contentStyle={styles.actionButtonContent}

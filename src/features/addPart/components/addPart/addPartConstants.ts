@@ -12,6 +12,7 @@ export interface StepMeta {
     label: string
     title: string
     subtitle: string
+    showTitle: boolean
 }
 
 export const STEPS: StepMeta[] = [
@@ -21,6 +22,7 @@ export const STEPS: StepMeta[] = [
         label: 'الماركة',
         title: 'اختر الشركة المصنعة',
         subtitle: 'حدد ماركة السيارة التي تتوافق معها القطعة',
+        showTitle: true,
     },
     {
         step: Step.Model,
@@ -28,13 +30,15 @@ export const STEPS: StepMeta[] = [
         label: 'الموديل',
         title: 'اختر الموديل',
         subtitle: 'حدد طراز السيارة المطلوب',
+        showTitle: false,
     },
     {
         step: Step.Year,
         icon: 'calendar-range',
         label: 'السنة',
         title: 'سنة الصنع',
-        subtitle: 'اختر سنة صنع السيارة المتوافقة',
+        subtitle: 'اختر سنوات السيارة المتوافقة',
+        showTitle: false,
     },
     {
         step: Step.Category,
@@ -42,6 +46,7 @@ export const STEPS: StepMeta[] = [
         label: 'الفئة',
         title: 'اختر فئة القطعة',
         subtitle: 'حدد التصنيف المناسب لهذه القطعة',
+        showTitle: false,
     },
     {
         step: Step.Details,
@@ -49,10 +54,18 @@ export const STEPS: StepMeta[] = [
         label: 'التفاصيل',
         title: 'تفاصيل القطعة',
         subtitle: 'أضف الاسم والسعر والوصف لإتمام النشر',
+        showTitle: true,
     },
 ]
 
 export const TOTAL_STEPS = STEPS.length
+
+/** "2018" for a single year, "2015 - 2019" for a range, "" when unset. */
+export const formatYearRange = (from: number | null, to: number | null): string => {
+    if (from == null) return ''
+    const hi = to ?? from
+    return from === hi ? String(from) : `${from} - ${hi}`
+}
 
 export const ARABIC_TEXT = {
     STEP_OF: (current: number, total: number) => `${current} من ${total}`,

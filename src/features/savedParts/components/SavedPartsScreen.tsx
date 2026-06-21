@@ -35,7 +35,7 @@ export const SavedPartsScreen = ({navigation}: SavedPartsScreenProps) => {
         [navigation, getBySlug, categories]
     )
 
-    let emptyState = <SavedPartsEmpty navigation={navigation} />
+    let emptyState = <SavedPartsEmpty />
     if (loading) {
         emptyState = <SavedPartsSkeleton />
     } else if (error) {

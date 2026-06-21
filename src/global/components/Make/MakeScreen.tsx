@@ -19,6 +19,7 @@ interface MakeScreenProps {
     onNext: () => void
     onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
     hideHeader?: boolean
+    hideSearch?: boolean
     contentTopInset?: number
 }
 
@@ -31,6 +32,7 @@ export const MakeScreen = ({
     onNext,
     onScroll,
     hideHeader,
+    hideSearch,
     contentTopInset = 0,
 }: MakeScreenProps) => {
     const [makes, setMakes] = useState<MakeApi[]>([])
@@ -92,6 +94,7 @@ export const MakeScreen = ({
             onSelect={handleSelect}
             onScroll={onScroll}
             hideHeader={hideHeader}
+            hideSearch={hideSearch}
             contentTopInset={contentTopInset}
         />
     )

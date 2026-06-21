@@ -25,6 +25,7 @@ interface MakeListProps {
     onSelect: (make: MakeApi) => void
     onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
     hideHeader?: boolean
+    hideSearch?: boolean
     contentTopInset: number
 }
 
@@ -36,6 +37,7 @@ export const MakeList = ({
     onSelect,
     onScroll,
     hideHeader,
+    hideSearch,
     contentTopInset,
 }: MakeListProps) => {
     const theme = useAppTheme()
@@ -47,14 +49,22 @@ export const MakeList = ({
                 keyExtractor={item => item.title}
                 keyboardShouldPersistTaps='handled'
                 ListHeaderComponent={
-                    <View style={styles.listHeader}>
-                        {!hideHeader && (
-                            <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
-                                {ARABIC_TEXT.SELECT_MAKE}
-                            </Text>
-                        )}
-                        <ListSearchBar value={query} onChangeText={onQueryChange} placeholder={ARABIC_TEXT.SEARCH_PLACEHOLDER} />
-                    </View>
+                    hideHeader && hideSearch ? null : (
+                        <View style={styles.listHeader}>
+                            {!hideHeader && (
+                                <Text variant='headlineSmall' style={[styles.stepTitle, {color: theme.colors.onSurface}]}>
+                                    {ARABIC_TEXT.SELECT_MAKE}
+                                </Text>
+                            )}
+                            {!hideSearch && (
+                                <ListSearchBar
+                                    value={query}
+                                    onChangeText={onQueryChange}
+                                    placeholder={ARABIC_TEXT.SEARCH_PLACEHOLDER}
+                                />
+                            )}
+                        </View>
+                    )
                 }
                 renderItem={({item: section}) => (
                     <View style={styles.sectionContainer}>

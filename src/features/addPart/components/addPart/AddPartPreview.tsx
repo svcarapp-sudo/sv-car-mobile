@@ -12,7 +12,7 @@ interface AddPartPreviewProps {
     makeName: string
     makeLogoUrl?: string | null
     modelName: string
-    year: number | null
+    yearLabel: string
     categoryName: string
     onStepPress: (step: Step) => void
 }
@@ -22,7 +22,7 @@ export const AddPartPreview = ({
     makeName,
     makeLogoUrl,
     modelName,
-    year,
+    yearLabel,
     categoryName,
     onStepPress,
 }: AddPartPreviewProps) => {
@@ -31,7 +31,7 @@ export const AddPartPreview = ({
     const all = [
         {step: Step.Make, value: makeName ?? '', icon: 'car-side', logoUrl: makeLogoUrl ?? null},
         {step: Step.Model, value: modelName ?? '', icon: 'car-info', logoUrl: null as string | null},
-        {step: Step.Year, value: year ? String(year) : '', icon: 'calendar-range', logoUrl: null as string | null},
+        {step: Step.Year, value: yearLabel, icon: 'calendar-range', logoUrl: null as string | null},
         {step: Step.Category, value: categoryName ?? '', icon: 'shape', logoUrl: null as string | null},
     ]
 

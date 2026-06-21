@@ -5,6 +5,7 @@ import {Avatar, Divider, Drawer, Text} from 'react-native-paper'
 
 import {useAppTheme} from '@/global/hooks'
 import {navigationRef} from '@/global/navigation/navigationRef'
+import {resetMainTo} from '@/global/navigation/navActions'
 import {useAuthStore} from '@/global/store'
 import {themeColors} from '@/global/theme'
 import {haptics} from '@/global/utils'
@@ -43,9 +44,9 @@ export const AppDrawer = ({onClose, onLogout}: AppDrawerProps) => {
     const goTo = (screen: DrawerMenuItem['screen']) => {
         haptics.selection()
         close()
-        if (navigationRef.isReady()) {
-            navigationRef.navigate('Main', {screen})
-        }
+        // Reset to the destination so it's a clean stack root (menu icon, no stray
+        // back arrow) — matching the bottom nav instead of pushing onto history.
+        resetMainTo(screen)
     }
 
     const handleLogout = () => {

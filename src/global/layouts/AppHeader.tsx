@@ -6,6 +6,7 @@ import {Text, IconButton} from 'react-native-paper'
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 import {navigationRef} from '@/global/navigation/navigationRef'
+import {resetMainTo} from '@/global/navigation/navActions'
 import {useSavedPartsStore} from '@/global/store'
 import {useLayoutStore} from './layoutStore'
 import {FavoritesButton} from './FavoritesButton'
@@ -45,9 +46,8 @@ export const AppHeader = () => {
     const headerHeight = 58 + insets.top
 
     const goToFavorites = () => {
-        if (navigationRef.isReady()) {
-            navigationRef.navigate('Main', {screen: 'SavedParts'})
-        }
+        // Reset to SavedParts so it behaves exactly like the drawer's favorites entry.
+        resetMainTo('SavedParts')
     }
 
     return (

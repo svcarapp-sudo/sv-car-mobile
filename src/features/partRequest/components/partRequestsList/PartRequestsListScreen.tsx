@@ -5,6 +5,7 @@ import type {NavigationProp} from '@react-navigation/native'
 
 import {FadeSlideIn, showToast, staggerDelay} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
+import {resetMainTo} from '@/global/navigation/navActions'
 import type {RootStackParamList} from '@/global/navigation/types'
 
 import {usePartRequestsList} from '../../hooks'
@@ -30,7 +31,9 @@ export const PartRequestsListScreen = ({navigation}: PartRequestsListScreenProps
     const goDetail = useCallback((id: string) => navigation?.navigate('PartRequestDetail', {requestId: id}), [navigation])
 
     const goAdd = useCallback(() => navigation?.navigate('AddPartRequest'), [navigation])
-    const goMyRequests = useCallback(() => navigation?.navigate('MyPartRequests'), [navigation])
+    // MyPartRequests is a top-level tab — reset to it so it shows the menu icon,
+    // exactly like tapping it in the bottom nav (not a pushed back-arrow page).
+    const goMyRequests = useCallback(() => resetMainTo('MyPartRequests'), [])
 
     const resetFilters = useCallback(() => {
         list.setSearch('')

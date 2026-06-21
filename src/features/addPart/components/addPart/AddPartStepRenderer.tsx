@@ -1,8 +1,9 @@
 import type {NativeScrollEvent, NativeSyntheticEvent} from 'react-native'
 
-import {MakeScreen, ModelScreen, YearScreen} from '@/global/components'
+import {MakeScreen, ModelScreen} from '@/global/components'
 import {CategoryScreen} from '../category'
 import {AddPartDetailsForm} from '../details'
+import {PartYearRangeScreen} from '../year'
 import {Step} from './addPartConstants'
 import type {PartCategoryApi} from '@/global/types'
 import type {MakeApi, ModelApi} from '@/global/services/catalogService'
@@ -14,7 +15,8 @@ interface AddPartStepRendererProps {
     makeName: string
     modelId: number | null
     modelName: string
-    year: number | null
+    yearFrom: number | null
+    yearTo: number | null
     categoryId: number | null
     categories: PartCategoryApi[]
     categoriesLoading: boolean
@@ -29,7 +31,8 @@ interface AddPartStepRendererProps {
     years: number[]
     onMakeSelect: (name: string, id: string, logoUrl?: string | null) => void
     onModelSelect: (name: string, id: string) => void
-    onYearSelect: (yearStr: string) => void
+    onYearChange: (from: number | null, to: number | null) => void
+    onYearNext: () => void
     onCategorySelect: (id: number, name: string) => void
     onNameChange: (value: string) => void
     onDescriptionChange: (value: string) => void
@@ -57,6 +60,7 @@ export const AddPartStepRenderer = (props: AddPartStepRendererProps) => {
                     onNext={() => {}}
                     onScroll={props.onScroll}
                     hideHeader={props.hideHeader}
+                    hideSearch
                     contentTopInset={props.contentTopInset}
                 />
             )
@@ -72,18 +76,19 @@ export const AddPartStepRenderer = (props: AddPartStepRendererProps) => {
                     onNext={() => {}}
                     onScroll={props.onScroll}
                     hideHeader={props.hideHeader}
+                    hideSearch
                     contentTopInset={props.contentTopInset}
                 />
             ) : null
         case Step.Year:
             return (
-                <YearScreen
+                <PartYearRangeScreen
                     years={props.years}
-                    value={props.year?.toString() || ''}
-                    onSelect={props.onYearSelect}
-                    onNext={() => {}}
+                    yearFrom={props.yearFrom}
+                    yearTo={props.yearTo}
+                    onChange={props.onYearChange}
+                    onNext={props.onYearNext}
                     onScroll={props.onScroll}
-                    hideHeader={props.hideHeader}
                     contentTopInset={props.contentTopInset}
                 />
             )
@@ -96,7 +101,6 @@ export const AddPartStepRenderer = (props: AddPartStepRendererProps) => {
                     onSelect={props.onCategorySelect}
                     onNext={() => {}}
                     onScroll={props.onScroll}
-                    hideHeader={props.hideHeader}
                     contentTopInset={props.contentTopInset}
                 />
             )

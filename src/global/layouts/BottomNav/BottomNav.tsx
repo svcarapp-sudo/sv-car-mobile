@@ -1,19 +1,18 @@
 import React, {useCallback} from 'react'
 import {StyleSheet, View} from 'react-native'
-import {useNavigation, useNavigationState, CommonActions} from '@react-navigation/native'
-import type {NativeStackNavigationProp} from '@react-navigation/native-stack'
+import {useNavigationState} from '@react-navigation/native'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
 import {haptics} from '@/global/utils'
-import type {RootStackParamList} from '@/global/navigation/types'
+import {resetMainTo} from '@/global/navigation/navActions'
 
 import {BottomNavItem} from './BottomNavItem'
 
 const ARABIC_TEXT = {
     HOME: 'الرئيسية',
-    PART_REQUESTS: 'المطلوبة',
+    MY_REQUESTS: 'طلباتي',
     MY_PARTS: 'إعلاناتي',
     MY_ACCOUNT: 'حسابي',
 }
@@ -23,7 +22,7 @@ interface NavItem {
     icon: string
     activeIcon: string
     label: string
-    screenName: 'Home' | 'PartsList' | 'PartRequestsList' | 'MyParts' | 'MyAccount'
+    screenName: 'Home' | 'MyPartRequests' | 'MyParts' | 'MyAccount'
     params?: Record<string, unknown>
 }
 
@@ -36,11 +35,11 @@ const NAV_ITEMS: NavItem[] = [
         screenName: 'Home',
     },
     {
-        key: 'PartRequestsList',
+        key: 'MyPartRequests',
         icon: 'clipboard-list-outline',
         activeIcon: 'clipboard-list',
-        label: ARABIC_TEXT.PART_REQUESTS,
-        screenName: 'PartRequestsList',
+        label: ARABIC_TEXT.MY_REQUESTS,
+        screenName: 'MyPartRequests',
     },
     {
         key: 'MyParts',
@@ -61,7 +60,6 @@ const NAV_ITEMS: NavItem[] = [
 export const BottomNav = React.memo(() => {
     const theme = useAppTheme()
     const insets = useSafeAreaInsets()
-    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
     const activeRoute = useNavigationState(state => {
         if (!state?.routes?.length) return 'Home'
@@ -77,27 +75,11 @@ export const BottomNav = React.memo(() => {
             if (activeRoute === item.key) return
 
             haptics.selection()
-            navigation.dispatch(state => {
-                const mainRoute = state.routes.find(r => r.name === 'Main')
-                const innerState = mainRoute?.state
-
-                if (!innerState?.key) {
-                    return CommonActions.navigate({
-                        name: 'Main',
-                        params: {screen: item.screenName, params: item.params},
-                    })
-                }
-
-                return {
-                    ...CommonActions.reset({
-                        index: 0,
-                        routes: item.params ? [{name: item.screenName, params: item.params}] : [{name: item.screenName}],
-                    }),
-                    target: innerState.key,
-                }
-            })
+            // Same reset-to-root action the drawer and favorites button use, so a tab
+            // is always a clean stack root regardless of which surface opened it.
+            resetMainTo(item.screenName, item.params)
         },
-        [navigation, activeRoute]
+        [activeRoute]
     )
 
     return (

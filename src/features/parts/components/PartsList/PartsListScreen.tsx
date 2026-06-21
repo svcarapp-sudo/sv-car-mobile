@@ -3,7 +3,7 @@ import {FlatList, StyleSheet, View} from 'react-native'
 import {ActivityIndicator} from 'react-native-paper'
 import type {NavigationProp, RouteProp} from '@react-navigation/native'
 
-import {FadeSlideIn, staggerDelay} from '@/global/components'
+import {FadeSlideIn, VehiclePickerSheet, staggerDelay, useVehiclePicker} from '@/global/components'
 import {useAppTheme, useCatalog} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
 
@@ -31,6 +31,7 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
     const [sort, setSort] = useState<SortOption>('newest')
 
     const goAddVehicle = () => navigation?.navigate('AddVehicle')
+    const {openPicker, sheetProps} = useVehiclePicker(goAddVehicle)
     const categoryName = (routeCategory ? getBySlug(routeCategory)?.name : null) || routeCategory || null
 
     const visibleParts = useMemo(() => {
@@ -66,7 +67,7 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
                             partsCount={total}
                             search={search}
                             onSearchChange={setSearch}
-                            onChangeVehicle={goAddVehicle}
+                            onChangeVehicle={openPicker}
                             onAddVehicle={goAddVehicle}
                         />
                         <PartsListFilters
@@ -100,6 +101,7 @@ export const PartsListScreen = ({route, navigation}: PartsListScreenProps) => {
             />
 
             <PartsListSortSheet visible={sortOpen} selected={sort} onSelect={setSort} onDismiss={() => setSortOpen(false)} />
+            <VehiclePickerSheet {...sheetProps} />
         </View>
     )
 }
@@ -108,7 +110,7 @@ const styles = StyleSheet.create({
     container: {flex: 1},
     headerWrap: {marginHorizontal: -16, marginBottom: 8},
     listContent: {paddingHorizontal: 16, paddingBottom: 28},
-    emptyContent: {flexGrow: 1, paddingHorizontal: 0},
+    emptyContent: {flexGrow: 1},
     gridRow: {gap: 0, marginHorizontal: -5, marginBottom: 10},
     itemSlot: {flex: 1},
     footer: {paddingVertical: 20, alignItems: 'center'},

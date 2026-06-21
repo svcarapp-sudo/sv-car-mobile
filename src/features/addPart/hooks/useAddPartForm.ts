@@ -25,7 +25,8 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
     const [makeLogoUrl, setMakeLogoUrl] = useState<string | null>(null)
     const [modelId, setModelId] = useState<number | null>(null)
     const [modelName, setModelName] = useState('')
-    const [year, setYear] = useState<number | null>(null)
+    const [yearFrom, setYearFrom] = useState<number | null>(null)
+    const [yearTo, setYearTo] = useState<number | null>(null)
     const [categoryId, setCategoryId] = useState<number | null>(null)
     const [categoryName, setCategoryName] = useState('')
     const [name, setName] = useState('')
@@ -46,7 +47,10 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
             setCategoryId(null)
             setCategoryName('')
         }
-        if (step <= Step.Year) setYear(null)
+        if (step <= Step.Year) {
+            setYearFrom(null)
+            setYearTo(null)
+        }
         if (step <= Step.Model) {
             setModelId(null)
             setModelName('')
@@ -84,10 +88,12 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
         advanceStep()
     }, [])
 
-    const handleYearSelect = useCallback((yearStr: string) => {
-        setYear(Number(yearStr))
-        advanceStep()
+    const handleYearChange = useCallback((from: number | null, to: number | null) => {
+        setYearFrom(from)
+        setYearTo(to)
     }, [])
+
+    const handleYearNext = () => advanceStep()
 
     const handleCategorySelect = useCallback((id: number, n: string) => {
         setCategoryId(id)
@@ -96,7 +102,7 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
     }, [])
 
     const handleSubmit = useCallback(async () => {
-        if (!makeId || !modelId || !year || !categoryId || !name.trim() || !price.trim()) {
+        if (!makeId || !modelId || !yearFrom || !categoryId || !name.trim() || !price.trim()) {
             showToast(ARABIC_TEXT.REQUIRED_FIELD, 'error')
             return
         }
@@ -107,7 +113,7 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
         }
         try {
             await createPart({
-                compatibilities: [{makeId, modelId, yearFrom: year, yearTo: year}],
+                compatibilities: [{makeId, modelId, yearFrom, yearTo: yearTo ?? yearFrom}],
                 categoryId,
                 name: name.trim(),
                 description: description.trim() || undefined,
@@ -120,9 +126,9 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
         } catch (err) {
             showToast(err instanceof Error ? err.message : ARABIC_TEXT.ERROR, 'error')
         }
-    }, [makeId, modelId, year, categoryId, name, description, price, imageUrl, sku, createPart, navigation])
+    }, [makeId, modelId, yearFrom, yearTo, categoryId, name, description, price, imageUrl, sku, createPart, navigation])
 
-    const canSubmit = !!(makeId && modelId && year && categoryId && name.trim() && price.trim())
+    const canSubmit = !!(makeId && modelId && yearFrom && categoryId && name.trim() && price.trim())
 
     return {
         currentStep,
@@ -132,7 +138,8 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
         makeLogoUrl,
         modelId,
         modelName,
-        year,
+        yearFrom,
+        yearTo,
         categoryId,
         categoryName,
         name,
@@ -155,7 +162,8 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
         handleStepChange,
         handleMakeSelect,
         handleModelSelect,
-        handleYearSelect,
+        handleYearChange,
+        handleYearNext,
         handleCategorySelect,
         handleSubmit,
     }

@@ -6,6 +6,7 @@ export type DrawerScreen =
     | 'MyAccount'
     | 'MyParts'
     | 'MyPartRequests'
+    | 'PartRequestsList'
     | 'SellerAccount'
 
 export interface DrawerMenuItem {
@@ -34,5 +35,6 @@ export const DRAWER_ACCOUNT_ITEMS: DrawerMenuItem[] = [
     {id: 'account', label: 'حسابي', icon: 'account-outline', screen: 'MyAccount'},
     {id: 'my-parts', label: 'إعلاناتي', icon: 'package-variant', screen: 'MyParts'},
     {id: 'my-requests', label: 'طلباتي', icon: 'clipboard-list-outline', screen: 'MyPartRequests'},
+    {id: 'browse-requests', label: 'تصفّح كل الطلبات', icon: 'clipboard-search-outline', screen: 'PartRequestsList'},
     {id: 'seller', label: 'لوحة البائع', icon: 'storefront-outline', screen: 'SellerAccount'},
 ]

@@ -5,7 +5,7 @@ import {Button, Text} from 'react-native-paper'
 import {IllustrationSellerProfile} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {themeColors} from '@/global/theme'
-import {navigationRef} from '@/global/navigation/navigationRef'
+import {resetMainTo} from '@/global/navigation/navActions'
 
 const ARABIC = {
     TITLE: 'لم تبدأ البيع بعد',
@@ -13,9 +13,7 @@ const ARABIC = {
     CTA: 'إنشاء ملف تجاري',
 }
 
-const goToAccount = () => {
-    if (navigationRef.isReady()) navigationRef.navigate('Main', {screen: 'MyAccount'})
-}
+const goToAccount = () => resetMainTo('MyAccount')
 
 /** Shown when the authenticated user has no seller profile yet. */
 export const SellerAccountEmpty = () => {

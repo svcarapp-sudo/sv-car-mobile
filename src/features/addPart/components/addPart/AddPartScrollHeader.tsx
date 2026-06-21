@@ -10,10 +10,11 @@ interface AddPartScrollHeaderProps {
     currentStep: Step
     title: string
     subtitle: string
+    showTitle: boolean
     makeName: string
     makeLogoUrl?: string | null
     modelName: string
-    year: number | null
+    yearLabel: string
     categoryName: string
     onStepPress: (step: Step) => void
     onLayout: (event: LayoutChangeEvent) => void
@@ -25,10 +26,11 @@ export const AddPartScrollHeader = ({
     currentStep,
     title,
     subtitle,
+    showTitle,
     makeName,
     makeLogoUrl,
     modelName,
-    year,
+    yearLabel,
     categoryName,
     onStepPress,
     onLayout,
@@ -46,11 +48,11 @@ export const AddPartScrollHeader = ({
                 makeName={makeName}
                 makeLogoUrl={makeLogoUrl}
                 modelName={modelName}
-                year={year}
+                yearLabel={yearLabel}
                 categoryName={categoryName}
                 onStepPress={onStepPress}
             />
-            <StepHeader title={title} subtitle={subtitle} />
+            {showTitle ? <StepHeader title={title} subtitle={subtitle} /> : null}
         </Animated.View>
     )
 }
