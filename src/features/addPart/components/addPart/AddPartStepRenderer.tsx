@@ -5,7 +5,7 @@ import {CategoryScreen} from '../category'
 import {AddPartDetailsForm} from '../details'
 import {PartYearRangeScreen} from '../year'
 import {Step} from './addPartConstants'
-import type {PartCategoryApi} from '@/global/types'
+import type {PartCategoryApi, PartConditionValue} from '@/global/types'
 import type {MakeApi, ModelApi} from '@/global/services/catalogService'
 
 interface AddPartStepRendererProps {
@@ -23,6 +23,8 @@ interface AddPartStepRendererProps {
     name: string
     description: string
     price: string
+    condition: PartConditionValue
+    stockQuantity: string
     imageUrl: string
     sku: string
     loading: boolean
@@ -37,6 +39,8 @@ interface AddPartStepRendererProps {
     onNameChange: (value: string) => void
     onDescriptionChange: (value: string) => void
     onPriceChange: (value: string) => void
+    onConditionChange: (value: PartConditionValue) => void
+    onStockQuantityChange: (value: string) => void
     onImageUrlChange: (value: string) => void
     onSkuChange: (value: string) => void
     onSubmit: () => void
@@ -109,6 +113,8 @@ export const AddPartStepRenderer = (props: AddPartStepRendererProps) => {
                     name={props.name}
                     description={props.description}
                     price={props.price}
+                    condition={props.condition}
+                    stockQuantity={props.stockQuantity}
                     imageUrl={props.imageUrl}
                     sku={props.sku}
                     categoryId={props.categoryId}
@@ -116,6 +122,8 @@ export const AddPartStepRenderer = (props: AddPartStepRendererProps) => {
                     onNameChange={props.onNameChange}
                     onDescriptionChange={props.onDescriptionChange}
                     onPriceChange={props.onPriceChange}
+                    onConditionChange={props.onConditionChange}
+                    onStockQuantityChange={props.onStockQuantityChange}
                     onImageUrlChange={props.onImageUrlChange}
                     onSkuChange={props.onSkuChange}
                     onSubmit={props.onSubmit}

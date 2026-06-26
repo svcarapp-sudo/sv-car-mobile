@@ -17,6 +17,7 @@ import {PartRequestDetailDescription} from './PartRequestDetailDescription'
 import {PartRequestDetailHero} from './PartRequestDetailHero'
 import {PartRequestDetailOwnerActions} from './PartRequestDetailOwnerActions'
 import {PartRequestDetailVehicle} from './PartRequestDetailVehicle'
+import {RequestOffersList} from './RequestOffersList'
 
 const T = {
     BACK: 'العودة',
@@ -39,7 +40,7 @@ export const PartRequestDetailScreen = ({route, navigation}: PartRequestDetailSc
     const theme = useAppTheme()
     const currentUserId = useAuthStore(s => s.user?.id)
     const requestId = route?.params?.requestId
-    const {request, loading, error, setStatus} = usePartRequestDetail(requestId)
+    const {request, loading, error, setStatus, refresh} = usePartRequestDetail(requestId)
     const [busy, setBusy] = useState(false)
 
     const handleStatus = async (status: PartRequestStatus) => {
@@ -91,7 +92,10 @@ export const PartRequestDetailScreen = ({route, navigation}: PartRequestDetailSc
             showsVerticalScrollIndicator={false}>
             <PartRequestDetailHero request={request} />
             {isOwner ? (
-                <PartRequestDetailOwnerActions request={request} busy={busy} onStatusChange={handleStatus} />
+                <>
+                    <PartRequestDetailOwnerActions request={request} busy={busy} onStatusChange={handleStatus} />
+                    {requestId ? <RequestOffersList requestId={requestId} onAccepted={refresh} /> : null}
+                </>
             ) : (
                 <PartRequestDetailContact request={request} />
             )}

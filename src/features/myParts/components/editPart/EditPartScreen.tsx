@@ -7,6 +7,7 @@ import {useMyParts} from '../../hooks/useMyParts'
 import {Screen, showToast} from '@/global/components'
 import {useCatalog, useAppTheme} from '@/global/hooks'
 import type {RootStackParamList} from '@/global/navigation/types'
+import type {PartConditionValue} from '@/global/types'
 import {EditPartVehicleBanner} from './EditPartVehicleBanner'
 import {EditPartFormFields} from './EditPartFormFields'
 import {EditPartFormSkeleton} from './EditPartFormSkeleton'
@@ -34,6 +35,8 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [price, setPrice] = useState('')
+    const [condition, setCondition] = useState<PartConditionValue>('USED')
+    const [stockQuantity, setStockQuantity] = useState('1')
     const [imageUrl, setImageUrl] = useState('')
     const [sku, setSku] = useState('')
     const [saving, setSaving] = useState(false)
@@ -43,6 +46,8 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
             setName(part.name)
             setDescription(part.description || '')
             setPrice(part.price.toString())
+            setCondition(part.condition ?? 'USED')
+            setStockQuantity((part.stockQuantity ?? 1).toString())
             setImageUrl(part.imageUrl || '')
             setSku(part.sku || '')
         }
@@ -63,12 +68,16 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
             return
         }
 
+        const stockNum = Math.max(0, Math.round(Number(stockQuantity) || 0))
+
         setSaving(true)
         try {
             await updatePart(partId, {
                 name: name.trim(),
                 description: description.trim() || undefined,
                 price: priceNum,
+                condition,
+                stockQuantity: stockNum,
                 imageUrl: imageUrl.trim() || undefined,
                 sku: sku.trim() || undefined,
             })
@@ -79,7 +88,7 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
         } finally {
             setSaving(false)
         }
-    }, [partId, name, description, price, imageUrl, sku, updatePart, navigation])
+    }, [partId, name, description, price, condition, stockQuantity, imageUrl, sku, updatePart, navigation])
 
     if (partsLoading && !part) {
         return (
@@ -111,6 +120,10 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
                     onDescriptionChange={setDescription}
                     price={price}
                     onPriceChange={setPrice}
+                    condition={condition}
+                    onConditionChange={setCondition}
+                    stockQuantity={stockQuantity}
+                    onStockQuantityChange={setStockQuantity}
                     imageUrl={imageUrl}
                     onImageUrlChange={setImageUrl}
                     sku={sku}
@@ -126,16 +139,7 @@ export const EditPartScreen = ({route, navigation}: EditPartScreenProps) => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    centered: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 32,
-    },
-    scrollContent: {
-        padding: 16,
-        paddingBottom: 32,
-    },
+    container: {flex: 1},
+    centered: {justifyContent: 'center', alignItems: 'center', padding: 32},
+    scrollContent: {padding: 16, paddingBottom: 32},
 })

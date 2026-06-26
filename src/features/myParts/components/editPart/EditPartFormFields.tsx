@@ -2,6 +2,9 @@ import {StyleSheet, View} from 'react-native'
 import {TextInput, Button} from 'react-native-paper'
 
 import {NumericTextInput, PartNameInput} from '@/global/components'
+import type {PartConditionValue} from '@/global/types'
+
+import {PartConditionSelector} from './PartConditionSelector'
 
 const ARABIC_TEXT = {
     PART_NAME: 'اسم القطعة',
@@ -10,6 +13,8 @@ const ARABIC_TEXT = {
     DESCRIPTION_PLACEHOLDER: 'وصف تفصيلي للقطعة...',
     PRICE: 'السعر ($)',
     PRICE_PLACEHOLDER: '0.00',
+    STOCK: 'الكمية المتوفرة',
+    STOCK_PLACEHOLDER: '1',
     IMAGE_URL: 'رابط الصورة (اختياري)',
     IMAGE_URL_PLACEHOLDER: 'https://example.com/image.jpg',
     SKU: 'رمز القطعة (اختياري)',
@@ -26,6 +31,10 @@ interface EditPartFormFieldsProps {
     onDescriptionChange: (value: string) => void
     price: string
     onPriceChange: (value: string) => void
+    condition: PartConditionValue
+    onConditionChange: (value: PartConditionValue) => void
+    stockQuantity: string
+    onStockQuantityChange: (value: string) => void
     imageUrl: string
     onImageUrlChange: (value: string) => void
     sku: string
@@ -36,28 +45,14 @@ interface EditPartFormFieldsProps {
     onCancel: () => void
 }
 
-export const EditPartFormFields = ({
-    name,
-    onNameChange,
-    description,
-    onDescriptionChange,
-    price,
-    onPriceChange,
-    imageUrl,
-    onImageUrlChange,
-    sku,
-    onSkuChange,
-    categoryId,
-    saving,
-    onSave,
-    onCancel,
-}: EditPartFormFieldsProps) => {
+export const EditPartFormFields = (p: EditPartFormFieldsProps) => {
+    const {name, description, price, imageUrl, sku, categoryId, saving} = p
     return (
         <>
             <PartNameInput
                 label={ARABIC_TEXT.PART_NAME}
                 value={name}
-                onChangeText={onNameChange}
+                onChangeText={p.onNameChange}
                 placeholder={ARABIC_TEXT.PART_NAME_PLACEHOLDER}
                 categoryId={categoryId}
                 style={styles.input}
@@ -66,7 +61,7 @@ export const EditPartFormFields = ({
             <TextInput
                 label={ARABIC_TEXT.DESCRIPTION}
                 value={description}
-                onChangeText={onDescriptionChange}
+                onChangeText={p.onDescriptionChange}
                 placeholder={ARABIC_TEXT.DESCRIPTION_PLACEHOLDER}
                 mode='outlined'
                 multiline
@@ -78,7 +73,7 @@ export const EditPartFormFields = ({
             <NumericTextInput
                 label={ARABIC_TEXT.PRICE}
                 value={price}
-                onChangeText={onPriceChange}
+                onChangeText={p.onPriceChange}
                 placeholder={ARABIC_TEXT.PRICE_PLACEHOLDER}
                 mode='outlined'
                 keyboardType='decimal-pad'
@@ -86,10 +81,23 @@ export const EditPartFormFields = ({
                 left={<TextInput.Icon icon='cash' />}
             />
 
+            <PartConditionSelector value={p.condition} onChange={p.onConditionChange} />
+
+            <NumericTextInput
+                label={ARABIC_TEXT.STOCK}
+                value={p.stockQuantity}
+                onChangeText={p.onStockQuantityChange}
+                placeholder={ARABIC_TEXT.STOCK_PLACEHOLDER}
+                mode='outlined'
+                keyboardType='number-pad'
+                style={styles.input}
+                left={<TextInput.Icon icon='package-variant-closed' />}
+            />
+
             <TextInput
                 label={ARABIC_TEXT.IMAGE_URL}
                 value={imageUrl}
-                onChangeText={onImageUrlChange}
+                onChangeText={p.onImageUrlChange}
                 placeholder={ARABIC_TEXT.IMAGE_URL_PLACEHOLDER}
                 mode='outlined'
                 keyboardType='url'
@@ -101,7 +109,7 @@ export const EditPartFormFields = ({
             <TextInput
                 label={ARABIC_TEXT.SKU}
                 value={sku}
-                onChangeText={onSkuChange}
+                onChangeText={p.onSkuChange}
                 placeholder={ARABIC_TEXT.SKU_PLACEHOLDER}
                 mode='outlined'
                 autoCapitalize='characters'
@@ -110,12 +118,12 @@ export const EditPartFormFields = ({
             />
 
             <View style={styles.buttons}>
-                <Button mode='outlined' onPress={onCancel} style={styles.btn} disabled={saving}>
+                <Button mode='outlined' onPress={p.onCancel} style={styles.btn} disabled={saving}>
                     {ARABIC_TEXT.CANCEL}
                 </Button>
                 <Button
                     mode='contained'
-                    onPress={onSave}
+                    onPress={p.onSave}
                     style={styles.btn}
                     contentStyle={styles.saveBtnContent}
                     loading={saving}
@@ -128,19 +136,8 @@ export const EditPartFormFields = ({
 }
 
 const styles = StyleSheet.create({
-    input: {
-        marginBottom: 14,
-    },
-    buttons: {
-        flexDirection: 'row',
-        gap: 12,
-        marginTop: 10,
-    },
-    btn: {
-        flex: 1,
-        borderRadius: 12,
-    },
-    saveBtnContent: {
-        paddingVertical: 4,
-    },
+    input: {marginBottom: 14},
+    buttons: {flexDirection: 'row', gap: 12, marginTop: 10},
+    btn: {flex: 1, borderRadius: 12},
+    saveBtnContent: {paddingVertical: 4},
 })

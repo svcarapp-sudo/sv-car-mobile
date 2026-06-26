@@ -170,6 +170,11 @@ export interface PartCategoryApi {
     sortOrder: number
 }
 
+/** Part lifecycle state (seller console). */
+export type PartStatus = 'ACTIVE' | 'SOLD' | 'HIDDEN'
+/** Physical condition of a part. */
+export type PartConditionValue = 'NEW' | 'USED' | 'REFURBISHED'
+
 // Part types
 export interface Part {
     id: string
@@ -196,6 +201,10 @@ export interface Part {
     categoryId?: number
     viewCount?: number
     createdAt?: number
+    // Lifecycle / inventory (seller console)
+    status?: PartStatus
+    condition?: PartConditionValue
+    stockQuantity?: number
 }
 
 export interface VehicleCompatibility {
@@ -212,6 +221,39 @@ export interface CompatibilityResult {
     isCompatible: boolean
     exactMatch: boolean
     reason?: string
+}
+
+// Offers — a seller's price quote on a buyer's part request.
+export type OfferStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'WITHDRAWN'
+
+export interface Offer {
+    id: number
+    partRequestId: number
+    sellerUserId: number
+    price: number
+    message?: string | null
+    status: OfferStatus
+    partId?: number | null
+    contactPhone?: string | null
+    // Request summary (seller's "my offers" view)
+    requestTitle?: string | null
+    requestStatus?: string | null
+    // Seller info (requester's "offers received" view)
+    sellerName?: string | null
+    sellerStoreName?: string | null
+    sellerCity?: string | null
+    // Optional linked listing
+    linkedPartName?: string | null
+    linkedPartPrice?: number | null
+    createdAt?: string | null
+    updatedAt?: string | null
+}
+
+export interface CreateOfferRequest {
+    price: number
+    message?: string
+    partId?: number
+    contactPhone?: string
 }
 
 export type {

@@ -2,12 +2,13 @@ import {useState, useCallback, useEffect} from 'react'
 
 import {ApiError} from '@/global/services'
 import {myPartsService} from '../services'
-import type {CreatePartRequest, UpdatePartRequest, Part} from '@/global/types'
+import type {CreatePartRequest, PartStatus, UpdatePartRequest, Part} from '@/global/types'
 
 export const useMyParts = () => {
     const [parts, setParts] = useState<Part[]>([])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
     const fetchMyParts = useCallback(async () => {
         setLoading(true)
@@ -76,6 +77,30 @@ export const useMyParts = () => {
         }
     }, [])
 
+    const setStatus = useCallback((id: string, status: PartStatus): Promise<Part> => updatePart(id, {status}), [updatePart])
+
+    const toggleSelect = useCallback((id: string) => {
+        setSelectedIds(prev => {
+            const next = new Set(prev)
+            if (next.has(id)) next.delete(id)
+            else next.add(id)
+            return next
+        })
+    }, [])
+
+    const clearSelection = useCallback(() => setSelectedIds(new Set()), [])
+
+    /** Apply a per-id async operation to all selected ids; returns counts. */
+    const runBulk = useCallback(
+        async (op: (id: string) => Promise<unknown>): Promise<{ok: number; failed: number}> => {
+            const ids = Array.from(selectedIds)
+            const results = await Promise.allSettled(ids.map(op))
+            const ok = results.filter(r => r.status === 'fulfilled').length
+            return {ok, failed: ids.length - ok}
+        },
+        [selectedIds]
+    )
+
     useEffect(() => {
         fetchMyParts().catch(() => {
             // Error already handled in fetchMyParts
@@ -90,5 +115,11 @@ export const useMyParts = () => {
         createPart,
         updatePart,
         deletePart,
+        setStatus,
+        selectedIds,
+        selectionMode: selectedIds.size > 0,
+        toggleSelect,
+        clearSelection,
+        runBulk,
     }
 }

@@ -2,7 +2,10 @@ import {useMemo, useState} from 'react'
 
 import type {Part, PartCategoryApi} from '@/global/types'
 
+import {isLowOrOut} from '../constants/partLifecycle'
+
 export type MyPartsSortKey = 'newest' | 'priceDesc' | 'priceAsc' | 'nameAsc'
+export type MyPartsStatusFilter = 'all' | 'active' | 'sold' | 'hidden' | 'lowStock'
 
 export interface MyPartsFiltersState {
     search: string
@@ -11,10 +14,28 @@ export interface MyPartsFiltersState {
     setSort: (v: MyPartsSortKey) => void
     activeCategoryId: number | null
     setActiveCategoryId: (id: number | null) => void
+    statusFilter: MyPartsStatusFilter
+    setStatusFilter: (v: MyPartsStatusFilter) => void
     availableCategories: PartCategoryApi[]
     filtered: Part[]
     isFiltered: boolean
     resetFilters: () => void
+}
+
+const matchesStatus = (part: Part, filter: MyPartsStatusFilter): boolean => {
+    switch (filter) {
+        case 'active':
+            return (part.status ?? 'ACTIVE') === 'ACTIVE'
+        case 'sold':
+            return part.status === 'SOLD'
+        case 'hidden':
+            return part.status === 'HIDDEN'
+        case 'lowStock':
+            return isLowOrOut(part.stockQuantity)
+        case 'all':
+        default:
+            return true
+    }
 }
 
 const matchesSearch = (part: Part, query: string): boolean => {
@@ -42,6 +63,7 @@ export const useMyPartsFilters = (parts: Part[], categories: PartCategoryApi[]):
     const [search, setSearch] = useState('')
     const [sort, setSort] = useState<MyPartsSortKey>('newest')
     const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null)
+    const [statusFilter, setStatusFilter] = useState<MyPartsStatusFilter>('all')
 
     const availableCategories = useMemo(() => {
         const ids = new Set<number>()
@@ -50,16 +72,18 @@ export const useMyPartsFilters = (parts: Part[], categories: PartCategoryApi[]):
     }, [parts, categories])
 
     const filtered = useMemo(() => {
-        const byCategory = activeCategoryId == null ? parts : parts.filter(p => p.categoryId === activeCategoryId)
+        const byStatus = parts.filter(p => matchesStatus(p, statusFilter))
+        const byCategory = activeCategoryId == null ? byStatus : byStatus.filter(p => p.categoryId === activeCategoryId)
         const bySearch = byCategory.filter(p => matchesSearch(p, search.trim()))
         return sortParts(bySearch, sort)
-    }, [parts, activeCategoryId, search, sort])
+    }, [parts, activeCategoryId, statusFilter, search, sort])
 
-    const isFiltered = search.trim().length > 0 || activeCategoryId != null
+    const isFiltered = search.trim().length > 0 || activeCategoryId != null || statusFilter !== 'all'
 
     const resetFilters = () => {
         setSearch('')
         setActiveCategoryId(null)
+        setStatusFilter('all')
     }
 
     return {
@@ -69,6 +93,8 @@ export const useMyPartsFilters = (parts: Part[], categories: PartCategoryApi[]):
         setSort,
         activeCategoryId,
         setActiveCategoryId,
+        statusFilter,
+        setStatusFilter,
         availableCategories,
         filtered,
         isFiltered,

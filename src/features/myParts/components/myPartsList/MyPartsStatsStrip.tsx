@@ -9,12 +9,16 @@ interface StatsStripProps {
     count: number
     totalValue: number
     categoriesCount: number
+    activeCount: number
+    lowStockCount: number
 }
 
 const ARABIC_TEXT = {
     LISTED: 'قطعة معروضة',
     VALUE: 'قيمة المخزون',
     CATEGORIES: 'فئات',
+    ACTIVE: 'نشطة',
+    LOW_STOCK: 'مخزون منخفض',
     CURRENCY: 'ر.س',
 }
 
@@ -41,15 +45,17 @@ interface StatTileProps {
     icon: string
     value: string
     label: string
-    accent: 'primary' | 'tertiary' | 'success'
+    accent: 'primary' | 'tertiary' | 'success' | 'warning'
 }
 
 const StatTile = ({icon, value, label, accent}: StatTileProps) => {
     const theme = useAppTheme()
+    const ring = theme.colors.surface
     const accentMap = {
-        primary: {bg: theme.colors.primaryContainer, fg: theme.colors.primary, ring: theme.colors.surface},
-        tertiary: {bg: theme.colors.accentContainer, fg: theme.colors.tertiary, ring: theme.colors.surface},
-        success: {bg: theme.colors.successContainer, fg: theme.colors.success, ring: theme.colors.surface},
+        primary: {bg: theme.colors.primaryContainer, fg: theme.colors.primary, ring},
+        tertiary: {bg: theme.colors.accentContainer, fg: theme.colors.tertiary, ring},
+        success: {bg: theme.colors.successContainer, fg: theme.colors.success, ring},
+        warning: {bg: theme.colors.warningContainer, fg: theme.colors.warning, ring},
     }
     const c = accentMap[accent]
     return (
@@ -67,28 +73,39 @@ const StatTile = ({icon, value, label, accent}: StatTileProps) => {
     )
 }
 
-export const MyPartsStatsStrip = ({count, totalValue, categoriesCount}: StatsStripProps) => {
+export const MyPartsStatsStrip = ({count, totalValue, categoriesCount, activeCount, lowStockCount}: StatsStripProps) => {
     const animatedCount = useCountUp(count)
     const animatedValue = useCountUp(totalValue)
     const animatedCats = useCountUp(categoriesCount)
+    const animatedActive = useCountUp(activeCount)
+    const animatedLow = useCountUp(lowStockCount)
     return (
-        <View style={styles.row}>
+        <View style={styles.grid}>
             <StatTile icon='package-variant' value={formatNumber(animatedCount)} label={ARABIC_TEXT.LISTED} accent='primary' />
+            <StatTile
+                icon='check-circle-outline'
+                value={formatNumber(animatedActive)}
+                label={ARABIC_TEXT.ACTIVE}
+                accent='success'
+            />
+            <StatTile icon='alert-outline' value={formatNumber(animatedLow)} label={ARABIC_TEXT.LOW_STOCK} accent='warning' />
             <StatTile
                 icon='cash-multiple'
                 value={`${formatNumber(animatedValue)} ${ARABIC_TEXT.CURRENCY}`}
                 label={ARABIC_TEXT.VALUE}
                 accent='tertiary'
             />
-            <StatTile icon='shape-outline' value={formatNumber(animatedCats)} label={ARABIC_TEXT.CATEGORIES} accent='success' />
+            <StatTile icon='shape-outline' value={formatNumber(animatedCats)} label={ARABIC_TEXT.CATEGORIES} accent='primary' />
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    row: {flexDirection: 'row', gap: 10, marginBottom: 14},
+    grid: {flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 14},
     tile: {
-        flex: 1,
+        flexGrow: 1,
+        flexBasis: '30%',
+        minWidth: 96,
         alignItems: 'center',
         paddingVertical: 14,
         paddingHorizontal: 8,

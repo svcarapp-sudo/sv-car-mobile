@@ -83,6 +83,8 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
                             name={form.name}
                             description={form.description}
                             price={form.price}
+                            condition={form.condition}
+                            stockQuantity={form.stockQuantity}
                             imageUrl={form.imageUrl}
                             sku={form.sku}
                             loading={form.loading}
@@ -97,6 +99,8 @@ export const AddPartScreen = ({navigation}: AddPartScreenProps) => {
                             onNameChange={form.setName}
                             onDescriptionChange={form.setDescription}
                             onPriceChange={form.setPrice}
+                            onConditionChange={form.setCondition}
+                            onStockQuantityChange={form.setStockQuantity}
                             onImageUrlChange={form.setImageUrl}
                             onSkuChange={form.setSku}
                             onSubmit={form.handleSubmit}

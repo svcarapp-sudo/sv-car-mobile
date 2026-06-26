@@ -1,4 +1,4 @@
-import type {Part, PartCategory} from '@/global/types'
+import type {Part, PartCategory, PartConditionValue, PartStatus} from '@/global/types'
 
 export interface GetPartsRequest {
     category?: PartCategory
@@ -24,6 +24,8 @@ export interface CreatePartRequest {
     price: number
     imageUrl?: string
     sku?: string
+    condition?: PartConditionValue
+    stockQuantity?: number
 }
 
 export interface UpdatePartRequest {
@@ -34,6 +36,9 @@ export interface UpdatePartRequest {
     price?: number
     imageUrl?: string
     sku?: string
+    status?: PartStatus
+    condition?: PartConditionValue
+    stockQuantity?: number
 }
 
 export type PartResponse = Part

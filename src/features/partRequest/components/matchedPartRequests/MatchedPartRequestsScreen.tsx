@@ -1,18 +1,19 @@
-import {useCallback, useEffect} from 'react'
+import {useCallback, useEffect, useMemo} from 'react'
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native'
 import {ActivityIndicator} from 'react-native-paper'
 import type {NavigationProp} from '@react-navigation/native'
+import {useFocusEffect} from '@react-navigation/native'
 
 import {FadeSlideIn, showToast, staggerDelay} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
 import {resetMainTo} from '@/global/navigation/navActions'
 import type {RootStackParamList} from '@/global/navigation/types'
 
-import {usePartRequestsMatched} from '../../hooks'
+import {useMyOffers, usePartRequestsMatched} from '../../hooks'
 import type {PartRequest} from '../../types'
-import {PartRequestCardItem} from '../partRequestsList/PartRequestCardItem'
 import {PartRequestsListFilters} from '../partRequestsList/PartRequestsListFilters'
 import {PartRequestsListSkeleton} from '../partRequestsList/PartRequestsListSkeleton'
+import {MatchedRequestCard} from './MatchedRequestCard'
 import {MatchedRequestsEmpty} from './MatchedRequestsEmpty'
 import {MatchedRequestsHeader} from './MatchedRequestsHeader'
 
@@ -25,11 +26,27 @@ interface MatchedPartRequestsScreenProps {
 export const MatchedPartRequestsScreen = ({navigation}: MatchedPartRequestsScreenProps) => {
     const theme = useAppTheme()
     const list = usePartRequestsMatched()
+    const myOffers = useMyOffers()
     const hasSpecializations = list.specializations.length > 0
 
+    // Request ids the seller has already quoted on (any non-withdrawn offer).
+    const offeredIds = useMemo(
+        () => new Set(myOffers.offers.filter(o => o.status !== 'WITHDRAWN').map(o => String(o.partRequestId))),
+        [myOffers.offers]
+    )
+
     const goDetail = useCallback((id: string) => navigation?.navigate('PartRequestDetail', {requestId: id}), [navigation])
+    const goOffer = useCallback((id: string) => navigation?.navigate('SendOffer', {requestId: id}), [navigation])
     // MyAccount is a top-level section — reset to it so it's a clean root.
     const goSetup = useCallback(() => resetMainTo('MyAccount'), [])
+
+    // Re-pull sent offers when returning (e.g. after submitting one) so the badge updates.
+    useFocusEffect(
+        useCallback(() => {
+            myOffers.reload().catch(() => {})
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [])
+    )
 
     useEffect(() => {
         if (list.error && list.requests.length > 0) showToast(T.REFRESH_ERROR, 'error')
@@ -39,10 +56,15 @@ export const MatchedPartRequestsScreen = ({navigation}: MatchedPartRequestsScree
     const renderItem = useCallback(
         ({item, index}: {item: PartRequest; index: number}) => (
             <FadeSlideIn delay={index < 8 ? staggerDelay(index) : 0}>
-                <PartRequestCardItem request={item} onPress={() => goDetail(item.id)} />
+                <MatchedRequestCard
+                    request={item}
+                    alreadyOffered={offeredIds.has(item.id)}
+                    onPress={() => goDetail(item.id)}
+                    onOffer={() => goOffer(item.id)}
+                />
             </FadeSlideIn>
         ),
-        [goDetail]
+        [goDetail, goOffer, offeredIds]
     )
 
     const renderEmpty = () => {

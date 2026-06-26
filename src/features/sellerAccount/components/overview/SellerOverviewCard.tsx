@@ -9,10 +9,13 @@ import {SellerStatTile} from './SellerStatTile'
 const ARABIC = {
     TITLE: 'نظرة عامة على النشاط',
     PARTS: 'قطعة معروضة',
+    ACTIVE: 'نشطة',
     VIEWS: 'مشاهدة',
     FAVORITES: 'إضافة للمفضلة',
     REQUESTS: 'طلب قطعة',
+    OFFERS: 'عرض مقبول',
     OPEN: 'مفتوح',
+    SENT: 'مُرسلة',
 }
 
 const formatNumber = (n: number) => new Intl.NumberFormat('ar-SA', {maximumFractionDigits: 0}).format(n)
@@ -21,10 +24,11 @@ interface SellerOverviewCardProps {
     summary: SellerSummary
 }
 
-/** Grouped KPI overview — four related stats laid out as a 2×2 tile grid. */
+/** Grouped KPI overview — six related stats laid out as a 2×3 tile grid. */
 export const SellerOverviewCard = ({summary}: SellerOverviewCardProps) => {
     const theme = useAppTheme()
     const openHint = summary.partRequestsOpen > 0 ? `${formatNumber(summary.partRequestsOpen)} ${ARABIC.OPEN}` : undefined
+    const sentHint = summary.offersSent > 0 ? `${formatNumber(summary.offersSent)} ${ARABIC.SENT}` : undefined
 
     return (
         <View>
@@ -39,21 +43,36 @@ export const SellerOverviewCard = ({summary}: SellerOverviewCardProps) => {
                         label={ARABIC.PARTS}
                         accent='primary'
                     />
-                    <SellerStatTile icon='eye-outline' value={summary.totalViews} label={ARABIC.VIEWS} accent='info' />
+                    <SellerStatTile
+                        icon='check-decagram-outline'
+                        value={summary.activeListings}
+                        label={ARABIC.ACTIVE}
+                        accent='success'
+                    />
                 </View>
                 <View style={styles.row}>
+                    <SellerStatTile icon='eye-outline' value={summary.totalViews} label={ARABIC.VIEWS} accent='info' />
                     <SellerStatTile
                         icon='heart-outline'
                         value={summary.favoritesReceived}
                         label={ARABIC.FAVORITES}
                         accent='tertiary'
                     />
+                </View>
+                <View style={styles.row}>
                     <SellerStatTile
                         icon='clipboard-text-outline'
                         value={summary.partRequestsTotal}
                         label={ARABIC.REQUESTS}
                         hint={openHint}
-                        accent='success'
+                        accent='primary'
+                    />
+                    <SellerStatTile
+                        icon='tag-check-outline'
+                        value={summary.offersAccepted}
+                        label={ARABIC.OFFERS}
+                        hint={sentHint}
+                        accent='info'
                     />
                 </View>
             </View>

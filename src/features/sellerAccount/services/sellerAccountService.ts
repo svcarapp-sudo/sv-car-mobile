@@ -1,5 +1,5 @@
 import {apiClient} from '@/global/services'
-import type {SellerSummary} from '../types'
+import type {SellerAnalytics, SellerSummary} from '../types'
 
 const BASE = '/api/seller'
 
@@ -11,6 +11,10 @@ const BASE = '/api/seller'
 class SellerAccountService {
     async getSummary(): Promise<SellerSummary> {
         return apiClient.get<SellerSummary>(`${BASE}/summary`)
+    }
+
+    async getAnalytics(days = 30): Promise<SellerAnalytics> {
+        return apiClient.get<SellerAnalytics>(`${BASE}/analytics`, {params: {days}})
     }
 }
 

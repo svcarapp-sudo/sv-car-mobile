@@ -22,6 +22,9 @@ export type RootStackParamList = {
         | {screen: 'MyPartRequests'; params?: undefined}
         | {screen: 'MatchedPartRequests'; params?: undefined}
         | {screen: 'SellerAccount'; params?: undefined}
+        | {screen: 'SellerAnalytics'; params?: undefined}
+        | {screen: 'SendOffer'; params: {requestId: string}}
+        | {screen: 'MyOffers'; params?: undefined}
         | undefined
     Home: undefined
     AddVehicle: {vehicleId?: string} | undefined
@@ -39,4 +42,7 @@ export type RootStackParamList = {
     MyPartRequests: undefined
     MatchedPartRequests: undefined
     SellerAccount: undefined
+    SellerAnalytics: undefined
+    SendOffer: {requestId: string}
+    MyOffers: undefined
 }

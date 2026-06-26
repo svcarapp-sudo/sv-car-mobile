@@ -24,6 +24,9 @@ export interface PartModelResponse {
     sku?: string | null
     compatibilities?: PartCompatibilityResponse[]
     viewCount?: number | null
+    status?: string | null
+    condition?: string | null
+    stockQuantity?: number | null
     createdAt?: string | number
     updatedAt?: string | number
 }
@@ -64,9 +67,12 @@ export function mapPartModelToPart(model: PartModelResponse, categories?: {id: n
         })),
         sellerName: model.sellerName || undefined,
         sellerCity: model.sellerCity || undefined,
-        inStock: true,
+        inStock: model.stockQuantity != null ? model.stockQuantity > 0 : true,
         rating: undefined,
         viewCount: typeof model.viewCount === 'number' ? model.viewCount : 0,
         createdAt: model.createdAt ? new Date(model.createdAt).getTime() : undefined,
+        status: (model.status as Part['status']) ?? undefined,
+        condition: (model.condition as Part['condition']) ?? undefined,
+        stockQuantity: typeof model.stockQuantity === 'number' ? model.stockQuantity : undefined,
     }
 }

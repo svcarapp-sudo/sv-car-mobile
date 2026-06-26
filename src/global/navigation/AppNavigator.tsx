@@ -11,7 +11,7 @@ import {AddVehicleScreen} from '@/features/addVehicle'
 import {MyPartsListScreen, EditPartScreen} from '@/features/myParts'
 import {AddPartScreen} from '@/features/addPart'
 import {MyAccountScreen} from '@/features/account'
-import {SellerAccountScreen} from '@/features/sellerAccount'
+import {SellerAccountScreen, SellerAnalyticsScreen} from '@/features/sellerAccount'
 import {SavedPartsScreen} from '@/features/savedParts'
 import {
     PartRequestsListScreen,
@@ -19,6 +19,8 @@ import {
     AddPartRequestScreen,
     MyPartRequestsListScreen,
     MatchedPartRequestsScreen,
+    SendOfferScreen,
+    MyOffersListScreen,
 } from '@/features/partRequest'
 import {MainLayout} from '@/global/layouts'
 import {useSavedPartsStore, useVehicleStore} from '@/global/store'
@@ -45,6 +47,9 @@ const ARABIC_TEXT = {
     ADD_PART_REQUEST: 'انشر طلباً',
     MY_PART_REQUESTS: 'طلباتي',
     MATCHED_PART_REQUESTS: 'طلبات تطابق تخصصك',
+    SELLER_ANALYTICS: 'التحليلات والأداء',
+    SEND_OFFER: 'تقديم عرض',
+    MY_OFFERS: 'عروضي',
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -186,6 +191,27 @@ const MainFlow = () => {
                     component={MatchedPartRequestsScreen}
                     options={{
                         title: ARABIC_TEXT.MATCHED_PART_REQUESTS,
+                    }}
+                />
+                <Stack.Screen
+                    name='SellerAnalytics'
+                    component={SellerAnalyticsScreen}
+                    options={{
+                        title: ARABIC_TEXT.SELLER_ANALYTICS,
+                    }}
+                />
+                <Stack.Screen
+                    name='SendOffer'
+                    component={SendOfferScreen}
+                    options={{
+                        title: ARABIC_TEXT.SEND_OFFER,
+                    }}
+                />
+                <Stack.Screen
+                    name='MyOffers'
+                    component={MyOffersListScreen}
+                    options={{
+                        title: ARABIC_TEXT.MY_OFFERS,
                     }}
                 />
             </Stack.Navigator>

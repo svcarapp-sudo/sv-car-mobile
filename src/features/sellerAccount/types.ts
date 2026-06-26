@@ -23,10 +23,18 @@ export interface SellerSummary {
     verified: boolean
 
     totalPartsListed: number
+    activeListings: number
+    lowStockCount: number
+    outOfStockCount: number
     totalViews: number
     favoritesReceived: number
     partRequestsTotal: number
     partRequestsOpen: number
+
+    /** Offers the seller has sent (funnel for the hub). */
+    offersSent: number
+    offersPending: number
+    offersAccepted: number
 
     /** Makes the seller specializes in, and how many open requests currently match them. */
     specializations: SellerSpecialization[]
@@ -40,4 +48,49 @@ export interface SellerSummary {
     subscriptionPrice: number | null
     subscriptionStartedAt: string | null
     subscriptionExpiresAt: string | null
+}
+
+/** A labelled count for distribution charts. */
+export interface LabelCount {
+    label: string
+    count: number
+}
+
+/** One point in a daily time series (date = ISO yyyy-MM-dd). */
+export interface TrendPoint {
+    date: string
+    count: number
+}
+
+/** A best-performing part for the analytics leaderboard. */
+export interface TopPart {
+    id: number
+    name: string
+    viewCount: number
+    price: number
+    categoryName: string | null
+}
+
+/**
+ * Seller "Insights" analytics. Mirrors the backend `SellerAnalyticsResponse`
+ * (GET /api/seller/analytics?days=N).
+ */
+export interface SellerAnalytics {
+    rangeDays: number
+    totalListed: number
+    activeListings: number
+    soldListings: number
+    hiddenListings: number
+    lowStockCount: number
+    outOfStockCount: number
+    totalViews: number
+    favoritesReceived: number
+    partsByStatus: LabelCount[]
+    partsByCategory: LabelCount[]
+    topParts: TopPart[]
+    newListingsTrend: TrendPoint[]
+    matchedDemandTrend: TrendPoint[]
+    offersSent: number
+    offersPending: number
+    offersAccepted: number
 }

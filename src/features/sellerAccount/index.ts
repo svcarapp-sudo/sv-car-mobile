@@ -1,2 +1,2 @@
-export {SellerAccountScreen} from './components'
-export type {SellerSummary} from './types'
+export {SellerAccountScreen, SellerAnalyticsScreen} from './components'
+export type {SellerSummary, SellerAnalytics} from './types'

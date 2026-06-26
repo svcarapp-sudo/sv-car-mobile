@@ -3,6 +3,7 @@ import {Icon, Text} from 'react-native-paper'
 
 import {Screen} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
+import type {PartConditionValue} from '@/global/types'
 import {AddPartFields} from './AddPartFields'
 import {AddPartFormActions} from './AddPartFormActions'
 
@@ -15,6 +16,8 @@ interface AddPartDetailsFormProps {
     name: string
     description: string
     price: string
+    condition: PartConditionValue
+    stockQuantity: string
     imageUrl: string
     sku: string
     categoryId: number | null
@@ -22,6 +25,8 @@ interface AddPartDetailsFormProps {
     onNameChange: (value: string) => void
     onDescriptionChange: (value: string) => void
     onPriceChange: (value: string) => void
+    onConditionChange: (value: PartConditionValue) => void
+    onStockQuantityChange: (value: string) => void
     onImageUrlChange: (value: string) => void
     onSkuChange: (value: string) => void
     onSubmit: () => void
@@ -38,6 +43,8 @@ export const AddPartDetailsForm = ({
     name,
     description,
     price,
+    condition,
+    stockQuantity,
     imageUrl,
     sku,
     categoryId,
@@ -45,6 +52,8 @@ export const AddPartDetailsForm = ({
     onNameChange,
     onDescriptionChange,
     onPriceChange,
+    onConditionChange,
+    onStockQuantityChange,
     onImageUrlChange,
     onSkuChange,
     onSubmit,
@@ -83,12 +92,16 @@ export const AddPartDetailsForm = ({
                 name={name}
                 description={description}
                 price={price}
+                condition={condition}
+                stockQuantity={stockQuantity}
                 imageUrl={imageUrl}
                 sku={sku}
                 categoryId={categoryId}
                 onNameChange={onNameChange}
                 onDescriptionChange={onDescriptionChange}
                 onPriceChange={onPriceChange}
+                onConditionChange={onConditionChange}
+                onStockQuantityChange={onStockQuantityChange}
                 onImageUrlChange={onImageUrlChange}
                 onSkuChange={onSkuChange}
             />

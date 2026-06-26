@@ -5,6 +5,7 @@ import {showToast} from '@/global/components'
 import {useCatalog} from '@/global/hooks'
 import {Step} from '../components/addPart/addPartConstants'
 import type {RootStackParamList} from '@/global/navigation/types'
+import type {PartConditionValue} from '@/global/types'
 import {useAddPart} from './useAddPart'
 
 const ARABIC_TEXT = {
@@ -32,6 +33,8 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [price, setPrice] = useState('')
+    const [condition, setCondition] = useState<PartConditionValue>('USED')
+    const [stockQuantity, setStockQuantity] = useState('1')
     const [imageUrl, setImageUrl] = useState('')
     const [sku, setSku] = useState('')
 
@@ -40,6 +43,8 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
             setName('')
             setDescription('')
             setPrice('')
+            setCondition('USED')
+            setStockQuantity('1')
             setImageUrl('')
             setSku('')
         }
@@ -118,6 +123,8 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
                 name: name.trim(),
                 description: description.trim() || undefined,
                 price: priceNum,
+                condition,
+                stockQuantity: Math.max(0, Math.round(Number(stockQuantity) || 0)),
                 imageUrl: imageUrl.trim() || undefined,
                 sku: sku.trim() || undefined,
             })
@@ -126,7 +133,22 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
         } catch (err) {
             showToast(err instanceof Error ? err.message : ARABIC_TEXT.ERROR, 'error')
         }
-    }, [makeId, modelId, yearFrom, yearTo, categoryId, name, description, price, imageUrl, sku, createPart, navigation])
+    }, [
+        makeId,
+        modelId,
+        yearFrom,
+        yearTo,
+        categoryId,
+        name,
+        description,
+        price,
+        condition,
+        stockQuantity,
+        imageUrl,
+        sku,
+        createPart,
+        navigation,
+    ])
 
     const canSubmit = !!(makeId && modelId && yearFrom && categoryId && name.trim() && price.trim())
 
@@ -145,6 +167,8 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
         name,
         description,
         price,
+        condition,
+        stockQuantity,
         imageUrl,
         sku,
         loading,
@@ -157,6 +181,8 @@ export const useAddPartForm = (navigation?: NavigationProp<RootStackParamList>) 
         setName,
         setDescription,
         setPrice,
+        setCondition,
+        setStockQuantity,
         setImageUrl,
         setSku,
         handleStepChange,
