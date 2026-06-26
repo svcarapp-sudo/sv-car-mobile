@@ -6,7 +6,7 @@ import type {Part} from '@/global/types'
 
 import {CONDITION_LABEL, STATUS_LABEL, stockLevel} from '../../constants/partLifecycle'
 
-const T = {QTY: (n: number) => `الكمية: ${n}`, LOW: 'مخزون منخفض', OUT: 'نفد المخزون'}
+const T = {QTY: (n: number) => `الكمية: ${n}`, OUT: 'نفد المخزون'}
 
 interface MyPartBadgesProps {
     status?: Part['status']
@@ -42,7 +42,6 @@ export const MyPartBadges = ({status, condition, stockQuantity}: MyPartBadgesPro
     const level = stockLevel(stockQuantity)
     const stock = {
         out: {bg: theme.colors.errorContainer, fg: theme.colors.error, label: T.OUT, icon: 'alert-circle-outline'},
-        low: {bg: theme.colors.warningContainer, fg: theme.colors.warning, label: T.LOW, icon: 'alert-outline'},
         ok: {
             bg: theme.colors.surfaceContainerHigh,
             fg: theme.colors.onSurfaceVariant,
