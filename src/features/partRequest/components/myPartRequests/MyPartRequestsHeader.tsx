@@ -3,7 +3,7 @@ import {Icon, Text} from 'react-native-paper'
 
 import {FadeSlideIn, PressableScale} from '@/global/components'
 import {useAppTheme} from '@/global/hooks'
-import {themeColors} from '@/global/theme'
+import {shadows, themeColors} from '@/global/theme'
 
 const T = {
     KICKER: 'متابعة الطلبات',
@@ -34,11 +34,12 @@ export const MyPartRequestsHeader = ({onBrowseAll}: MyPartRequestsHeaderProps) =
                         <PressableScale
                             onPress={onBrowseAll}
                             withHaptic
-                            style={[styles.browseBtn, {backgroundColor: theme.colors.onDarkSurfaceLight}]}
+                            style={[styles.browseBtn, {backgroundColor: theme.colors.onPrimary}]}
                             accessibilityRole='button'
                             accessibilityLabel={T.BROWSE}>
-                            <Icon source='clipboard-search-outline' size={14} color={theme.colors.onPrimary} />
-                            <Text style={[styles.browseLabel, {color: theme.colors.onPrimary}]}>{T.BROWSE}</Text>
+                            <Icon source='clipboard-search-outline' size={15} color={theme.colors.primary} />
+                            <Text style={[styles.browseLabel, {color: theme.colors.primary}]}>{T.BROWSE}</Text>
+                            <Icon source='chevron-left' size={16} color={theme.colors.primary} />
                         </PressableScale>
                     </View>
                     <Text style={[styles.heroTitle, {color: theme.colors.onPrimary}]}>{T.TITLE}</Text>
@@ -68,8 +69,17 @@ const styles = StyleSheet.create({
     topRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 10},
     kicker: {flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999},
     kickerText: {fontSize: 10, fontWeight: '800', letterSpacing: 0.4},
-    browseBtn: {flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 11, paddingVertical: 6, borderRadius: 999},
-    browseLabel: {fontSize: 11.5, fontWeight: '800'},
+    browseBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+        paddingStart: 12,
+        paddingEnd: 8,
+        paddingVertical: 8,
+        borderRadius: 999,
+        ...shadows.sm,
+    },
+    browseLabel: {fontSize: 12.5, fontWeight: '800'},
     heroTitle: {fontSize: 21, fontWeight: '800', letterSpacing: -0.4},
     heroSubtitle: {fontSize: 12, fontWeight: '500', marginTop: 2},
 })

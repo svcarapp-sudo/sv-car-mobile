@@ -1,8 +1,5 @@
-import {useState} from 'react'
-import {Pressable, StyleSheet} from 'react-native'
-import {Icon, Menu} from 'react-native-paper'
-
-import {useAppTheme} from '@/global/hooks'
+import {AnchoredMenu} from '@/global/components'
+import type {AnchoredMenuItem} from '@/global/components'
 
 import type {PartRequestStatus} from '../../types'
 
@@ -21,47 +18,20 @@ interface MyPartRequestCardMenuProps {
 
 /** Kebab menu carrying status transitions + delete for an own-request card. */
 export const MyPartRequestCardMenu = ({status, onStatusChange, onDelete}: MyPartRequestCardMenuProps) => {
-    const theme = useAppTheme()
-    const [open, setOpen] = useState(false)
-    const close = () => setOpen(false)
-    const run = (fn: () => void) => () => {
-        close()
-        fn()
-    }
+    const items: AnchoredMenuItem[] = [
+        ...(status === 'OPEN'
+            ? [
+                  {
+                      key: 'fulfill',
+                      label: T.MARK_FULFILLED,
+                      icon: 'check-decagram-outline',
+                      onPress: () => onStatusChange('FULFILLED'),
+                  },
+                  {key: 'close', label: T.CLOSE, icon: 'lock-outline', onPress: () => onStatusChange('CLOSED')},
+              ]
+            : [{key: 'reopen', label: T.REOPEN, icon: 'broadcast', onPress: () => onStatusChange('OPEN')}]),
+        {key: 'delete', label: T.DELETE, icon: 'delete-outline', onPress: onDelete, destructive: true},
+    ]
 
-    return (
-        <Menu
-            visible={open}
-            onDismiss={close}
-            contentStyle={{backgroundColor: theme.colors.surface}}
-            anchor={
-                <Pressable onPress={() => setOpen(true)} hitSlop={10} style={styles.kebab} accessibilityRole='button'>
-                    <Icon source='dots-horizontal' size={20} color={theme.colors.onSurfaceVariant} />
-                </Pressable>
-            }>
-            {status === 'OPEN' && (
-                <Menu.Item
-                    leadingIcon='check-decagram-outline'
-                    onPress={run(() => onStatusChange('FULFILLED'))}
-                    title={T.MARK_FULFILLED}
-                />
-            )}
-            {status === 'OPEN' && (
-                <Menu.Item leadingIcon='lock-outline' onPress={run(() => onStatusChange('CLOSED'))} title={T.CLOSE} />
-            )}
-            {status !== 'OPEN' && (
-                <Menu.Item leadingIcon='broadcast' onPress={run(() => onStatusChange('OPEN'))} title={T.REOPEN} />
-            )}
-            <Menu.Item
-                leadingIcon='delete-outline'
-                onPress={run(onDelete)}
-                title={T.DELETE}
-                titleStyle={{color: theme.colors.error}}
-            />
-        </Menu>
-    )
+    return <AnchoredMenu items={items} />
 }
-
-const styles = StyleSheet.create({
-    kebab: {padding: 2},
-})

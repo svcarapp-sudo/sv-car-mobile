@@ -26,7 +26,10 @@ interface MyPartRequestCardItemProps {
 /**
  * Own-request status card: a status-coloured edge rail + badge keep state
  * legible at a glance, an amber flag warns when an open request nears expiry,
- * the kebab carries transitions and the footer the budget ledger.
+ * the kebab carries transitions and the footer the budget ledger. The kebab
+ * sits in an absolute overlay *outside* the card's PressableScale so its tap
+ * target never competes with the card press and its menu anchor stays still —
+ * previously the nested pressables raced and the menu opened only sometimes.
  */
 export const MyPartRequestCardItem = ({request, onPress, onDelete, onStatusChange}: MyPartRequestCardItemProps) => {
     const theme = useAppTheme()
@@ -42,65 +45,68 @@ export const MyPartRequestCardItem = ({request, onPress, onDelete, onStatusChang
         request.status === 'OPEN' && daysToExpiry != null && daysToExpiry >= 0 && daysToExpiry <= EXPIRING_WINDOW_DAYS
 
     return (
-        <PressableScale
-            onPress={onPress}
-            containerStyle={styles.cardContainer}
-            style={[styles.card, {backgroundColor: theme.colors.surface}]}
-            accessibilityRole='button'
-            accessibilityLabel={request.title}>
-            <View style={styles.cardInner}>
-                <View style={[styles.rail, {backgroundColor: railColor}]} pointerEvents='none' />
-                <View style={styles.top}>
-                    <View style={styles.topLeft}>
-                        <PartRequestStatusBadge status={request.status} size='md' />
-                        {expiringSoon ? (
-                            <View style={[styles.expiry, {backgroundColor: theme.colors.accentSoft}]}>
-                                <Icon source='clock-alert-outline' size={11} color={theme.colors.tertiary} />
-                                <Text style={[styles.expiryText, {color: theme.colors.tertiary}]} numberOfLines={1}>
-                                    {T.EXPIRING}
-                                </Text>
-                            </View>
-                        ) : null}
-                    </View>
-                    <MyPartRequestCardMenu status={request.status} onStatusChange={onStatusChange} onDelete={onDelete} />
-                </View>
-                <View style={styles.body}>
-                    <View style={styles.thumbBox}>
-                        {thumb ? (
-                            <Image source={{uri: thumb}} style={styles.thumb} resizeMode='cover' />
-                        ) : (
-                            <View style={[styles.thumbArt, {backgroundColor: theme.colors.surfaceContainerLow}]}>
-                                <CategoryArt slug={request.categorySlug ?? 'other'} size={60} />
-                            </View>
-                        )}
-                    </View>
-                    <View style={styles.info}>
-                        {request.categoryName ? (
-                            <View style={[styles.chip, {backgroundColor: theme.colors.primaryContainer}]}>
-                                <Text style={[styles.chipText, {color: theme.colors.primary}]} numberOfLines={1}>
-                                    {request.categoryName}
-                                </Text>
-                            </View>
-                        ) : null}
-                        <Text style={[styles.title, {color: theme.colors.onSurface}]} numberOfLines={2}>
-                            {request.title}
-                        </Text>
-                        <View style={styles.vehicleRow}>
-                            <Icon source='car-side' size={13} color={theme.colors.secondary} />
-                            <Text style={[styles.vehicleText, {color: theme.colors.onSurfaceVariant}]} numberOfLines={1}>
-                                {formatVehicle(request)}
-                            </Text>
+        <View style={styles.cardContainer}>
+            <PressableScale
+                onPress={onPress}
+                style={[styles.card, {backgroundColor: theme.colors.surface}]}
+                accessibilityRole='button'
+                accessibilityLabel={request.title}>
+                <View style={styles.cardInner}>
+                    <View style={[styles.rail, {backgroundColor: railColor}]} pointerEvents='none' />
+                    <View style={styles.top}>
+                        <View style={styles.topLeft}>
+                            <PartRequestStatusBadge status={request.status} size='md' />
+                            {expiringSoon ? (
+                                <View style={[styles.expiry, {backgroundColor: theme.colors.accentSoft}]}>
+                                    <Icon source='clock-alert-outline' size={11} color={theme.colors.tertiary} />
+                                    <Text style={[styles.expiryText, {color: theme.colors.tertiary}]} numberOfLines={1}>
+                                        {T.EXPIRING}
+                                    </Text>
+                                </View>
+                            ) : null}
                         </View>
                     </View>
+                    <View style={styles.body}>
+                        <View style={styles.thumbBox}>
+                            {thumb ? (
+                                <Image source={{uri: thumb}} style={styles.thumb} resizeMode='cover' />
+                            ) : (
+                                <View style={[styles.thumbArt, {backgroundColor: theme.colors.surfaceContainerLow}]}>
+                                    <CategoryArt slug={request.categorySlug ?? 'other'} size={60} />
+                                </View>
+                            )}
+                        </View>
+                        <View style={styles.info}>
+                            {request.categoryName ? (
+                                <View style={[styles.chip, {backgroundColor: theme.colors.primaryContainer}]}>
+                                    <Text style={[styles.chipText, {color: theme.colors.primary}]} numberOfLines={1}>
+                                        {request.categoryName}
+                                    </Text>
+                                </View>
+                            ) : null}
+                            <Text style={[styles.title, {color: theme.colors.onSurface}]} numberOfLines={2}>
+                                {request.title}
+                            </Text>
+                            <View style={styles.vehicleRow}>
+                                <Icon source='car-side' size={13} color={theme.colors.secondary} />
+                                <Text style={[styles.vehicleText, {color: theme.colors.onSurfaceVariant}]} numberOfLines={1}>
+                                    {formatVehicle(request)}
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                    <PartRequestCardFooter
+                        budgetMin={request.budgetMin}
+                        budgetMax={request.budgetMax}
+                        city={request.city}
+                        createdAt={request.createdAt}
+                    />
                 </View>
-                <PartRequestCardFooter
-                    budgetMin={request.budgetMin}
-                    budgetMax={request.budgetMax}
-                    city={request.city}
-                    createdAt={request.createdAt}
-                />
+            </PressableScale>
+            <View style={styles.menuOverlay} pointerEvents='box-none'>
+                <MyPartRequestCardMenu status={request.status} onStatusChange={onStatusChange} onDelete={onDelete} />
             </View>
-        </PressableScale>
+        </View>
     )
 }
 
@@ -109,14 +115,7 @@ const styles = StyleSheet.create({
     card: {borderRadius: 18, ...shadows.md},
     cardInner: {borderRadius: 18, overflow: 'hidden'},
     rail: {position: 'absolute', start: 0, top: 18, bottom: 18, width: 3.5, borderTopEndRadius: 4, borderBottomEndRadius: 4},
-    top: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingStart: 14,
-        paddingEnd: 6,
-        paddingTop: 10,
-    },
+    top: {flexDirection: 'row', alignItems: 'center', paddingStart: 14, paddingEnd: 44, paddingTop: 10},
     topLeft: {flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1},
     expiry: {flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 7, paddingVertical: 3, borderRadius: 999},
     expiryText: {fontSize: 9.5, fontWeight: '800', letterSpacing: 0.2},
@@ -130,4 +129,5 @@ const styles = StyleSheet.create({
     title: {fontSize: 14.5, fontWeight: '800', lineHeight: 20, letterSpacing: -0.2},
     vehicleRow: {flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 'auto'},
     vehicleText: {fontSize: 11.5, fontWeight: '600', flex: 1},
+    menuOverlay: {position: 'absolute', top: 8, end: 6},
 })
